@@ -1,0 +1,69 @@
+@baseURL = http://localhost:3000
+@id_do_usuario = 5
+
+### Listar todos os usuários
+GET {{baseURL}}/users
+Accept: application/json
+
+### Criar um novo usuário
+POST {{baseURL}}/users
+Content-Type: application/json
+
+{
+    "nome": "Carlos Almeida",
+    "email": "carlos@example.com",
+    "senha_hash": "hashed_password",
+    "perfil_id": 1
+}
+
+### Criar usuário com email inválido (erro esperado)
+POST {{baseURL}}/users
+Content-Type: application/json
+
+{
+    "nome": "Teste Email Invalido",
+    "email": "email_invalido",
+    "senha_hash": "hashed_password",
+    "perfil_id": 1
+}
+
+### Criar usuário com email repetido (erro esperado)
+POST {{baseURL}}/users
+Content-Type: application/json
+
+{
+    "nome": "Carlos Almeida",
+    "email": "carlos@example.com",
+    "senha_hash": "hashed_password",
+    "perfil_id": 1
+}
+
+### Atualizar um usuário existente (substitua @id_do_usuario)
+PUT {{baseURL}}/users/{{id_do_usuario}}
+Content-Type: application/json
+
+{
+    "nome": "Carlos de Almeida Atualizado",
+    "email": "carlosatualizado@example.com",
+    "senha_hash": "updated_hashed_password",
+    "perfil_id": 1
+}
+
+### Atualizar usuário inexistente (erro esperado)
+PUT {{baseURL}}/users/9999
+Content-Type: application/json
+
+{
+    "nome": "Usuario Inexistente",
+    "email": "inexistente@example.com",
+    "senha_hash": "hashed_password",
+    "perfil_id": 1
+}
+
+### Deletar um usuário existente (substitua @id_do_usuario)
+DELETE {{baseURL}}/users/{{id_do_usuario}}
+Accept: application/json
+
+### Deletar um usuário inexistente (erro esperado)
+DELETE {{baseURL}}/users/9999
+Accept: application/json
