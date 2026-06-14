@@ -90,7 +90,7 @@ The backend maps and implements a relational database structure with the followi
     ```
 5.  **Run the application:**
     ```bash
-    npm start
+    npm run dev
     ```
 
 ## ⚙️ Testing the API
