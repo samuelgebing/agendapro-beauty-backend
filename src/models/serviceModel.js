@@ -17,20 +17,20 @@ class ServiceModel {
 
     // Cria um novo serviço
     static async create(service) {
-        const { nome, area_id, duracao_min, preco, duracao } = service;
+        const { nome, area_id, duracao_min, preco } = service;
         const [result] = await db.query(
-            'INSERT INTO servicos (nome, area_id, duracao_min, preco, duracao) VALUES (?, ?, ?, ?, ?)',
-            [nome, area_id, duracao_min, preco, duracao]
+            'INSERT INTO servicos (nome, area_id, duracao_min, preco) VALUES (?, ?, ?, ?)',
+            [nome, area_id, duracao_min, preco]
         );
         return result.insertId; // Retorna o ID do serviço criado
     }
 
     // Atualiza um serviço existente
     static async update(id, service) {
-        const { nome, area_id, duracao_min, preco, duracao } = service;
+        const { nome, area_id, duracao_min, preco } = service;
         const [result] = await db.query(
-            'UPDATE servicos SET nome = ?, area_id = ?, duracao_min = ?, preco = ?, duracao = ? WHERE id = ? ',
-            [nome, area_id, duracao_min, preco, duracao, id]
+            'UPDATE servicos SET nome = ?, area_id = ?, duracao_min = ?, preco = ? WHERE id = ? ',
+            [nome, area_id, duracao_min, preco, id]
         );
         return result.affectedRows; // Retorna o número de linhas afetadas
     }
