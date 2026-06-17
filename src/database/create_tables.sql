@@ -12,7 +12,7 @@ create table if not exists servicos (
 	area_id INT, 
 	nome varchar(100) unique,
 	duracao_min int,
-	preco decimal(4,2),
+	preco decimal(7,2),
 	foreign key (area_id)
 	references areas(id)
 );
