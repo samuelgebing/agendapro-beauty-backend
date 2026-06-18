@@ -1,0 +1,70 @@
+### SPRINT 2: teste - Testar todas as rotas com REST Client, Insomnia ou Postman
+@baseURL = http://localhost:3000
+@id_do_servico = 22
+
+### Listar todos os serviços
+GET {{baseURL}}/services
+Accept: application/json
+
+### Criar um novo serviço
+POST {{baseURL}}/services
+Content-Type: application/json
+
+{
+    "nome": "Corte de Cabelo masculino",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
+}
+
+### Criar serviço com área inválida (erro esperado)
+POST {{baseURL}}/services
+Content-Type: application/json
+
+{
+    "nome": "Teste Área Inválida",
+    "area_id": 999,
+    "duracao_min": 30,
+    "preco": 50.00
+}
+
+### Criar serviço com nome repetido (erro esperado)
+POST {{baseURL}}/services
+Content-Type: application/json
+
+{
+    "nome": "Corte de Cabelo masculino",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
+}
+
+### Atualizar um serviço existente (substitua @id_do_servico)
+PUT {{baseURL}}/services/{{id_do_servico}}
+Content-Type: application/json
+
+{
+    "nome": "Corte de Cabelo masculino Atualizado",
+    "area_id": 1,
+    "duracao_min": 45,
+    "preco": 60.00
+}
+
+### Atualizar serviço inexistente (erro esperado)
+PUT {{baseURL}}/services/9999
+Content-Type: application/json
+
+{
+    "nome": "Serviço Inexistente",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
+}
+
+### Deletar um serviço existente (substitua @id_do_servico)
+DELETE {{baseURL}}/services/{{id_do_servico}}
+Accept: application/json
+
+### Deletar um serviço inexistente (erro esperado)
+DELETE {{baseURL}}/services/9999
+Accept: application/json
