@@ -10,9 +10,6 @@ const helmet = require('helmet');
 const userRoutes = require('./routes/userRoutes');
 // Importa as rotas relacionadas aos usuários
 
-const serviceRoutes = require('./routes/serviceRoutes');
-// Importa as rotas relacionadas aos serviços
-
 const errorMiddleware = require('./middlewares/errorMiddleware');
 // Importa o middleware para tratamento centralizado de erros
 
@@ -32,10 +29,6 @@ app.use(express.json());
 // Rotas da aplicação
 app.use('/users', userRoutes);
 // Define que todas as requisições iniciadas com /users serão encaminhadas para o arquivo userRoutes
-
-// Rotas da aplicação
-app.use('/services', serviceRoutes);
-// Define que todas as requisições iniciadas com /services serão encaminhadas para o arquivo serviceRoutes
 
 // Middleware de tratamento de erros (deve ser adicionado depois das rotas)
 app.use(errorMiddleware);
