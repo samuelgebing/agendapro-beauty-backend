@@ -1,8 +1,8 @@
 // SPRINT 2: filtro - Listagem de serviços filtrada por área do salão
 // SPRINT 2: validação - Validação básica dos dados recebidos (campos obrigatórios, tipos)
 
-const ServiceModel = require("../models/serviceModel");
-// Importa o Model responsável pelo acesso ao banco de dados (tabela serviços)
+const ServiceModel = require("../models/professionalModel");
+// Importa o Model responsável pelo acesso ao banco de dados (tabela profissionais)
 
 class ServiceService {
     // Busca todos os serviços cadastrados
