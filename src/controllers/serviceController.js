@@ -1,6 +1,6 @@
-// SPRINT 2: CRUD para profissionais
-const ProfessionalService = require('../services/serviceService');
-// Importa o serviço que contém a lógica de negócio para manipular profissionais
+// SPRINT 2: CRUD para serviços
+const ServiceService = require('../services/serviceService');
+// Importa o serviço que contém a lógica de negócio para manipular serviços
 
 class ServiceController {
     // Método para listar todos os serviços
