@@ -1,6 +1,7 @@
 ### SPRINT 2: teste - Testar todas as rotas com REST Client, Insomnia ou Postman
 @baseURL = http://localhost:3000
 @id_do_servico = 22
+@id_area_do_servico = 1
 
 ### Listar todos os serviços
 GET {{baseURL}}/services
@@ -67,4 +68,8 @@ Accept: application/json
 
 ### Deletar um serviço inexistente (erro esperado)
 DELETE {{baseURL}}/services/9999
+Accept: application/json
+
+### Listar todos os serviços filtrados por área
+GET {{baseURL}}/services?area_id={{id_area_do_servico}}
 Accept: application/json

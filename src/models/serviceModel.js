@@ -8,6 +8,13 @@ class ServiceModel {
         return rows;
     }
 
+    // Busca um serviço pela área do salão
+    static async findByArea(area_id) {
+        const [rows] = await db.query('SELECT * FROM servicos WHERE area_id = ?',
+            [area_id]);
+        return rows;
+    }
+
     // Busca um serviço pelo nome
     static async findByNome(nome) {
         const [rows] = await db.query('SELECT * FROM servicos WHERE nome = ?',
