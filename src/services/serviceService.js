@@ -5,12 +5,23 @@ const ServiceModel = require("../models/serviceModel");
 // Importa o Model responsável pelo acesso ao banco de dados (tabela serviços)
 
 class ServiceService {
-    // Busca todos os serviços cadastrados
-    static async getAllServices() {
+    
+    static async getAllServices(area_id) {
+        // Busca os serviços filtrados por área do salão, se area_id for fornecido
+        if (area_id) {
+            return await ServiceModel.findByArea(area_id);
+        }
+
+        // Busca todos os serviços cadastrados
         return await ServiceModel.findAll();
     }
 
-    // FAZER: getAllServicesByArea(area_id) 
+    /*
+    // Busca serviços por área do salão
+    static async getAllServicesByArea(area_id) {
+        return await ServiceModel.findByArea(area_id);
+    }
+    */
 
     // Cria um novo serviço após validações
     static async createService(service) {
