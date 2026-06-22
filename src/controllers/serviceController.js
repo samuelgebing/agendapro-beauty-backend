@@ -6,8 +6,8 @@ class ServiceController {
     // Método para listar todos os serviços
     static async getAll(req, res) {
         try {
-            // Se a URL for /services, areaId será undefined (Falso no IF do Service)
-            // Se for /services?areaId=1, areaId será '1' (Verdadeiro no IF do Service)
+            // Se a URL for /services, area_id será undefined (Falso no IF do Service)
+            // Se for /services?area_id=1, area_id será '1' (Verdadeiro no IF do Service)
             const { area_id } = req.query;
 
             const services = await ServiceService.getAllServices(area_id);
