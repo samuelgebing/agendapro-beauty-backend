@@ -37,6 +37,10 @@ app.use('/users', userRoutes);
 app.use('/services', serviceRoutes);
 // Define que todas as requisições iniciadas com /services serão encaminhadas para o arquivo serviceRoutes
 
+// Rotas da aplicação
+app.use('/professional', professionalRoutes);
+// Define que todas as requisições iniciadas com /professional serão encaminhadas para o arquivo professionalRoutes
+
 // Middleware de tratamento de erros (deve ser adicionado depois das rotas)
 app.use(errorMiddleware);
 // Middleware que captura e trata erros, enviando respostas ao cliente
