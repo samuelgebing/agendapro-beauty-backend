@@ -9,7 +9,7 @@ class ProfessionalService {
     static validateProfessional(professional) {
         if (!professional) throw new Error("Profissional não fornecido.");
 
-        const errors = [];
+        let errors = [];
         // Verifica campos obrigatórios
         if (!professional.nome) errors.push("Nome do profissional não fornecido.");
         if (!professional.telefone) errors.push("Telefone do profissional não fornecido.");
@@ -77,7 +77,9 @@ class ProfessionalService {
 
         const updatedRows = await ProfessionalModel.update(id, professional);
         if (updatedRows === 0) {
-            throw new Error("Profissional não encontrado."); // Caso nenhum profissional tenha sido atualizado
+            let error = new Error("Profissional não encontrado."); // Define a mensagem de erro
+            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
+            throw error; // Lança o erro com status 404
         }
         return updatedRows;
     }
@@ -86,7 +88,9 @@ class ProfessionalService {
     static async deleteProfessional(id) {
         const deletedRows = await ProfessionalModel.delete(id);
         if (deletedRows === 0) {
-            throw new Error("Profissional não encontrado."); // Caso nenhum profissional tenha sido deletado
+            let error = new Error("Profissional não encontrado."); // Define a mensagem de erro
+            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
+            throw error; // Lança o erro com status 404
         }
         return deletedRows;
     }
