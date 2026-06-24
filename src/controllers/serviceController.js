@@ -14,7 +14,9 @@ class ServiceController {
 
             res.json(services); // Retorna a lista em formato JSON
         } catch (error) {
-            res.status(500).json({ error: error.message }); // Em caso de erro, retorna status 500(erro interno)
+            if(!error.statusCode) error.statusCode = 500; 
+            // Se não houver statusCode, define como 500 (erro interno)
+            res.status(error.statusCode).json({ error: error.message }); // Em caso de erro, retorna status 500(erro interno)
         }
     }
 
@@ -27,7 +29,9 @@ class ServiceController {
             res.status(201).json({ message: 'Serviço criado com sucesso.', id }); 
             // Retorna status 201(criado) e o ID
         } catch (error) {
-            res.status(400).json({ error: error.message }); 
+            if(!error.statusCode) error.statusCode = 400; 
+            // Se não houver statusCode, define como 400 (erro de validação)
+            res.status(error.statusCode).json({ error: error.message }); 
             // Em caso de erro de validação, retorna status 400
         }
     }
@@ -39,7 +43,9 @@ class ServiceController {
             await ServiceService.updateService(id, req.body); // Chama o service para atualizar
             res.json({ message: 'Serviço atualizado com sucesso.' });
         } catch (error) {
-            res.status(400).json({ error: error.message }); 
+            if(!error.statusCode) error.statusCode = 400; 
+            // Se não houver statusCode, define como 400 (erro de validação)
+            res.status(error.statusCode).json({ error: error.message }); 
             // Retorna erro se não encontrar ou problema nos dados
         }
     }
@@ -51,7 +57,9 @@ class ServiceController {
             await ServiceService.deleteService(id); // Chama o service para deletar
             res.json({ message: 'Serviço deletado com sucesso.' });
         } catch (error) {
-            res.status(400).json({ error: error.message }); // Retorna erro se serviço não encontrado
+            if(!error.statusCode) error.statusCode = 400; 
+            // Se não houver statusCode, define como 400 (erro de validação)
+            res.status(error.statusCode).json({ error: error.message }); // Retorna erro se serviço não encontrado
         }
     }
 }

@@ -8,7 +8,11 @@ class ServiceService {
 
     // Valida os dados do serviço antes de criar ou atualizar
     static validateService(service) {
-        if (!service) throw new Error("Serviço não fornecido.");
+        if (!service) {
+            const error = new Error("Serviço não fornecido.");
+            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
+            throw error;
+        }
 
         const errors = [];
         // Verifica campos obrigatórios
@@ -19,7 +23,9 @@ class ServiceService {
         
         if (errors.length > 0) { 
             errors[0] = "FALHA NA VALIDAÇÃO DO SERVIÇO: " + errors[0]; // Prefixa a primeira mensagem de erro
-            throw new Error(errors.join(" ")); // Lança um erro com todas as mensagens de validação
+            const error = new Error(errors.join(" ")); // Cria um erro com todas as mensagens de validação
+            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
+            throw error; // Lança o erro com status code
         }
 
         // VALIDAÇÕES DE NOME
@@ -43,7 +49,9 @@ class ServiceService {
         
         if (errors.length > 0) { 
             errors[0] = "FALHA NA VALIDAÇÃO DO SERVIÇO: " + errors[0]; // Prefixa a primeira mensagem de erro
-            throw new Error(errors.join(" ")); // Lança um erro com todas as mensagens de validação
+            const error = new Error(errors.join(" ")); // Cria um erro com todas as mensagens de validação
+            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
+            throw error; // Lança o erro com status code
         }
         
         // Se todas as validações passarem, apenas continua sem lançar erros
@@ -87,7 +95,9 @@ class ServiceService {
         
         const updatedRows = await ServiceModel.update(id, service);
         if (updatedRows === 0) {
-            throw new Error("Serviço não encontrado."); // Caso nenhum serviço tenha sido atualizado
+            const error = new Error("Serviço não encontrado."); // Define a mensagem de erro
+            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
+            throw error; // Lança o erro com status 404
         }
         return updatedRows;
     }
@@ -96,7 +106,9 @@ class ServiceService {
     static async deleteService(id) {
         const deletedRows = await ServiceModel.delete(id);
         if (deletedRows === 0) {
-            throw new Error("Serviço não encontrado."); // Caso nenhum serviço tenha sido deletado
+            const error = new Error("Serviço não encontrado."); // Define a mensagem de erro
+            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
+            throw error; // Lança o erro com status 404
         }
         return deletedRows;
     }
