@@ -1,35 +1,23 @@
-### SPRINT 2: teste - Testar todas as rotas com REST Client, Insomnia ou Postman
+# ==========================================
+# TESTES DO MÓDULO DE SERVIÇOS (ISSUE #10)
+# ==========================================
 @baseURL = http://localhost:3000
 @id_do_servico = 22
 @id_area_do_servico = 1
+
+# ==========================================
+# CENÁRIOS DE SUCESSO (VALIDAÇÕES DA ISSUE #10)
+# ==========================================
 
 ### Listar todos os serviços
 GET {{baseURL}}/services
 Accept: application/json
 
-### Criar um novo serviço
-POST {{baseURL}}/services
-Content-Type: application/json
+### Listar todos os serviços filtrados por área
+GET {{baseURL}}/services?area_id={{id_area_do_servico}}
+Accept: application/json
 
-{
-    "nome": "Corte de Cabelo masculino",
-    "area_id": 1,
-    "duracao_min": 30,
-    "preco": 50.00
-}
-
-### Criar serviço com área inválida (erro esperado)
-POST {{baseURL}}/services
-Content-Type: application/json
-
-{
-    "nome": "Teste Área Inválida",
-    "area_id": 999,
-    "duracao_min": 30,
-    "preco": 50.00
-}
-
-### Criar serviço com nome repetido (erro esperado)
+### Criar um novo serviço com sucesso
 POST {{baseURL}}/services
 Content-Type: application/json
 
@@ -51,7 +39,79 @@ Content-Type: application/json
     "preco": 60.00
 }
 
-### Atualizar serviço inexistente (erro esperado)
+### Deletar um serviço existente (substitua @id_do_servico)
+DELETE {{baseURL}}/services/{{id_do_servico}}
+Accept: application/json
+
+# ==========================================
+# CENÁRIOS DE ERRO (VALIDAÇÕES DA ISSUE #10)
+# ==========================================
+
+# ------------------------------------------
+# TESTES DE CRIAÇÃO (POST)
+# ------------------------------------------
+
+### [400 Bad Request] Criar serviço sem passá-lo
+POST {{baseURL}}/services
+Content-Type: application/json
+
+### [400 Bad Request] Criar serviço sem passar os campos obrigatórios
+POST {{baseURL}}/services
+Content-Type: application/json
+
+{
+    "campo_inexistente": ""
+}
+
+### [400 Bad Request] Criar serviço com id da área inválido (erro esperado)
+POST {{baseURL}}/services
+Content-Type: application/json
+
+{
+    "nome": "Teste Área Inválida",
+    "area_id": 0,
+    "duracao_min": 30,
+    "preco": 50.00
+}
+
+### [500 Internal Server Error] Criar serviço com id da área válido, mas inexistente (erro esperado)
+POST {{baseURL}}/services
+Content-Type: application/json
+
+{
+    "nome": "Teste Área Inválida",
+    "area_id": 9999,
+    "duracao_min": 30,
+    "preco": 50.00
+}
+
+### [400 Bad Request] Criar serviço com todos os campos inválidos (erro esperado)
+POST {{baseURL}}/services
+Content-Type: application/json
+
+{
+    "nome": 1,
+    "area_id": 0,
+    "duracao_min": "30 minutos",
+    "preco": "50 reais"
+}
+
+### [400 Bad Request] Criar serviço com nome repetido (erro esperado)
+POST {{baseURL}}/services
+Content-Type: application/json
+
+{
+    "nome": "Corte de Cabelo",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
+}
+
+# ------------------------------------------
+# TESTES DE ALTERAÇÃO (PUT)
+# ------------------------------------------
+
+### [500 Internal Server Error] Atualizar serviço inexistente (erro esperado)
 PUT {{baseURL}}/services/9999
 Content-Type: application/json
 
@@ -62,14 +122,47 @@ Content-Type: application/json
     "preco": 50.00
 }
 
-### Deletar um serviço existente (substitua @id_do_servico)
-DELETE {{baseURL}}/services/{{id_do_servico}}
-Accept: application/json
+### [400 Bad Request] Atualizar serviço com id inválido (erro esperado)
+PUT {{baseURL}}/services/0
+Content-Type: application/json
 
-### Deletar um serviço inexistente (erro esperado)
+{
+    "nome": "Serviço com id inválido",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
+}
+
+### [400 Bad Request] Atualizar serviço com todos os campos inválidos (erro esperado)
+PUT {{baseURL}}/services/{{id_do_servico}}
+Content-Type: application/json
+
+{
+    "nome": 1,
+    "area_id": 0,
+    "duracao_min": "30 minutos",
+    "preco": "50 reais"
+}
+
+### [400 Bad Request] Atualizar serviço com nome repetido (erro esperado)
+PUT {{baseURL}}/services/{{id_do_servico}}
+Content-Type: application/json
+
+{
+    "nome": "Corte de Cabelo",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
+}
+
+# ------------------------------------------
+# TESTES DE EXCLUSÃO (DELETE)
+# ------------------------------------------
+
+### [500 Internal Server Error] Deletar um serviço inexistente (erro esperado)
 DELETE {{baseURL}}/services/9999
 Accept: application/json
 
-### Listar todos os serviços filtrados por área
-GET {{baseURL}}/services?area_id={{id_area_do_servico}}
+### [400 Bad Request] Deletar um serviço com id inválido (erro esperado)
+DELETE {{baseURL}}/services/0
 Accept: application/json
