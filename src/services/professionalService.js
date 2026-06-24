@@ -7,9 +7,13 @@ const validatePhone = require("../utils/validatePhone");
 class ProfessionalService {
     // Valida os dados do profissional antes de criar ou atualizar
     static validateProfessional(professional) {
-        if (!professional) throw new Error("Profissional não fornecido.");
+        if (!professional) {
+            const error = new Error("Profissional não fornecido.");
+            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
+            throw error;
+        }
 
-        const errors = [];
+        let errors = [];
         // Verifica campos obrigatórios
         if (!professional.nome) errors.push("Nome do profissional não fornecido.");
         if (!professional.telefone) errors.push("Telefone do profissional não fornecido.");
@@ -17,7 +21,9 @@ class ProfessionalService {
         
         if (errors.length > 0) { 
             errors[0] = "FALHA NA VALIDAÇÃO DO PROFISSIONAL: " + errors[0]; // Prefixa a primeira mensagem de erro
-            throw new Error(errors.join(" ")); // Lança um erro com todas as mensagens de validação
+            const error = new Error(errors.join(" ")); // Cria um erro com todas as mensagens de validação
+            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
+            throw error; // Lança o erro com status code
         }
         
         if (!professional.ativo) professional.ativo = 1; 
@@ -44,7 +50,9 @@ class ProfessionalService {
         
         if (errors.length > 0) { 
             errors[0] = "FALHA NA VALIDAÇÃO DO PROFISSIONAL: " + errors[0]; // Prefixa a primeira mensagem de erro
-            throw new Error(errors.join(" ")); // Lança um erro com todas as mensagens de validação
+            const error = new Error(errors.join(" ")); // Cria um erro com todas as mensagens de validação
+            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
+            throw error; // Lança o erro com status code
         }
 
     }
@@ -77,7 +85,9 @@ class ProfessionalService {
 
         const updatedRows = await ProfessionalModel.update(id, professional);
         if (updatedRows === 0) {
-            throw new Error("Profissional não encontrado."); // Caso nenhum profissional tenha sido atualizado
+            const error = new Error("Profissional não encontrado."); // Define a mensagem de erro
+            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
+            throw error; // Lança o erro com status 404
         }
         return updatedRows;
     }
@@ -86,7 +96,9 @@ class ProfessionalService {
     static async deleteProfessional(id) {
         const deletedRows = await ProfessionalModel.delete(id);
         if (deletedRows === 0) {
-            throw new Error("Profissional não encontrado."); // Caso nenhum profissional tenha sido deletado
+            const error = new Error("Profissional não encontrado."); // Define a mensagem de erro
+            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
+            throw error; // Lança o erro com status 404
         }
         return deletedRows;
     }

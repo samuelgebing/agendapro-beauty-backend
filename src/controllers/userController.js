@@ -8,7 +8,8 @@ class UserController {
             const users = await UserService.getAllUsers(); // Chama o service para buscar usuários
             res.json(users); // Retorna a lista em formato JSON
         } catch (error) {
-            res.status(500).json({ error: error.message }); // Em caso de erro, retorna status 500(erro interno)
+            if (!error.statusCode) error.statusCode = 500; // Define status 500 se não houver status definido
+            res.status(error.statusCode).json({ error: error.message }); // Em caso de erro, retorna status 500(erro interno)
         }
     }
 
@@ -18,7 +19,8 @@ class UserController {
             const id = await UserService.createUser(req.body); // Chama o service para criar usuário
             res.status(201).json({ message: 'Usuário criado com sucesso.', id }); // Retorna status 201(criado) e o ID
         } catch (error) {
-            res.status(400).json({ error: error.message }); // Em caso de erro de validação, retorna status 400
+            if (!error.statusCode) error.statusCode = 400; // Define status 400 se não houver status definido
+            res.status(error.statusCode).json({ error: error.message }); // Em caso de erro de validação, retorna status 400
         }
     }
 
@@ -29,7 +31,8 @@ class UserController {
             await UserService.updateUser(id, req.body); // Chama o service para atualizar
             res.json({ message: 'Usuário atualizado com sucesso.' });
         } catch (error) {
-            res.status(400).json({ error: error.message }); // Retorna erro se não encontrar ou problema nos dados
+            if (!error.statusCode) error.statusCode = 400; // Define status 400 se não houver status definido
+            res.status(error.statusCode).json({ error: error.message }); // Retorna erro se não encontrar ou problema nos dados
         }
     }
 
@@ -40,7 +43,8 @@ class UserController {
             await UserService.deleteUser(id); // Chama o service para deletar
             res.json({ message: 'Usuário deletado com sucesso.' });
         } catch (error) {
-            res.status(400).json({ error: error.message }); // Retorna erro se usuário não encontrado
+            if (!error.statusCode) error.statusCode = 400; // Define status 400 se não houver status definido
+            res.status(error.statusCode).json({ error: error.message }); // Retorna erro se usuário não encontrado
         }
     }
 }

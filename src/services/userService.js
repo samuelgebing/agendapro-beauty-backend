@@ -6,7 +6,11 @@ class UserService {
     // Valida os dados do usuário antes de criar ou atualizar
     static validateUser(user) {
         // Verifica se o objeto user foi fornecido, caso contrário lança um erro
-        if (!user) throw new Error("Usuário não fornecido.");
+        if (!user) {
+            const error = new Error("Usuário não fornecido.");
+            error.statusCode = 400;
+            throw error;
+        }
 
         const errors = [];
         // Verifica campos obrigatórios
@@ -15,7 +19,9 @@ class UserService {
         if (!user.senha_hash) errors.push("Senha do usuário não fornecida.");
         if (errors.length > 0) { 
             errors[0] = "FALHA NA VALIDAÇÃO DO USUÁRIO: " + errors[0]; // Prefixa a primeira mensagem de erro
-            throw new Error(errors.join(" ")); // Lança um erro com todas as mensagens de validação
+            const error = new Error(errors.join(" ")); // Cria um erro com todas as mensagens de validação
+            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
+            throw error; // Lança o erro com status code
         }
             // Une em um erro todas as mensagens de validação de campos obrigatórios
 
@@ -50,7 +56,9 @@ class UserService {
 
         if (errors.length > 0) { 
             errors[0] = "FALHA NA VALIDAÇÃO DO USUÁRIO: " + errors[0]; // Prefixa a primeira mensagem de erro
-            throw new Error(errors.join(" ")); // Lança um erro com todas as mensagens de validação
+            const error = new Error(errors.join(" ")); // Cria um erro com todas as mensagens de validação
+            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
+            throw error; // Lança o erro com status code
         }
         
         // Se todas as validações passarem, apenas continua sem lançar erros
@@ -72,8 +80,11 @@ class UserService {
         this.validateUser(user); // Chama a função de validação
 
         const updatedRows = await UserModel.update(id, user);
-        if (updatedRows === 0)
-            throw new Error("Usuário não encontrado."); // Caso nenhum usuário tenha sido atualizado
+        if (updatedRows === 0) {
+            const error = new Error("Usuário não encontrado."); // Define a mensagem de erro
+            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
+            throw error; // Lança o erro com status 404
+        }
 
         return updatedRows;
     }
@@ -81,8 +92,11 @@ class UserService {
     // Deleta um usuário pelo ID
     static async deleteUser(id) {
         const deletedRows = await UserModel.delete(id);
-        if (deletedRows === 0)
-            throw new Error("Usuário não encontrado."); // Caso nenhum usuário tenha sido deletado
+        if (deletedRows === 0) {
+            const error = new Error("Usuário não encontrado."); // Define a mensagem de erro
+            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
+            throw error; // Lança o erro com status 404
+        }
 
         return deletedRows;
     }
