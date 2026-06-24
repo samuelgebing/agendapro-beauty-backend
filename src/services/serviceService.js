@@ -5,6 +5,49 @@ const ServiceModel = require("../models/serviceModel");
 // Importa o Model responsável pelo acesso ao banco de dados (tabela serviços)
 
 class ServiceService {
+
+    // Valida os dados do serviço antes de criar ou atualizar
+    static validateService(service) {
+        if (!service) throw new Error("Serviço não fornecido.");
+
+        const errors = [];
+        // Verifica campos obrigatórios
+        if (!service.nome) errors.push("Nome do serviço não fornecido.");
+        if (!service.preco) errors.push("Preço do serviço não fornecido.");
+        if (!service.area_id) errors.push("Área do serviço não fornecida.");
+        if (!service.duracao_min) errors.push("Duração do serviço não fornecida.");
+        
+        if (errors.length > 0) { 
+            errors[0] = "FALHA NA VALIDAÇÃO DO SERVIÇO: " + errors[0]; // Prefixa a primeira mensagem de erro
+            throw new Error(errors.join(" ")); // Lança um erro com todas as mensagens de validação
+        }
+
+        // VALIDAÇÕES DE NOME
+        if (typeof service.nome !== "string") 
+            errors.push("Nome com formato inválido.");
+        if (service.nome.length < 2 || service.nome.length > 100) 
+            errors.push("Nome deve ter entre 2 e 100 caracteres.");
+
+        // VALIDAÇÕES DE PREÇO
+        if (typeof service.preco !== "number" || service.preco <= 0) 
+            errors.push("Preço com formato inválido.");
+
+        // VALIDAÇÕES DE DURAÇÃO
+        if (typeof service.duracao_min !== "number" || service.duracao_min <= 0) 
+            errors.push("Duração com formato inválido.");
+
+        // FAZER: Implementar validação de área_id
+        // VALIDAÇÕES DE AREA_ID
+        if (typeof service.area_id !== "number" || service.area_id <= 0) 
+            errors.push("Área do serviço com formato inválido.");
+        
+        if (errors.length > 0) { 
+            errors[0] = "FALHA NA VALIDAÇÃO DO SERVIÇO: " + errors[0]; // Prefixa a primeira mensagem de erro
+            throw new Error(errors.join(" ")); // Lança um erro com todas as mensagens de validação
+        }
+        
+        // Se todas as validações passarem, apenas continua sem lançar erros
+    }
     
     static async getAllServices(area_id) {
         // Busca os serviços filtrados por área do salão, se area_id for fornecido
@@ -29,6 +72,8 @@ class ServiceService {
             // serviceModel.js --> findAreaById(service.area_id)
             // areaModel.js --> findById(service.area_id)
 
+        this.validateService(service); // Chama a função de validação
+
         return await ServiceModel.create(service); // Cria o novo serviço
     }
 
@@ -37,7 +82,9 @@ class ServiceService {
         // FAZER: validar a área do serviço
             // serviceModel.js --> findAreaById(service.area_id)
             // areaModel.js --> findById(service.area_id)
-            
+
+        this.validateService(service); // Chama a função de validação
+        
         const updatedRows = await ServiceModel.update(id, service);
         if (updatedRows === 0) {
             throw new Error("Serviço não encontrado."); // Caso nenhum serviço tenha sido atualizado
