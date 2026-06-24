@@ -53,6 +53,14 @@ class ServiceService {
             error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
             throw error; // Lança o erro com status code
         }
+
+        // Verifica se o serviço já existe no banco apenas se as demais validações passarem
+        const existingName = await ServiceModel.findByNome(service.nome);
+        if (existingName){
+            const error = new Error("Serviço já cadastrado, forneça outro nome.");
+            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
+            throw error;
+        }
         
         // Se todas as validações passarem, apenas continua sem lançar erros
     }
