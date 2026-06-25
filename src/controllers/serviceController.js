@@ -29,10 +29,10 @@ class ServiceController {
             res.status(201).json({ message: 'Serviço criado com sucesso.', id }); 
             // Retorna status 201(criado) e o ID
         } catch (error) {
-            if(!error.statusCode) error.statusCode = 400; 
-            // Se não houver statusCode, define como 400 (erro de validação)
+            if(!error.statusCode) error.statusCode = 500; 
+            // Se não houver statusCode, define como 500 (erro interno do servidor)
             res.status(error.statusCode).json({ error: error.message }); 
-            // Em caso de erro de validação, retorna status 400
+            // Em caso de erro interno do servidor, retorna status 500
         }
     }
 

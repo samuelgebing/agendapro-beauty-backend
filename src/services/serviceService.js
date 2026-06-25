@@ -6,7 +6,28 @@ const ServiceModel = require("../models/serviceModel");
 
 class ServiceService {
 
+    static validateIdService(id) {
+        if (!id && id !== 0) {
+            const error = new Error("ID do serviço não fornecido."); // Define a mensagem de erro
+            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
+            throw error; // Lança o erro com status 404
+        }
+
+        id = Number(id); // Converte para NaN se for string
+        if (
+            typeof id === NaN || 
+            typeof id !== 'number' || // NaN é lido como number
+            id <= 0 ||
+            !Number.isInteger(id)
+        ) {
+            const error = new Error("ID do serviço com formato inválido."); // Define a mensagem de erro
+            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
+            throw error; // Lança o erro com status 400
+        }
+    }
+    
     // Valida os dados do serviço antes de criar ou atualizar
+    // OBS: sem id
     static async validateService(service) {
         if (!service) {
             const error = new Error("Serviço não fornecido.");
@@ -18,7 +39,11 @@ class ServiceService {
         // Verifica campos obrigatórios
         if (!service.nome) errors.push("Nome do serviço não fornecido.");
         if (!service.preco) errors.push("Preço do serviço não fornecido.");
-        if (!service.area_id) errors.push("Área do serviço não fornecida.");
+        if (
+            !service.area_id &&
+            service.area_id !== 0
+        ) 
+            errors.push("Área do serviço não fornecida.");
         if (!service.duracao_min) errors.push("Duração do serviço não fornecida.");
         
         if (errors.length > 0) { 
@@ -58,7 +83,15 @@ class ServiceService {
         const existingName = await ServiceModel.findByNome(service.nome);
         if (existingName){
             const error = new Error("Serviço já cadastrado, forneça outro nome.");
-            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
+            error.statusCode = 409; // Define o status HTTP para 409 (conflito)
+            throw error;
+        }
+
+        // Verifica se o id da área do serviço já existe no banco apenas se as demais validações passarem
+        const existingAreaId = await ServiceModel.findByArea(service.area_id);
+        if (!existingAreaId || existingAreaId == ""){
+            const error = new Error("Área do serviço não encontrada.");
+            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
             throw error;
         }
         
@@ -88,7 +121,7 @@ class ServiceService {
             // serviceModel.js --> findAreaById(service.area_id)
             // areaModel.js --> findById(service.area_id)
 
-        this.validateService(service); // Chama a função de validação
+        await this.validateService(service); // Chama a função de validação
 
         return await ServiceModel.create(service); // Cria o novo serviço
     }
@@ -99,7 +132,8 @@ class ServiceService {
             // serviceModel.js --> findAreaById(service.area_id)
             // areaModel.js --> findById(service.area_id)
 
-        this.validateService(service); // Chama a função de validação
+        this.validateIdService(id); // Chama a função de validação do id
+        await this.validateService(service); // Chama a função de validação geral
         
         const updatedRows = await ServiceModel.update(id, service);
         if (updatedRows === 0) {
@@ -112,6 +146,8 @@ class ServiceService {
 
     // Deleta um serviço pelo ID
     static async deleteService(id) {
+        this.validateIdService(id); // Chama a função de validação do id
+        
         const deletedRows = await ServiceModel.delete(id);
         if (deletedRows === 0) {
             const error = new Error("Serviço não encontrado."); // Define a mensagem de erro
