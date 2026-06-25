@@ -9,7 +9,7 @@ class ServiceModel {
     }
 
     // Busca um serviço pela área do salão
-    static async findByArea(area_id) {
+    static async findByAreaId(area_id) {
         const query = 'SELECT s.id, s.area_id, s.nome, s.duracao_min, s.preco FROM servicos s, areas a WHERE a.id = ? AND s.area_id = a.id';
         const [rows] = await db.query(query, [area_id]);
         return rows;

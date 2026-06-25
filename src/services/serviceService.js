@@ -88,7 +88,7 @@ class ServiceService {
         }
 
         // Verifica se o id da área do serviço já existe no banco apenas se as demais validações passarem
-        const existingAreaId = await ServiceModel.findByArea(service.area_id);
+        const existingAreaId = await ServiceModel.findByAreaId(service.area_id);
         if (!existingAreaId || existingAreaId == ""){
             const error = new Error("Área do serviço não encontrada.");
             error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
@@ -101,7 +101,7 @@ class ServiceService {
     static async getAllServices(area_id) {
         // Busca os serviços filtrados por área do salão, se area_id for fornecido
         if (area_id) {
-            return await ServiceModel.findByArea(area_id);
+            return await ServiceModel.findByAreaId(area_id);
         }
 
         // Busca todos os serviços cadastrados
@@ -147,7 +147,7 @@ class ServiceService {
     // Deleta um serviço pelo ID
     static async deleteService(id) {
         this.validateIdService(id); // Chama a função de validação do id
-        
+
         const deletedRows = await ServiceModel.delete(id);
         if (deletedRows === 0) {
             const error = new Error("Serviço não encontrado."); // Define a mensagem de erro
