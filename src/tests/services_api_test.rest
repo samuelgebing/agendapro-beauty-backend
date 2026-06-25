@@ -22,10 +22,10 @@ POST {{baseURL}}/services
 Content-Type: application/json
 
 {
-"nome": "Corte de Cabelo masculino",
-"area_id": 1,
-"duracao_min": 30,
-"preco": 50.00
+    "nome": "Corte de Cabelo masculino",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
 }
 
 ### Atualizar um serviço existente (substitua @id_do_servico)
@@ -33,10 +33,10 @@ PUT {{baseURL}}/services/{{id_do_servico}}
 Content-Type: application/json
 
 {
-"nome": "Corte de Cabelo masculino Atualizado",
-"area_id": 1,
-"duracao_min": 45,
-"preco": 60.00
+    "nome": "Corte de Cabelo masculino Atualizado",
+    "area_id": 1,
+    "duracao_min": 45,
+    "preco": 60.00
 }
 
 ### Deletar um serviço existente (substitua @id_do_servico)
@@ -62,7 +62,7 @@ POST {{baseURL}}/services
 Content-Type: application/json
 
 {
-"campo_inexistente": ""
+    "campo_inexistente": ""
 }
 
 ### [400 Bad Request] Criar serviço com id da área inválido (erro esperado)
@@ -70,10 +70,10 @@ POST {{baseURL}}/services
 Content-Type: application/json
 
 {
-"nome": "Teste Área Inválida",
-"area_id": -1,
-"duracao_min": 30,
-"preco": 50.00
+    "nome": "Teste Área Inválida",
+    "area_id": -1,
+    "duracao_min": 30,
+    "preco": 50.00
 }
 
 ### [404 Not Found] Criar serviço com id da área válido, mas inexistente (erro esperado)
@@ -81,10 +81,10 @@ POST {{baseURL}}/services
 Content-Type: application/json
 
 {
-"nome": "Teste Área Inválida",
-"area_id": 9999,
-"duracao_min": 30,
-"preco": 50.00
+    "nome": "Teste Área Inválida",
+    "area_id": 9999,
+    "duracao_min": 30,
+    "preco": 50.00
 }
 
 ### [400 Bad Request] Criar serviço com todos os campos inválidos (erro esperado)
@@ -92,10 +92,10 @@ POST {{baseURL}}/services
 Content-Type: application/json
 
 {
-"nome": 1,
-"area_id": 0,
-"duracao_min": "30 minutos",
-"preco": "50 reais"
+    "nome": 1,
+    "area_id": 0,
+    "duracao_min": "30 minutos",
+    "preco": "50 reais"
 }
 
 ### [409 Conflict] Criar serviço com nome repetido (erro esperado)
@@ -103,10 +103,10 @@ POST {{baseURL}}/services
 Content-Type: application/json
 
 {
-"nome": "Corte de Cabelo",
-"area_id": 1,
-"duracao_min": 30,
-"preco": 50.00
+    "nome": "Corte de Cabelo",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
 }
 
 # ------------------------------------------
@@ -118,10 +118,10 @@ PUT {{baseURL}}/services/9999
 Content-Type: application/json
 
 {
-"nome": "Serviço Inexistente",
-"area_id": 1,
-"duracao_min": 30,
-"preco": 50.00
+    "nome": "Serviço Inexistente",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (string) (erro esperado)
@@ -129,10 +129,10 @@ PUT {{baseURL}}/services/texto
 Content-Type: application/json
 
 {
-"nome": "Serviço Inexistente",
-"area_id": 1,
-"duracao_min": 30,
-"preco": 50.00
+    "nome": "Serviço Inexistente",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (0) (erro esperado)
@@ -140,10 +140,10 @@ PUT {{baseURL}}/services/0
 Content-Type: application/json
 
 {
-"nome": "Serviço com id inválido",
-"area_id": 1,
-"duracao_min": 30,
-"preco": 50.00
+    "nome": "Serviço com id inválido",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (número decimal) (erro esperado)
@@ -151,10 +151,10 @@ PUT {{baseURL}}/services/0.5
 Content-Type: application/json
 
 {
-"nome": "Serviço com id inválido",
-"area_id": 1,
-"duracao_min": 30,
-"preco": 50.00
+    "nome": "Serviço com id inválido",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (booleano) (erro esperado)
@@ -162,10 +162,10 @@ PUT {{baseURL}}/services/true
 Content-Type: application/json
 
 {
-"nome": "Serviço com id inválido",
-"area_id": 1,
-"duracao_min": 30,
-"preco": 50.00
+    "nome": "Serviço com id inválido",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (undefined) (erro esperado)
@@ -173,10 +173,10 @@ PUT {{baseURL}}/services/undefined
 Content-Type: application/json
 
 {
-"nome": "Serviço com id inválido",
-"area_id": 1,
-"duracao_min": 30,
-"preco": 50.00
+    "nome": "Serviço com id inválido",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
 }
 
 ### [400 Bad Request] Atualizar serviço com todos os campos inválidos (erro esperado)
@@ -184,10 +184,10 @@ PUT {{baseURL}}/services/{{id_do_servico}}
 Content-Type: application/json
 
 {
-"nome": 1,
-"area_id": 0,
-"duracao_min": "30 minutos",
-"preco": "50 reais"
+    "nome": 1,
+    "area_id": 0,
+    "duracao_min": "30 minutos",
+    "preco": "50 reais"
 }
 
 ### [400 Bad Request] Atualizar serviço com nome repetido (erro esperado)
@@ -195,10 +195,10 @@ PUT {{baseURL}}/services/{{id_do_servico}}
 Content-Type: application/json
 
 {
-"nome": "Corte de Cabelo",
-"area_id": 1,
-"duracao_min": 30,
-"preco": 50.00
+    "nome": "Corte de Cabelo",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
 }
 
 # ------------------------------------------
