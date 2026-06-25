@@ -4,7 +4,7 @@ const validateEmail = require("../utils/validateEmail");
 // Importa a função utilitária que valida o formato de e-mail
 class UserService {
     // Valida os dados do usuário antes de criar ou atualizar
-    static validateUser(user) {
+    static async validateUser(user) {
         // Verifica se o objeto user foi fornecido, caso contrário lança um erro
         if (!user) {
             const error = new Error("Usuário não fornecido.");

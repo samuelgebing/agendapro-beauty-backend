@@ -13,6 +13,9 @@ const userRoutes = require('./routes/userRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 // Importa as rotas relacionadas aos serviços
 
+const professionalRoutes = require('./routes/professionalRoutes');
+// Importa as rotas relacionadas aos profissionais
+
 const errorMiddleware = require('./middlewares/errorMiddleware');
 // Importa o middleware para tratamento centralizado de erros
 
@@ -38,7 +41,7 @@ app.use('/services', serviceRoutes);
 // Define que todas as requisições iniciadas com /services serão encaminhadas para o arquivo serviceRoutes
 
 // Rotas da aplicação
-app.use('/professional', professionalRoutes);
+app.use('/professionals', professionalRoutes);
 // Define que todas as requisições iniciadas com /professional serão encaminhadas para o arquivo professionalRoutes
 
 // Middleware de tratamento de erros (deve ser adicionado depois das rotas)

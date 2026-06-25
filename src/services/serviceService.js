@@ -7,7 +7,7 @@ const ServiceModel = require("../models/serviceModel");
 class ServiceService {
 
     // Valida os dados do serviço antes de criar ou atualizar
-    static validateService(service) {
+    static async validateService(service) {
         if (!service) {
             const error = new Error("Serviço não fornecido.");
             error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
