@@ -1,1 +1,279 @@
-### SPRINT 2: teste - Testar todas as rotas com REST Client, Insomnia ou Postman
+# ==========================================
+# TESTES DO MÓDULO DE SERVIÇOS (ISSUE #10)
+# ==========================================
+@baseURL = http://localhost:3000
+@id_do_profissional_1 = 7
+@id_do_profissional_2 = 8
+@id_especialidade = 1
+
+# ==========================================
+# CENÁRIOS DE SUCESSO (VALIDAÇÕES DA ISSUE #10)
+# ==========================================
+
+### Listar todos os profissionais
+GET {{baseURL}}/professionals
+Accept: application/json
+
+### Listar todos os profissionais filtrados pela especialidade
+GET {{baseURL}}/professionals?especialidade_id={{id_especialidade}}
+Accept: application/json
+
+### Criar um novo profissional (telefone celular) com sucesso
+POST {{baseURL}}/professionals
+Content-Type: application/json
+
+{
+    "nome": "Novo profissional 1",
+    "especialidade_id": 1,
+    "telefone": "(54) 99999-9999",
+    "ativo": 1
+}
+
+### Criar um novo profissional (telefone fixo) com sucesso
+POST {{baseURL}}/professionals
+Content-Type: application/json
+
+{
+    "nome": "Novo profissional 2",
+    "especialidade_id": 1,
+    "telefone": "(54) 9999-9999",
+    "ativo": 1
+}
+
+### Atualizar um profissional existente (telefone celular) (substitua @id_do_profissional_1)
+PUT {{baseURL}}/professionals/{{id_do_profissional_1}}
+Content-Type: application/json
+
+{
+    "nome": "Novo profissional 1 atualizado",
+    "especialidade_id": 2,
+    "telefone": "(54) 88888-8888",
+    "ativo": 0
+}
+
+# OBS: ativo não atualizou
+### Atualizar um profissional existente (telefone fixo) (substitua @id_do_profissional_2)
+PUT {{baseURL}}/professionals/{{id_do_profissional_2}}
+Content-Type: application/json
+
+{
+    "nome": "Novo profissional 2 atualizado",
+    "especialidade_id": 2,
+    "telefone": "(54) 8888-8888",
+    "ativo": 0
+}
+
+### Deletar um profissional existente (telefone celular) (substitua @id_do_profissional_1)
+DELETE {{baseURL}}/professionals/{{id_do_profissional_1}}
+Accept: application/json
+
+### Deletar um profissional existente (telefone fixo) (substitua @id_do_profissional_2)
+DELETE {{baseURL}}/professionals/{{id_do_profissional_2}}
+Accept: application/json
+
+# ==========================================
+# CENÁRIOS DE ERRO (VALIDAÇÕES DA ISSUE #10)
+# ==========================================
+
+# ------------------------------------------
+# TESTES DE CRIAÇÃO (POST)
+# ------------------------------------------
+
+### [400 Bad Request] Criar profissional sem passá-lo
+POST {{baseURL}}/professionals
+Content-Type: application/json
+
+{}
+
+### [400 Bad Request] Criar profissional sem passar os campos obrigatórios
+POST {{baseURL}}/professionals
+Content-Type: application/json
+
+{
+    "campo_inexistente": ""
+}
+
+### [400 Bad Request] Criar profissional com id da especialidade inválido (erro esperado)
+POST {{baseURL}}/professionals
+Content-Type: application/json
+
+{
+    "nome": "Teste Especialidade Inválida",
+    "especialidade_id": -1,
+    "telefone": "(54) 99999-9999",
+    "ativo": 1
+}
+
+### [404 Not Found] Criar profissional com id da especialidade válido, mas inexistente (erro esperado)
+POST {{baseURL}}/professionals
+Content-Type: application/json
+
+{
+    "nome": "Teste Especialidade Inexistente",
+    "especialidade_id": 9999,
+    "telefone": "(54) 99999-9999",
+    "ativo": 1
+}
+
+
+
+
+
+### [400 Bad Request] Criar profissional com todos os campos inválidos (erro esperado)
+POST {{baseURL}}/professionals
+Content-Type: application/json
+
+{
+    "nome": 1,
+    "especialidade_id": 0,
+    "telefone": "(54) 9 9999-9999",
+    "ativo": -1
+}
+### OBS: VALIDAR "ativo"
+
+
+
+
+### OBS: VALIDAR
+### [409 Conflict] Criar profissional com nome repetido (erro esperado)
+POST {{baseURL}}/professionals
+Content-Type: application/json
+
+{
+    "nome": "Corte de Cabelo",
+    "especialidade_id": 1,
+    "telefone": "(54) 99999-9999",
+    "ativo": 1
+}
+
+
+
+
+
+
+# ------------------------------------------
+# TESTES DE ALTERAÇÃO (PUT)
+# ------------------------------------------
+
+### [404 Not Found] Atualizar profissional inexistente (erro esperado)
+PUT {{baseURL}}/professionals/9999
+Content-Type: application/json
+
+{
+    "nome": "Profissional Inexistente",
+    "especialidade_id": 1,
+    "telefone": "(54) 99999-9999",
+    "ativo": 1
+}
+
+### [400 Bad Request] Atualizar profissional com id inválido (string) (erro esperado)
+PUT {{baseURL}}/professionals/texto
+Content-Type: application/json
+
+{
+    "nome": "Profissional com id inválido",
+    "especialidade_id": 1,
+    "telefone": "(54) 99999-9999",
+    "ativo": 1
+}
+
+### [400 Bad Request] Atualizar profissional com id inválido (0) (erro esperado)
+PUT {{baseURL}}/professionals/0
+Content-Type: application/json
+
+{
+    "nome": "Profissional com id inválido",
+    "especialidade_id": 1,
+    "telefone": "(54) 99999-9999",
+    "ativo": 1
+}
+
+### [400 Bad Request] Atualizar profissional com id inválido (número decimal) (erro esperado)
+PUT {{baseURL}}/professionals/0.5
+Content-Type: application/json
+
+{
+    "nome": "Profissional com id inválido",
+    "especialidade_id": 1,
+    "telefone": "(54) 99999-9999",
+    "ativo": 1
+}
+
+### [400 Bad Request] Atualizar profissional com id inválido (booleano) (erro esperado)
+PUT {{baseURL}}/professionals/true
+Content-Type: application/json
+
+{
+    "nome": "Profissional com id inválido",
+    "especialidade_id": 1,
+    "telefone": "(54) 99999-9999",
+    "ativo": 1
+}
+
+### [400 Bad Request] Atualizar profissional com id inválido (undefined) (erro esperado)
+PUT {{baseURL}}/professionals/undefined
+Content-Type: application/json
+
+{
+    "nome": "Profissional com id inválido",
+    "especialidade_id": 1,
+    "telefone": "(54) 99999-9999",
+    "ativo": 1
+}
+
+### [400 Bad Request] Atualizar profissional com todos os campos inválidos (erro esperado)
+PUT {{baseURL}}/professionals/{{id_do_profissional_1}}
+Content-Type: application/json
+
+{
+    "nome": 1,
+    "especialidade_id": 0,
+    "telefone": "(54) 9 9999-9999",
+    "ativo": 2
+}
+
+
+
+### VERIFICAR
+### [400 Bad Request] Atualizar profissional com nome repetido (erro esperado)
+PUT {{baseURL}}/professionals/{{id_do_profissional_1}}
+Content-Type: application/json
+
+{
+    "nome": "Corte de Cabelo",
+    "area_id": 1,
+    "duracao_min": 30,
+    "preco": 50.00
+}
+
+
+
+
+
+# ------------------------------------------
+# TESTES DE EXCLUSÃO (DELETE)
+# ------------------------------------------
+
+### [404 Not Found] Deletar um profissional inexistente (erro esperado)
+DELETE {{baseURL}}/professionals/9999
+Accept: application/json
+
+### [400 Bad Request] Deletar profissional com id inválido (string) (erro esperado)
+DELETE {{baseURL}}/professionals/texto
+Accept: application/json
+
+### [400 Bad Request] Deletar profissional com id inválido (0) (erro esperado)
+DELETE {{baseURL}}/professionals/0
+Accept: application/json
+
+### [400 Bad Request] Deletar profissional com id inválido (número decimal) (erro esperado)
+DELETE {{baseURL}}/professionals/0.5
+Accept: application/json
+
+### [400 Bad Request] Deletar profissional com id inválido (booleano) (erro esperado)
+DELETE {{baseURL}}/professionals/true
+Accept: application/json
+
+### [400 Bad Request] Deletar profissional com id inválido (undefined) (erro esperado)
+DELETE {{baseURL}}/professionals/undefined
+Accept: application/json

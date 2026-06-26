@@ -8,10 +8,15 @@ class ProfessionalModel {
         return rows;
     }
 
-    // FAZER: findAllBySpecialty(especialidade_id)
+    static async findByEspecialidadeId(especialidade_id) {
+        const [rows] = await db.query(
+            'SELECT p.id, p.nome, p.especialidade_id, p.telefone, p.ativo FROM profissionais p, especialidades e WHERE e.id = ? AND p.especialidade_id = e.id', 
+            [especialidade_id]);
+        return rows;
+    }
 
     // Busca um profissional pelo nome
-    static async findByName(nome) {
+    static async findByNome(nome) {
         const [rows] = await db.query('SELECT * FROM profissionais WHERE nome = ?',
             [nome]);
         return rows[0];

@@ -7,7 +7,11 @@ class ProfessionalController {
     // Método para listar todos os profissionais
     static async getAll(req, res) {
         try {
-            const professionals = await ProfessionalService.getAllProfessionals(); 
+            // Se a URL for /professionals, especialidade_id será undefined (Falso no IF do Service)
+            // Se for /professionals?especialidade_id=1, especialidade_id será '1' (Verdadeiro no IF do Service)
+            const { especialidade_id } = req.query;
+
+            const professionals = await ProfessionalService.getAllProfessionals(especialidade_id); 
             // Chama o service para buscar profissionais
 
             res.json(professionals); // Retorna a lista em formato JSON

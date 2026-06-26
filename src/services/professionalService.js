@@ -3,21 +3,30 @@ const ProfessionalModel = require("../models/professionalModel");
 
 const validatePhone = require("../utils/validatePhone");
 // Importa a função de validação de telefone do arquivo validatePhone.js
+const ValidateId = require("../utils/validateId");
+// Importa a classe para validar IDs
 
 class ProfessionalService {
     // Valida os dados do profissional antes de criar ou atualizar
-    static validateProfessional(professional) {
-        if (!professional) {
+    static async validateProfessional(professional) {
+        if (
+            !professional || 
+            Object.keys(professional).length === 0 
+        ) {
             const error = new Error("Profissional não fornecido.");
             error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
             throw error;
         }
 
-        let errors = [];
+        const errors = [];
         // Verifica campos obrigatórios
         if (!professional.nome) errors.push("Nome do profissional não fornecido.");
         if (!professional.telefone) errors.push("Telefone do profissional não fornecido.");
-        if (!professional.especialidade_id) errors.push("Especialidade do profissional não fornecida.");
+        if (ValidateId.isNull(professional.especialidade_id)) 
+            errors.push("Especialidade do profissional não fornecida.");
+        
+        if (!professional.ativo) professional.ativo = 1; 
+        // Define status padrão como 1 (ativo) caso não seja fornecido
         
         if (errors.length > 0) { 
             errors[0] = "FALHA NA VALIDAÇÃO DO PROFISSIONAL: " + errors[0]; // Prefixa a primeira mensagem de erro
@@ -25,9 +34,6 @@ class ProfessionalService {
             error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
             throw error; // Lança o erro com status code
         }
-        
-        if (!professional.ativo) professional.ativo = 1; 
-        // Define status padrão como 1 (ativo) caso não seja fornecido
 
         // VALIDAÇÕES DE NOME
         if (typeof professional.nome !== "string") 
@@ -55,10 +61,32 @@ class ProfessionalService {
             throw error; // Lança o erro com status code
         }
 
+        // Verifica se o id da especialidade do profissional já existe no banco apenas se as demais validações passarem
+        const existingSpecialtyId = await ProfessionalModel.findByEspecialidadeId(professional.especialidade_id);
+        if (!existingSpecialtyId || existingSpecialtyId == ""){
+            const error = new Error("Especialidade do profissional não encontrada.");
+            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
+            throw error;
+        }
+
+        // Verifica se o profissional já existe no banco apenas se as demais validações passarem
+        const existingName = await ProfessionalModel.findByNome(professional.nome);
+        if (existingName){
+            const error = new Error("Profissional já cadastrado, forneça outro nome.");
+            error.statusCode = 409; // Define o status HTTP para 409 (conflito)
+            throw error;
+        }
+        
+        // Se todas as validações passarem, apenas continua sem lançar erros
     }
 
     // Busca todos os profissionais cadastrados
-    static async getAllProfessionals() {
+    static async getAllProfessionals(especialidade_id) {
+        // Busca os serviços filtrados por área do salão, se area_id for fornecido
+        if (especialidade_id) {
+            return await ProfessionalModel.findByEspecialidadeId(especialidade_id);
+        }
+
         return await ProfessionalModel.findAll();
     }
 
@@ -66,22 +94,15 @@ class ProfessionalService {
 
     // Cria um novo profissional após validações
     static async createProfessional(professional) {
-        // FAZER: validar a especialidade do profissional
-            // professionalModel.js --> findSpecialtyById(professional.especialidade_id)
-            // specialtyModel.js --> findById(professional.especialidade_id)
-
-        this.validateProfessional(professional); // Chama a função de validação
+        await this.validateProfessional(professional); // Chama a função de validação
 
         return await ProfessionalModel.create(professional); // Cria o novo profissional
     }
 
     // Atualiza informações de um profissional existente
     static async updateProfessional(id, professional) {
-        // FAZER: validar a especialidade do profissional
-            // professionalModel.js --> findSpecialtyById(professional.especialidade_id)
-            // specialtyModel.js --> findById(professional.especialidade_id)
-
-        this.validateProfessional(professional); // Chama a função de validação
+        ValidateId.primaryKey(id); // Chama a função de validação do id
+        await this.validateProfessional(professional); // Chama a função de validação
 
         const updatedRows = await ProfessionalModel.update(id, professional);
         if (updatedRows === 0) {
@@ -94,6 +115,8 @@ class ProfessionalService {
 
     // Deleta um profissional pelo ID
     static async deleteProfessional(id) {
+        ValidateId.primaryKey(id); // Chama a função de validação do id
+        
         const deletedRows = await ProfessionalModel.delete(id);
         if (deletedRows === 0) {
             const error = new Error("Profissional não encontrado."); // Define a mensagem de erro
