@@ -1,35 +1,17 @@
-// SPRINT 2: filtro - Listagem de serviços filtrada por área do salão
-// SPRINT 2: validação - Validação básica dos dados recebidos (campos obrigatórios, tipos)
-
 const ServiceModel = require("../models/serviceModel");
 // Importa o Model responsável pelo acesso ao banco de dados (tabela serviços)
+const ValidateId = require("../utils/validateId");
+// Importa a classe para validar IDs
 
 class ServiceService {
-
-    static validateIdService(id) {
-        if (!id && id !== 0) {
-            const error = new Error("ID do serviço não fornecido."); // Define a mensagem de erro
-            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
-            throw error; // Lança o erro com status 404
-        }
-
-        id = Number(id); // Converte para NaN se for string
-        if (
-            typeof id === NaN || 
-            typeof id !== 'number' || // NaN é lido como number
-            id <= 0 ||
-            !Number.isInteger(id)
-        ) {
-            const error = new Error("ID do serviço com formato inválido."); // Define a mensagem de erro
-            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
-            throw error; // Lança o erro com status 400
-        }
-    }
     
     // Valida os dados do serviço antes de criar ou atualizar
     // OBS: sem id
     static async validateService(service) {
-        if (!service) {
+        if (
+            !service || 
+            Object.keys(service).length === 0
+        ) {
             const error = new Error("Serviço não fornecido.");
             error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
             throw error;
@@ -39,10 +21,7 @@ class ServiceService {
         // Verifica campos obrigatórios
         if (!service.nome) errors.push("Nome do serviço não fornecido.");
         if (!service.preco) errors.push("Preço do serviço não fornecido.");
-        if (
-            !service.area_id &&
-            service.area_id !== 0
-        ) 
+        if (ValidateId.isNull(service.area_id)) 
             errors.push("Área do serviço não fornecida.");
         if (!service.duracao_min) errors.push("Duração do serviço não fornecida.");
         
@@ -67,9 +46,8 @@ class ServiceService {
         if (typeof service.duracao_min !== "number" || service.duracao_min <= 0) 
             errors.push("Duração com formato inválido.");
 
-        // FAZER: Implementar validação de área_id
         // VALIDAÇÕES DE AREA_ID
-        if (typeof service.area_id !== "number" || service.area_id <= 0) 
+        if (ValidateId.isInvalid(service.area_id)) 
             errors.push("Área do serviço com formato inválido.");
         
         if (errors.length > 0) { 
@@ -101,6 +79,8 @@ class ServiceService {
     static async getAllServices(area_id) {
         // Busca os serviços filtrados por área do salão, se area_id for fornecido
         if (area_id) {
+            ValidateId.isInvalid(area_id,'Área do Serviço');
+            
             return await ServiceModel.findByAreaId(area_id);
         }
 
@@ -108,19 +88,8 @@ class ServiceService {
         return await ServiceModel.findAll();
     }
 
-    /*
-    // Busca serviços por área do salão
-    static async getAllServicesByArea(area_id) {
-        return await ServiceModel.findByArea(area_id);
-    }
-    */
-
     // Cria um novo serviço após validações
     static async createService(service) {
-        // FAZER: validar a área do serviço
-            // serviceModel.js --> findAreaById(service.area_id)
-            // areaModel.js --> findById(service.area_id)
-
         await this.validateService(service); // Chama a função de validação
 
         return await ServiceModel.create(service); // Cria o novo serviço
@@ -128,11 +97,7 @@ class ServiceService {
 
     // Atualiza informações de um serviço existente
     static async updateService(id, service) {
-        // FAZER: validar a área do serviço
-            // serviceModel.js --> findAreaById(service.area_id)
-            // areaModel.js --> findById(service.area_id)
-
-        this.validateIdService(id); // Chama a função de validação do id
+        ValidateId.primaryKey(id,'Serviço'); // Chama a função de validação do id
         await this.validateService(service); // Chama a função de validação geral
         
         const updatedRows = await ServiceModel.update(id, service);
@@ -146,7 +111,7 @@ class ServiceService {
 
     // Deleta um serviço pelo ID
     static async deleteService(id) {
-        this.validateIdService(id); // Chama a função de validação do id
+        ValidateId.primaryKey(id,'Serviço'); // Chama a função de validação do id
 
         const deletedRows = await ServiceModel.delete(id);
         if (deletedRows === 0) {
