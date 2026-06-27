@@ -1,7 +1,7 @@
 USE agendapro_beauty;
 
 -- Inserting mock data
-INSERT INTO roles (nome) VALUES
+INSERT INTO roles (name) VALUES
 ('Cliente'),
 ('Profissional'),
 ('Administrador');
