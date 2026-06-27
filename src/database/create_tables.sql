@@ -1,95 +1,93 @@
--- Usa o banco de dados
 USE agendapro_beauty;
 
 create table if not exists areas (
 	id INT primary key auto_increment,
-	nome VARCHAR(100) unique,
-	descricao VARCHAR(255)
+	name VARCHAR(100) unique,
+	description VARCHAR(255)
 );
 
-create table if not exists servicos (
+create table if not exists services (
 	id INT primary key auto_increment,
 	area_id INT, 
-	nome varchar(100) unique,
-	duracao_min int,
-	preco decimal(7,2),
+	name varchar(100) unique,
+	min_duration int,
+	price decimal(7,2),
 	foreign key (area_id)
 	references areas(id)
 );
 
--- EXTRA: Para padronizar os perfis
-create table if not exists perfis (
+-- EXTRA: To standardize authorization roles
+create table if not exists roles (
 	id int primary key auto_increment,
-	nome varchar(30)
+	name varchar(30)
 );
 
--- Permite a mesma pessoa ter vários usuários,
--- mas com e-mails distintos
-create table if not exists usuarios (
+-- Users have distinct emails
+create table if not exists users (
 	id int primary key auto_increment,
-	nome varchar(100),
+	name varchar(100),
 	email varchar(100) unique,
-	senha_hash varchar(255),
-	perfil_id int,
-	criado_em timestamp,
-	foreign key (perfil_id)
-	references perfis(id)
+	password_hash varchar(255),
+	role_id int,
+	created_at timestamp,
+	foreign key (role_id)
+	references roles(id)
 );
 
--- EXTRA: Para padronizar as especialidades
-create table if not exists especialidades (
+-- EXTRA: To standardize specialities
+create table if not exists specialities (
 	id int primary key auto_increment,
-	nome varchar(100)
+	name varchar(100)
 );
 
--- Profissional pode ter mais de uma especialidade
-create table if not exists profissionais (
+-- VERIFY: Can professionals have more than one speciality?
+create table if not exists professionals (
 	id int primary key auto_increment,
-	nome varchar(100),
-	especialidade_id int,
-	telefone varchar(20),
-	ativo boolean default true,
-	foreign key (especialidade_id)
-	references especialidades(id)
+	name varchar(100),
+	speciality_id int,
+	phone varchar(20),
+	active boolean default true, -- NEED TO VALIDATE THE RIGHT TYPE
+	foreign key (speciality_id)
+	references specialities(id)
 );
 
-create table if not exists status_agendamento (
+create table if not exists schedule_status (
 	id int primary key auto_increment,
-	nome varchar(100),
-	descricao varchar(255)
+	name varchar(100),
+	description varchar(255)
 );
 
-create table if not exists agendamentos (
+create table if not exists schedules (
 	id int primary key auto_increment,
-	usuario_id int,
-	profissional_id int,
-	servico_id int,
+	user_id int,
+	professional_id int,
+	service_id int,
 	status_id int,
-	data_hora_inicio datetime,
-	data_hora_fim datetime,
-	criado_em timestamp,
-	foreign key (usuario_id)
-	references usuarios(id),
-	foreign key (profissional_id)
-	references profissionais(id),
-	foreign key (servico_id)
-	references servicos(id),
+	start_date_hour datetime,
+	end_date_hour datetime,
+	created_at timestamp,
+	foreign key (user_id)
+	references users(id),
+	foreign key (professional_id)
+	references professionals(id),
+	foreign key (service_id)
+	references services(id),
 	foreign key (status_id)
-	references status_agendamento(id)
+	references schedule_status(id)
 );
 
-create table if not exists horarios_trabalho (
+create table if not exists working_hours (
 	id int primary key auto_increment,
-	profissional_id int,
-	dia_semana tinyint check (dia_semana between 0 and 6),
-	hora_inicio time,
-	hora_fim time
+	professional_id int,
+	weekday tinyint check (weekday between 0 and 6),
+	start_hour time,
+	end_hour time
 );
 
-create table if not exists horarios_bloqueados (
+create table if not exists blocked_hours (
 	id int primary key auto_increment,
-	profissional_id int,
-	inicio datetime,
-	fim datetime,
-	motivo varchar(255)
+	professional_id int,
+	start datetime,
+	end datetime,
+	reason varchar(255)
 );
