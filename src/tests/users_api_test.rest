@@ -1,5 +1,5 @@
 @baseURL = http://localhost:3000
-@id_do_usuario = 5
+@user_id = 5
 
 ### Listar todos os usuários
 GET {{baseURL}}/users
@@ -10,10 +10,10 @@ POST {{baseURL}}/users
 Content-Type: application/json
 
 {
-    "nome": "Carlos Almeida",
+    "name": "Carlos Almeida",
     "email": "carlos@example.com",
-    "senha_hash": "hashed_password",
-    "perfil_id": 1
+    "password_hash": "hashed_password",
+    "role_id": 1
 }
 
 ### Criar usuário com email inválido (erro esperado)
@@ -21,10 +21,10 @@ POST {{baseURL}}/users
 Content-Type: application/json
 
 {
-    "nome": "Teste Email Invalido",
+    "name": "Teste Email Invalido",
     "email": "email_invalido",
-    "senha_hash": "hashed_password",
-    "perfil_id": 1
+    "password_hash": "hashed_password",
+    "role_id": 1
 }
 
 ### Criar usuário com email repetido (erro esperado)
@@ -32,21 +32,21 @@ POST {{baseURL}}/users
 Content-Type: application/json
 
 {
-    "nome": "Carlos Almeida",
+    "name": "Carlos Almeida",
     "email": "carlos@example.com",
-    "senha_hash": "hashed_password",
-    "perfil_id": 1
+    "password_hash": "hashed_password",
+    "role_id": 1
 }
 
-### Atualizar um usuário existente (substitua @id_do_usuario)
-PUT {{baseURL}}/users/{{id_do_usuario}}
+### Atualizar um usuário existente (substitua @user_id)
+PUT {{baseURL}}/users/{{user_id}}
 Content-Type: application/json
 
 {
-    "nome": "Carlos de Almeida Atualizado",
+    "name": "Carlos de Almeida Atualizado",
     "email": "carlosatualizado@example.com",
-    "senha_hash": "updated_hashed_password",
-    "perfil_id": 1
+    "password_hash": "updated_hashed_password",
+    "role_id": 1
 }
 
 ### Atualizar usuário inexistente (erro esperado)
@@ -54,14 +54,14 @@ PUT {{baseURL}}/users/9999
 Content-Type: application/json
 
 {
-    "nome": "Usuario Inexistente",
+    "name": "Usuario Inexistente",
     "email": "inexistente@example.com",
-    "senha_hash": "hashed_password",
-    "perfil_id": 1
+    "password_hash": "hashed_password",
+    "role_id": 1
 }
 
-### Deletar um usuário existente (substitua @id_do_usuario)
-DELETE {{baseURL}}/users/{{id_do_usuario}}
+### Deletar um usuário existente (substitua @user_id)
+DELETE {{baseURL}}/users/{{user_id}}
 Accept: application/json
 
 ### Deletar um usuário inexistente (erro esperado)

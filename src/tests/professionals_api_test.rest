@@ -2,9 +2,9 @@
 # TESTES DO MÓDULO DE SERVIÇOS (ISSUE #10)
 # ==========================================
 @baseURL = http://localhost:3000
-@id_do_profissional_1 = 10
-@id_do_profissional_2 = 11
-@id_especialidade = 1
+@professional_id_1 = 5
+@professional_id_2 = 6
+@speciality_id = 1
 
 # ==========================================
 # CENÁRIOS DE SUCESSO (VALIDAÇÕES DA ISSUE #10)
@@ -15,59 +15,59 @@ GET {{baseURL}}/professionals
 Accept: application/json
 
 ### Listar todos os profissionais filtrados pela especialidade
-GET {{baseURL}}/professionals?especialidade_id={{id_especialidade}}
+GET {{baseURL}}/professionals?speciality_id={{speciality_id}}
 Accept: application/json
 
-### Criar um novo profissional (telefone celular) com sucesso
+### Criar um novo profissional (phone celular) com sucesso
 POST {{baseURL}}/professionals
 Content-Type: application/json
 
 {
-    "nome": "Novo profissional 1",
-    "especialidade_id": 1,
-    "telefone": "(54) 99999-9999",
-    "ativo": 1
+    "name": "Novo profissional 1",
+    "speciality_id": 1,
+    "phone": "(54) 99999-9999",
+    "active": 1
 }
 
-### Criar um novo profissional (telefone fixo) com sucesso
+### Criar um novo profissional (phone fixo) com sucesso
 POST {{baseURL}}/professionals
 Content-Type: application/json
 
 {
-    "nome": "Novo profissional 2",
-    "especialidade_id": 1,
-    "telefone": "(54) 9999-9999",
-    "ativo": 1
+    "name": "Novo profissional 2",
+    "speciality_id": 1,
+    "phone": "(54) 9999-9999",
+    "active": 1
 }
 
-### Atualizar um profissional existente (telefone celular) (substitua @id_do_profissional_1)
-PUT {{baseURL}}/professionals/{{id_do_profissional_1}}
+### Atualizar um profissional existente (phone celular) (substitua @professional_id_1)
+PUT {{baseURL}}/professionals/{{professional_id_1}}
 Content-Type: application/json
 
 {
-    "nome": "Novo profissional 1 atualizado",
-    "especialidade_id": 2,
-    "telefone": "(54) 88888-8888",
-    "ativo": 0
+    "name": "Novo profissional 1 atualizado",
+    "speciality_id": 2,
+    "phone": "(54) 88888-8888",
+    "active": 0
 }
 
-### Atualizar um profissional existente (telefone fixo) (substitua @id_do_profissional_2)
-PUT {{baseURL}}/professionals/{{id_do_profissional_2}}
+### Atualizar um profissional existente (phone fixo) (substitua @professional_id_2)
+PUT {{baseURL}}/professionals/{{professional_id_2}}
 Content-Type: application/json
 
 {
-    "nome": "Novo profissional 2 atualizado",
-    "especialidade_id": 2,
-    "telefone": "(54) 8888-8888",
-    "ativo": 0
+    "name": "Novo profissional 2 atualizado",
+    "speciality_id": 2,
+    "phone": "(54) 8888-8888",
+    "active": 0
 }
 
-### Deletar um profissional existente (telefone celular) (substitua @id_do_profissional_1)
-DELETE {{baseURL}}/professionals/{{id_do_profissional_1}}
+### Deletar um profissional existente (phone celular) (substitua @professional_id_1)
+DELETE {{baseURL}}/professionals/{{professional_id_1}}
 Accept: application/json
 
-### Deletar um profissional existente (telefone fixo) (substitua @id_do_profissional_2)
-DELETE {{baseURL}}/professionals/{{id_do_profissional_2}}
+### Deletar um profissional existente (phone fixo) (substitua @professional_id_2)
+DELETE {{baseURL}}/professionals/{{professional_id_2}}
 Accept: application/json
 
 # ==========================================
@@ -97,10 +97,10 @@ POST {{baseURL}}/professionals
 Content-Type: application/json
 
 {
-    "nome": "Teste Especialidade Inválida",
-    "especialidade_id": -1,
-    "telefone": "(54) 99999-9999",
-    "ativo": 1
+    "name": "Teste Especialidade Inválida",
+    "speciality_id": -1,
+    "phone": "(54) 99999-9999",
+    "active": 1
 }
 
 ### [404 Not Found] Criar profissional com id da especialidade válido, mas inexistente (erro esperado)
@@ -108,10 +108,10 @@ POST {{baseURL}}/professionals
 Content-Type: application/json
 
 {
-    "nome": "Teste Especialidade Inexistente",
-    "especialidade_id": 9999,
-    "telefone": "(54) 99999-9999",
-    "ativo": 1
+    "name": "Teste Especialidade Inexistente",
+    "speciality_id": 9999,
+    "phone": "(54) 99999-9999",
+    "active": 1
 }
 
 ### [400 Bad Request] Criar profissional com todos os campos inválidos (erro esperado)
@@ -119,21 +119,21 @@ POST {{baseURL}}/professionals
 Content-Type: application/json
 
 {
-    "nome": 1,
-    "especialidade_id": 0,
-    "telefone": "(54) 9 9999-9999",
-    "ativo": -1
+    "name": 1,
+    "speciality_id": 0,
+    "phone": "(54) 9 9999-9999",
+    "active": -1
 }
 
-### [409 Conflict] Criar profissional com nome repetido (erro esperado)
+### [409 Conflict] Criar profissional com name repetido (erro esperado)
 POST {{baseURL}}/professionals
 Content-Type: application/json
 
 {
-    "nome": "Corte de Cabelo",
-    "especialidade_id": 1,
-    "telefone": "(54) 99999-9999",
-    "ativo": 1
+    "name": "João da Silva",
+    "speciality_id": 1,
+    "phone": "(54) 99999-9999",
+    "active": 1
 }
 
 # ------------------------------------------
@@ -145,10 +145,10 @@ PUT {{baseURL}}/professionals/9999
 Content-Type: application/json
 
 {
-    "nome": "Profissional Inexistente",
-    "especialidade_id": 1,
-    "telefone": "(54) 99999-9999",
-    "ativo": 1
+    "name": "Profissional Inexistente",
+    "speciality_id": 1,
+    "phone": "(54) 99999-9999",
+    "active": 1
 }
 
 ### [400 Bad Request] Atualizar profissional com id inválido (string) (erro esperado)
@@ -156,10 +156,10 @@ PUT {{baseURL}}/professionals/texto
 Content-Type: application/json
 
 {
-    "nome": "Profissional com id inválido",
-    "especialidade_id": 1,
-    "telefone": "(54) 99999-9999",
-    "ativo": 1
+    "name": "Profissional com id inválido",
+    "speciality_id": 1,
+    "phone": "(54) 99999-9999",
+    "active": 1
 }
 
 ### [400 Bad Request] Atualizar profissional com id inválido (0) (erro esperado)
@@ -167,10 +167,10 @@ PUT {{baseURL}}/professionals/0
 Content-Type: application/json
 
 {
-    "nome": "Profissional com id inválido",
-    "especialidade_id": 1,
-    "telefone": "(54) 99999-9999",
-    "ativo": 1
+    "name": "Profissional com id inválido",
+    "speciality_id": 1,
+    "phone": "(54) 99999-9999",
+    "active": 1
 }
 
 ### [400 Bad Request] Atualizar profissional com id inválido (número decimal) (erro esperado)
@@ -178,10 +178,10 @@ PUT {{baseURL}}/professionals/0.5
 Content-Type: application/json
 
 {
-    "nome": "Profissional com id inválido",
-    "especialidade_id": 1,
-    "telefone": "(54) 99999-9999",
-    "ativo": 1
+    "name": "Profissional com id inválido",
+    "speciality_id": 1,
+    "phone": "(54) 99999-9999",
+    "active": 1
 }
 
 ### [400 Bad Request] Atualizar profissional com id inválido (booleano) (erro esperado)
@@ -189,10 +189,10 @@ PUT {{baseURL}}/professionals/true
 Content-Type: application/json
 
 {
-    "nome": "Profissional com id inválido",
-    "especialidade_id": 1,
-    "telefone": "(54) 99999-9999",
-    "ativo": 1
+    "name": "Profissional com id inválido",
+    "speciality_id": 1,
+    "phone": "(54) 99999-9999",
+    "active": 1
 }
 
 ### [400 Bad Request] Atualizar profissional com id inválido (undefined) (erro esperado)
@@ -200,32 +200,32 @@ PUT {{baseURL}}/professionals/undefined
 Content-Type: application/json
 
 {
-    "nome": "Profissional com id inválido",
-    "especialidade_id": 1,
-    "telefone": "(54) 99999-9999",
-    "ativo": 1
+    "name": "Profissional com id inválido",
+    "speciality_id": 1,
+    "phone": "(54) 99999-9999",
+    "active": 1
 }
 
 ### [400 Bad Request] Atualizar profissional com todos os campos inválidos (erro esperado)
-PUT {{baseURL}}/professionals/{{id_do_profissional_1}}
+PUT {{baseURL}}/professionals/{{professional_id_1}}
 Content-Type: application/json
 
 {
-    "nome": 1,
-    "especialidade_id": 0,
-    "telefone": "(54) 9 9999-9999",
-    "ativo": 2
+    "name": 1,
+    "speciality_id": 0,
+    "phone": "(54) 9 9999-9999",
+    "active": 2
 }
 
-### [400 Bad Request] Atualizar profissional com nome repetido (erro esperado)
-PUT {{baseURL}}/professionals/{{id_do_profissional_1}}
+### [409 Conflict] Atualizar profissional com name repetido (erro esperado)
+PUT {{baseURL}}/professionals/{{professional_id_1}}
 Content-Type: application/json
 
 {
-    "nome": "Corte de Cabelo",
-    "especialidade_id": 1,
-    "telefone": "(54) 77777-7777",
-    "ativo": 1
+    "name": "João da Silva",
+    "speciality_id": 1,
+    "phone": "(54) 77777-7777",
+    "active": 1
 }
 
 # ------------------------------------------

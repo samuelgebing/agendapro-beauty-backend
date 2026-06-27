@@ -19,11 +19,11 @@ class ServiceService {
 
         const errors = [];
         // Verifica campos obrigatórios
-        if (!service.nome) errors.push("Nome do serviço não fornecido.");
-        if (!service.preco) errors.push("Preço do serviço não fornecido.");
+        if (!service.name) errors.push("Nome do serviço não fornecido.");
+        if (!service.price) errors.push("Preço do serviço não fornecido.");
         if (ValidateId.isNull(service.area_id)) 
             errors.push("Área do serviço não fornecida.");
-        if (!service.duracao_min) errors.push("Duração do serviço não fornecida.");
+        if (!service.min_duration) errors.push("Duração do serviço não fornecida.");
         
         if (errors.length > 0) { 
             errors[0] = "FALHA NA VALIDAÇÃO DO SERVIÇO: " + errors[0]; // Prefixa a primeira mensagem de erro
@@ -33,17 +33,17 @@ class ServiceService {
         }
 
         // VALIDAÇÕES DE NOME
-        if (typeof service.nome !== "string") 
+        if (typeof service.name !== "string") 
             errors.push("Nome com formato inválido.");
-        if (service.nome.length < 2 || service.nome.length > 100) 
+        if (service.name.length < 2 || service.name.length > 100) 
             errors.push("Nome deve ter entre 2 e 100 caracteres.");
 
         // VALIDAÇÕES DE PREÇO
-        if (typeof service.preco !== "number" || service.preco <= 0) 
+        if (typeof service.price !== "number" || service.price <= 0) 
             errors.push("Preço com formato inválido.");
 
         // VALIDAÇÕES DE DURAÇÃO
-        if (typeof service.duracao_min !== "number" || service.duracao_min <= 0) 
+        if (typeof service.min_duration !== "number" || service.min_duration <= 0) 
             errors.push("Duração com formato inválido.");
 
         // VALIDAÇÕES DE AREA_ID
@@ -58,7 +58,7 @@ class ServiceService {
         }
 
         // Verifica se o serviço já existe no banco apenas se as demais validações passarem
-        const existingName = await ServiceModel.findByNome(service.nome);
+        const existingName = await ServiceModel.findByName(service.name);
         if (existingName){
             const error = new Error("Serviço já cadastrado, forneça outro nome.");
             error.statusCode = 409; // Define o status HTTP para 409 (conflito)
