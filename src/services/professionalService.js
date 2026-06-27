@@ -25,7 +25,8 @@ class ProfessionalService {
         if (ValidateId.isNull(professional.especialidade_id)) 
             errors.push("Especialidade do profissional não fornecida.");
         
-        if (!professional.ativo) professional.ativo = 1; 
+        if (!professional.ativo && professional.ativo !== 0) 
+            professional.ativo = 1; 
         // Define status padrão como 1 (ativo) caso não seja fornecido
         
         if (errors.length > 0) { 
@@ -54,6 +55,13 @@ class ProfessionalService {
         ) 
             errors.push("Especialidade com formato inválido.");
         
+        // VALIDAÇÕES DE STATUS DO PROFISSIONAL ("ATIVO")
+        if (
+            typeof professional.ativo !== "number" ||
+            ![0,1].includes(professional.ativo)
+        )
+            errors.push("Status do profissional com formato inválido");
+
         if (errors.length > 0) { 
             errors[0] = "FALHA NA VALIDAÇÃO DO PROFISSIONAL: " + errors[0]; // Prefixa a primeira mensagem de erro
             const error = new Error(errors.join(" ")); // Cria um erro com todas as mensagens de validação

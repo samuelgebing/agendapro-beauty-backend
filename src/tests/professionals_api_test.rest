@@ -2,8 +2,8 @@
 # TESTES DO MÓDULO DE SERVIÇOS (ISSUE #10)
 # ==========================================
 @baseURL = http://localhost:3000
-@id_do_profissional_1 = 7
-@id_do_profissional_2 = 8
+@id_do_profissional_1 = 10
+@id_do_profissional_2 = 11
 @id_especialidade = 1
 
 # ==========================================
@@ -51,7 +51,6 @@ Content-Type: application/json
     "ativo": 0
 }
 
-# OBS: ativo não atualizou
 ### Atualizar um profissional existente (telefone fixo) (substitua @id_do_profissional_2)
 PUT {{baseURL}}/professionals/{{id_do_profissional_2}}
 Content-Type: application/json
@@ -115,10 +114,6 @@ Content-Type: application/json
     "ativo": 1
 }
 
-
-
-
-
 ### [400 Bad Request] Criar profissional com todos os campos inválidos (erro esperado)
 POST {{baseURL}}/professionals
 Content-Type: application/json
@@ -129,12 +124,7 @@ Content-Type: application/json
     "telefone": "(54) 9 9999-9999",
     "ativo": -1
 }
-### OBS: VALIDAR "ativo"
 
-
-
-
-### OBS: VALIDAR
 ### [409 Conflict] Criar profissional com nome repetido (erro esperado)
 POST {{baseURL}}/professionals
 Content-Type: application/json
@@ -145,11 +135,6 @@ Content-Type: application/json
     "telefone": "(54) 99999-9999",
     "ativo": 1
 }
-
-
-
-
-
 
 # ------------------------------------------
 # TESTES DE ALTERAÇÃO (PUT)
@@ -232,23 +217,16 @@ Content-Type: application/json
     "ativo": 2
 }
 
-
-
-### VERIFICAR
 ### [400 Bad Request] Atualizar profissional com nome repetido (erro esperado)
 PUT {{baseURL}}/professionals/{{id_do_profissional_1}}
 Content-Type: application/json
 
 {
     "nome": "Corte de Cabelo",
-    "area_id": 1,
-    "duracao_min": 30,
-    "preco": 50.00
+    "especialidade_id": 1,
+    "telefone": "(54) 77777-7777",
+    "ativo": 1
 }
-
-
-
-
 
 # ------------------------------------------
 # TESTES DE EXCLUSÃO (DELETE)
