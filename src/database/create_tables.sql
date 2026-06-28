@@ -46,7 +46,7 @@ create table if not exists professionals (
 	name varchar(100),
 	speciality_id int,
 	phone varchar(20),
-	active boolean default true, -- NEED TO VALIDATE THE RIGHT TYPE
+	active tinyint(1) default 1, -- To standardize into the backend validations
 	foreign key (speciality_id)
 	references specialities(id)
 );
