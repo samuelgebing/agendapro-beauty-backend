@@ -16,7 +16,7 @@ create table if not exists services (
 	references areas(id)
 );
 
--- EXTRA: To standardize authorization roles
+-- EXTRA: Standardize authorization roles
 create table if not exists roles (
 	id int primary key auto_increment,
 	name varchar(30)
@@ -34,7 +34,7 @@ create table if not exists users (
 	references roles(id)
 );
 
--- EXTRA: To standardize specialities
+-- EXTRA: Standardize specialities
 create table if not exists specialities (
 	id int primary key auto_increment,
 	name varchar(100)
@@ -46,7 +46,7 @@ create table if not exists professionals (
 	name varchar(100),
 	speciality_id int,
 	phone varchar(20),
-	active tinyint(1) default 1, -- To standardize into the backend validations
+	active tinyint(1) default 1, -- Standardize into the backend validations
 	foreign key (speciality_id)
 	references specialities(id)
 );
