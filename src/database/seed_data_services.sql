@@ -1,13 +1,12 @@
--- Usa o banco
 USE agendapro_beauty;
 
--- Inserção de dados fictícios
-INSERT INTO areas (nome, descricao) VALUES
+-- Inserting mock data
+INSERT INTO areas (name, description) VALUES
 ('Cabelo', 'Serviços relacionados a cabelo'),
 ('Unhas', 'Serviços relacionados a unhas'),
 ('Maquiagem', 'Serviços relacionados a maquiagem');
 
-INSERT INTO servicos (nome, area_id, duracao_min, preco) VALUES
+INSERT INTO services (name, area_id, min_duration, price) VALUES
 ('Corte de Cabelo', 1, 30, 60.00),
 ('Corte e Hidratação de Cabelo', 1, 45, 100.00),
 ('Manicure', 2, 30, 40.00),

@@ -1,5 +1,12 @@
+# ==========================================
+# TESTES (EXTRA) DO MÓDULO DE USUÁRIOS (ISSUE #10)
+# ==========================================
 @baseURL = http://localhost:3000
-@id_do_usuario = 5
+@user_id = 5
+
+# ==========================================
+# CENÁRIOS DE SUCESSO (VALIDAÇÕES DA ISSUE #10)
+# ==========================================
 
 ### Listar todos os usuários
 GET {{baseURL}}/users
@@ -10,21 +17,44 @@ POST {{baseURL}}/users
 Content-Type: application/json
 
 {
-    "nome": "Carlos Almeida",
+    "name": "Carlos Almeida",
     "email": "carlos@example.com",
-    "senha_hash": "hashed_password",
-    "perfil_id": 1
+    "password_hash": "hashed_password",
+    "role_id": 1
 }
+
+### Atualizar um usuário existente (substitua @user_id)
+PUT {{baseURL}}/users/{{user_id}}
+Content-Type: application/json
+
+{
+    "name": "Carlos de Almeida Atualizado",
+    "email": "carlosatualizado@example.com",
+    "password_hash": "updated_hashed_password",
+    "role_id": 1
+}
+
+### Deletar um usuário existente (substitua @user_id)
+DELETE {{baseURL}}/users/{{user_id}}
+Accept: application/json
+
+# ==========================================
+# CENÁRIOS DE ERRO (VALIDAÇÕES DA ISSUE #10)
+# ==========================================
+
+# ------------------------------------------
+# TESTES DE CRIAÇÃO (POST)
+# ------------------------------------------
 
 ### Criar usuário com email inválido (erro esperado)
 POST {{baseURL}}/users
 Content-Type: application/json
 
 {
-    "nome": "Teste Email Invalido",
+    "name": "Teste Email Invalido",
     "email": "email_invalido",
-    "senha_hash": "hashed_password",
-    "perfil_id": 1
+    "password_hash": "hashed_password",
+    "role_id": 1
 }
 
 ### Criar usuário com email repetido (erro esperado)
@@ -32,38 +62,128 @@ POST {{baseURL}}/users
 Content-Type: application/json
 
 {
-    "nome": "Carlos Almeida",
-    "email": "carlos@example.com",
-    "senha_hash": "hashed_password",
-    "perfil_id": 1
+    "name": "João Silva",
+    "email": "joao@example.com",
+    "password_hash": "hashed_password",
+    "role_id": 1
 }
 
-### Atualizar um usuário existente (substitua @id_do_usuario)
-PUT {{baseURL}}/users/{{id_do_usuario}}
-Content-Type: application/json
-
-{
-    "nome": "Carlos de Almeida Atualizado",
-    "email": "carlosatualizado@example.com",
-    "senha_hash": "updated_hashed_password",
-    "perfil_id": 1
-}
+# ------------------------------------------
+# TESTES DE ALTERAÇÃO (PUT)
+# ------------------------------------------
 
 ### Atualizar usuário inexistente (erro esperado)
 PUT {{baseURL}}/users/9999
 Content-Type: application/json
 
 {
-    "nome": "Usuario Inexistente",
+    "name": "Usuario Inexistente",
     "email": "inexistente@example.com",
-    "senha_hash": "hashed_password",
-    "perfil_id": 1
+    "password_hash": "hashed_password",
+    "role_id": 1
 }
 
-### Deletar um usuário existente (substitua @id_do_usuario)
-DELETE {{baseURL}}/users/{{id_do_usuario}}
-Accept: application/json
+### [400 Bad Request] Atualizar usuário com id inválido (string) (erro esperado)
+PUT {{baseURL}}/users/texto
+Content-Type: application/json
+
+{
+    "name": "Usuário com id inválido",
+    "email": "invalido@example.com",
+    "password_hash": "hashed_password",
+    "role_id": 1
+}
+
+### [400 Bad Request] Atualizar usuário com id inválido (0) (erro esperado)
+PUT {{baseURL}}/users/0
+Content-Type: application/json
+
+{
+    "name": "Usuário com id inválido",
+    "email": "invalido@example.com",
+    "password_hash": "hashed_password",
+    "role_id": 1
+}
+
+### [400 Bad Request] Atualizar usuário com id inválido (número decimal) (erro esperado)
+PUT {{baseURL}}/users/0.5
+Content-Type: application/json
+
+{
+    "name": "Usuário com id inválido",
+    "email": "invalido@example.com",
+    "password_hash": "hashed_password",
+    "role_id": 1
+}
+
+### [400 Bad Request] Atualizar usuário com id inválido (booleano) (erro esperado)
+PUT {{baseURL}}/users/true
+Content-Type: application/json
+
+{
+    "name": "Usuário com id inválido",
+    "email": "invalido@example.com",
+    "password_hash": "hashed_password",
+    "role_id": 1
+}
+
+### [400 Bad Request] Atualizar usuário com id inválido (undefined) (erro esperado)
+PUT {{baseURL}}/professionals/undefined
+Content-Type: application/json
+
+{
+    "name": "Usuário com id inválido",
+    "email": "invalido@example.com",
+    "password_hash": "hashed_password",
+    "role_id": 1
+}
+
+### [400 Bad Request] Atualizar usuário com todos os campos inválidos (erro esperado)
+PUT {{baseURL}}/professionals/{{user_id}}
+Content-Type: application/json
+
+{
+    "name": 1,
+    "email": "invalido",
+    "password_hash": 1,
+    "role_id": 0
+}
+
+### [409 Conflict] Atualizar usuário com name repetido (erro esperado)
+PUT {{baseURL}}/professionals/{{user_id}}
+Content-Type: application/json
+
+{
+    "name": "João da Silva",
+    "email": "invalido@example.com",
+    "password_hash": "hashed_password",
+    "role_id": 1
+}
+
+# ------------------------------------------
+# TESTES DE EXCLUSÃO (DELETE)
+# ------------------------------------------
 
 ### Deletar um usuário inexistente (erro esperado)
 DELETE {{baseURL}}/users/9999
+Accept: application/json
+
+### [400 Bad Request] Deletar usuário3 com id inválido (string) (erro esperado)
+DELETE {{baseURL}}/users/texto
+Accept: application/json
+
+### [400 Bad Request] Deletar usuário com id inválido (0) (erro esperado)
+DELETE {{baseURL}}/users/0
+Accept: application/json
+
+### [400 Bad Request] Deletar usuário com id inválido (número decimal) (erro esperado)
+DELETE {{baseURL}}/users/0.5
+Accept: application/json
+
+### [400 Bad Request] Deletar usuário com id inválido (booleano) (erro esperado)
+DELETE {{baseURL}}/users/true
+Accept: application/json
+
+### [400 Bad Request] Deletar usuário com id inválido (undefined) (erro esperado)
+DELETE {{baseURL}}/users/undefined
 Accept: application/json

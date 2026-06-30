@@ -4,7 +4,7 @@ const validateEmail = require("../utils/validateEmail");
 // Importa a função utilitária que valida o formato de e-mail
 class UserService {
     // Valida os dados do usuário antes de criar ou atualizar
-    static validateUser(user) {
+    static async validateUser(user) {
         // Verifica se o objeto user foi fornecido, caso contrário lança um erro
         if (!user) {
             const error = new Error("Usuário não fornecido.");
@@ -14,9 +14,9 @@ class UserService {
 
         const errors = [];
         // Verifica campos obrigatórios
-        if (!user.nome) errors.push("Nome do usuário não fornecido.");
+        if (!user.name) errors.push("Nome do usuário não fornecido.");
         if (!user.email) errors.push("E-mail do usuário não fornecido.");
-        if (!user.senha_hash) errors.push("Senha do usuário não fornecida.");
+        if (!user.password_hash) errors.push("Senha do usuário não fornecida.");
         if (errors.length > 0) { 
             errors[0] = "FALHA NA VALIDAÇÃO DO USUÁRIO: " + errors[0]; // Prefixa a primeira mensagem de erro
             const error = new Error(errors.join(" ")); // Cria um erro com todas as mensagens de validação
@@ -26,20 +26,20 @@ class UserService {
             // Une em um erro todas as mensagens de validação de campos obrigatórios
 
         // FAZER: Implementar validação de perfil_id (opcional, mas se fornecido deve ser válido)
-        if (!user.perfil_id) user.perfil_id = 1; 
+        if (!user.role_id) user.role_id = 1; 
         // Define perfil_id padrão como 1 (cliente) caso não seja fornecido
 
         // VALIDAÇÕES DE NOME
-        if (typeof user.nome !== "string") 
+        if (typeof user.name !== "string") 
             errors.push("Nome com formato inválido.");
-        if (user.nome.length < 2 || user.nome.length > 100) 
+        if (user.name.length < 2 || user.name.length > 100) 
             errors.push("Nome deve ter entre 2 e 100 caracteres.");
 
         // FAZER: Transformar senha_hash em hash antes de salvar no banco de dados (ex: bcrypt)
         // VALIDAÇÕES DE SENHA
-        if (typeof user.senha_hash !== "string") 
+        if (typeof user.password_hash !== "string") 
             errors.push("Senha com formato inválido.");
-        if (user.senha_hash.length < 6 || user.senha_hash.length > 255) 
+        if (user.password_hash.length < 6 || user.password_hash.length > 255) 
             errors.push("Senha deve ter mais de 6 caracteres.");
         // FAZER: Implementar validação de complexidade de senha (ex: letras maiúsculas, minúsculas, números, caracteres especiais)
 

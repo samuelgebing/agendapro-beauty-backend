@@ -4,16 +4,22 @@ const db = require('../config/database');
 class ProfessionalModel {
     // Busca todos os profissionais
     static async findAll() {
-        const [rows] = await db.query('SELECT * FROM profissionais');
+        const [rows] = await db.query('SELECT * FROM professionals');
         return rows;
     }
 
-    // FAZER: findAllBySpecialty(especialidade_id)
+    static async findBySpecialityId(speciality_id) {
+        // console.log('SELECT p.id, p.name, p.speciality_id, p.phone, p.active FROM professionals p, specialities s WHERE s.id = ? AND p.speciality_id = s.id');
+        const [rows] = await db.query(
+            'SELECT p.id, p.name, p.speciality_id, p.phone, p.active FROM professionals p, specialities s WHERE s.id = ? AND p.speciality_id = s.id', 
+            [speciality_id]);
+        return rows;
+    }
 
     // Busca um profissional pelo nome
-    static async findByName(nome) {
-        const [rows] = await db.query('SELECT * FROM profissionais WHERE nome = ?',
-            [nome]);
+    static async findByName(name) {
+        const [rows] = await db.query('SELECT * FROM professionals WHERE name = ?',
+            [name]);
         return rows[0];
     }
 
@@ -26,10 +32,10 @@ class ProfessionalModel {
         // FAZER: validar especialidade_id conforme tabela especialidades
 
         // O campo "ativo" tem como default "true" no banco
-        const { nome, especialidade_id, telefone } = professional;
+        const { name, speciality_id, phone } = professional;
         const [result] = await db.query(
-            'INSERT INTO profissionais (nome, especialidade_id, telefone) VALUES (?, ?, ?)',
-            [nome, especialidade_id, telefone]
+            'INSERT INTO professionals (name, speciality_id, phone) VALUES (?, ?, ?)',
+            [name, speciality_id, phone]
         );
         return result.insertId; // Retorna o ID do profissional criado
     }
@@ -39,17 +45,17 @@ class ProfessionalModel {
         // FAZER: validar especialidade_id conforme tabela especialidades
 
         // Aqui o campo "ativo" entra para o caso de atualização
-        const { nome, especialidade_id, telefone, ativo } = professional;
+        const { name, speciality_id, phone, active } = professional;
         const [result] = await db.query(
-            'UPDATE profissionais SET nome = ?, especialidade_id = ?, telefone = ?, ativo = ? WHERE id = ? ',
-            [nome, especialidade_id, telefone, ativo, id]
+            'UPDATE professionals SET name = ?, speciality_id = ?, phone = ?, active = ? WHERE id = ? ',
+            [name, speciality_id, phone, active, id]
         );
         return result.affectedRows; // Retorna o número de linhas afetadas
     }
 
     // Deleta um profissional pelo ID
     static async delete(id) {
-        const [result] = await db.query('DELETE FROM profissionais WHERE id = ?', [id]);
+        const [result] = await db.query('DELETE FROM professionals WHERE id = ?', [id]);
         return result.affectedRows; // Retorna o número de linhas afetadas
     }
 }
