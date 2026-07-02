@@ -29,7 +29,7 @@ create table if not exists users (
 	email varchar(100) unique,
 	password_hash varchar(255),
 	role_id int,
-	created_at timestamp,
+	created_at timestamp default current_timestamp,
 	foreign key (role_id)
 	references roles(id)
 );
@@ -65,7 +65,7 @@ create table if not exists schedules (
 	status_id int,
 	start_date_hour datetime,
 	end_date_hour datetime,
-	created_at timestamp,
+	created_at timestamp default current_timestamp,
 	foreign key (user_id)
 	references users(id),
 	foreign key (professional_id)
