@@ -13,6 +13,9 @@ const userRoutes = require('./routes/userRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 // Importa as rotas relacionadas aos serviços
 
+const scheduleRoutes = require('./routes/scheduleRoutes');
+// Importa as rotas relacionadas aos horários dos profissionais
+
 const professionalRoutes = require('./routes/professionalRoutes');
 // Importa as rotas relacionadas aos profissionais
 
@@ -39,6 +42,10 @@ app.use('/users', userRoutes);
 // Rotas da aplicação
 app.use('/services', serviceRoutes);
 // Define que todas as requisições iniciadas com /services serão encaminhadas para o arquivo serviceRoutes
+
+// Rotas da aplicação
+app.use('/schedules', scheduleRoutes);
+// Define que todas as requisições iniciadas com /schedules serão encaminhadas para o arquivo scheduleRoutes
 
 // Rotas da aplicação
 app.use('/professionals', professionalRoutes);
