@@ -8,6 +8,12 @@ class ProfessionalModel {
         return rows;
     }
 
+    static async findById(id) {
+        const [rows] = await db.query('SELECT * FROM professionals WHERE id = ?', 
+            [id]);
+        return rows[0];
+    }
+
     static async findBySpecialityId(speciality_id) {
         // console.log('SELECT p.id, p.name, p.speciality_id, p.phone, p.active FROM professionals p, specialities s WHERE s.id = ? AND p.speciality_id = s.id');
         const [rows] = await db.query(

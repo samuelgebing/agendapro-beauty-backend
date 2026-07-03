@@ -1,12 +1,12 @@
 # ==========================================
-# TESTES DO MÓDULO DE HORÁRIOS DE PROFISSIONAIS (ISSUE #10)
+# TESTES DO MÓDULO DE HORÁRIOS DE PROFISSIONAIS (ISSUE #11)
 # ==========================================
 @baseURL = http://localhost:3000
 @schedule_id = 16
 @professional_id = 1
 
 # ==========================================
-# CENÁRIOS DE SUCESSO (VALIDAÇÕES DA ISSUE #10)
+# CENÁRIOS DE SUCESSO (VALIDAÇÕES DA ISSUE #11)
 # ==========================================
 
 ### Listar todos os horários
@@ -45,7 +45,7 @@ DELETE {{baseURL}}/schedules/{{schedule_id}}
 Accept: application/json
 
 # ==========================================
-# CENÁRIOS DE ERRO (VALIDAÇÕES DA ISSUE #10)
+# CENÁRIOS DE ERRO (VALIDAÇÕES DA ISSUE #11)
 # ==========================================
 
 # ------------------------------------------
@@ -66,49 +66,50 @@ Content-Type: application/json
     "campo_inexistente": ""
 }
 
-### [400 Bad Request] Criar serviço com id da área inválido (erro esperado)
+### [400 Bad Request] Criar serviço com id de profissional inválido (erro esperado)
 POST {{baseURL}}/schedules
 Content-Type: application/json
 
 {
-    "name": "Teste Área Inválida",
-    "area_id": -1,
-    "min_duration": 30,
-    "price": 50.00
+    "professional_id": "Samuel",
+    "weekday": 4,
+    "start_hour": "04:00:00",
+    "end_hour": "08:00:00"
 }
 
-### [404 Not Found] Criar serviço com id da área válido, mas inexistente (erro esperado)
+### [404 Not Found] Criar serviço com id de profissional válido, mas inexistente (erro esperado)
 POST {{baseURL}}/schedules
 Content-Type: application/json
 
 {
-    "name": "Teste Área Inexistente",
-    "area_id": 9999,
-    "min_duration": 30,
-    "price": 50.00
+    "professional_id": 9999,
+    "weekday": 4,
+    "start_hour": "04:00:00",
+    "end_hour": "08:00:00"
 }
 
 ### [400 Bad Request] Criar serviço com todos os campos inválidos (erro esperado)
 POST {{baseURL}}/schedules
 Content-Type: application/json
 
-{
-    "name": 1,
-    "area_id": 0,
-    "min_duration": "30 minutos",
-    "price": "50 reais"
+{    
+    "professional_id": "Samuel",
+    "weekday": 7,
+    "start_hour": 4.30,
+    "end_hour": 8.00
 }
 
 ### [409 Conflict] Criar serviço com name repetido (erro esperado)
-POST {{baseURL}}/schedules
-Content-Type: application/json
-
-{
+.. VERIFICAR
+    POST {{baseURL}}/schedules
+    Content-Type: application/json
+..
+.. {
     "name": "Corte de Cabelo",
     "area_id": 1,
     "min_duration": 30,
     "price": 50.00
-}
+.. }
 
 # ------------------------------------------
 # TESTES DE ALTERAÇÃO (PUT)
@@ -119,10 +120,10 @@ PUT {{baseURL}}/schedules/9999
 Content-Type: application/json
 
 {
-    "name": "Serviço Inexistente",
-    "area_id": 1,
-    "min_duration": 30,
-    "price": 50.00
+    "professional_id": 2,
+    "weekday": 4,
+    "start_hour": "04:00:00",
+    "end_hour": "08:00:00"
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (string) (erro esperado)
@@ -130,10 +131,10 @@ PUT {{baseURL}}/schedules/texto
 Content-Type: application/json
 
 {
-    "name": "Serviço com id inválido",
-    "area_id": 1,
-    "min_duration": 30,
-    "price": 50.00
+    "professional_id": 2,
+    "weekday": 4,
+    "start_hour": "04:00:00",
+    "end_hour": "08:00:00"
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (0) (erro esperado)
@@ -141,10 +142,10 @@ PUT {{baseURL}}/schedules/0
 Content-Type: application/json
 
 {
-    "name": "Serviço com id inválido",
-    "area_id": 1,
-    "min_duration": 30,
-    "price": 50.00
+    "professional_id": 2,
+    "weekday": 4,
+    "start_hour": "04:00:00",
+    "end_hour": "08:00:00"
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (número decimal) (erro esperado)
@@ -152,10 +153,10 @@ PUT {{baseURL}}/schedules/0.5
 Content-Type: application/json
 
 {
-    "name": "Serviço com id inválido",
-    "area_id": 1,
-    "min_duration": 30,
-    "price": 50.00
+    "professional_id": 2,
+    "weekday": 4,
+    "start_hour": "04:00:00",
+    "end_hour": "08:00:00"
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (booleano) (erro esperado)
@@ -163,10 +164,10 @@ PUT {{baseURL}}/schedules/true
 Content-Type: application/json
 
 {
-    "name": "Serviço com id inválido",
-    "area_id": 1,
-    "min_duration": 30,
-    "price": 50.00
+    "professional_id": 2,
+    "weekday": 4,
+    "start_hour": "04:00:00",
+    "end_hour": "08:00:00"
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (undefined) (erro esperado)
@@ -174,10 +175,10 @@ PUT {{baseURL}}/schedules/undefined
 Content-Type: application/json
 
 {
-    "name": "Serviço com id inválido",
-    "area_id": 1,
-    "min_duration": 30,
-    "price": 50.00
+    "professional_id": 2,
+    "weekday": 4,
+    "start_hour": "04:00:00",
+    "end_hour": "08:00:00"
 }
 
 ### [400 Bad Request] Atualizar serviço com todos os campos inválidos (erro esperado)
@@ -185,22 +186,23 @@ PUT {{baseURL}}/schedules/{{schedule_id}}
 Content-Type: application/json
 
 {
-    "name": 1,
-    "area_id": 0,
-    "min_duration": "30 minutos",
-    "price": "50 reais"
+    "professional_id": "Samuel",
+    "weekday": 7,
+    "start_hour": 4.30,
+    "end_hour": 8.00
 }
 
 ### [400 Bad Request] Atualizar serviço com name repetido (erro esperado)
-PUT {{baseURL}}/schedules/{{schedule_id}}
-Content-Type: application/json
+.. VERIFICAR
+    PUT {{baseURL}}/schedules/{{schedule_id}}
+    Content-Type: application/json
 
-{
+.. {
     "name": "Corte de Cabelo",
     "area_id": 1,
     "min_duration": 30,
     "price": 50.00
-}
+.. }
 
 # ------------------------------------------
 # TESTES DE EXCLUSÃO (DELETE)

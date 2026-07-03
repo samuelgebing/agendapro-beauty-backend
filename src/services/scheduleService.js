@@ -1,12 +1,14 @@
 const ScheduleModel = require("../models/scheduleModel");
 // Importa o Model responsável pelo acesso ao banco de dados (tabela schedules)
+const ProfessionalModel = require("../models/professionalModel");
+// Importa o Model para validar o professional_id
 const ValidateId = require("../utils/validateId");
 // Importa a classe utilitária que valida o formato de IDs
 
 class ScheduleService {
     // Valida os dados do horário antes de criar ou atualizar
     // OBS: sem id
-    static validateSchedule(schedule) {
+    static async validateSchedule(schedule) {
         // Verifica se o objeto schedule foi fornecido, caso contrário lança um erro
         if (
             !schedule || 
@@ -53,6 +55,14 @@ class ScheduleService {
             error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
             throw error; // Lança o erro com status code
         }
+
+        // Verifica se o id da área do serviço já existe no banco apenas se as demais validações passarem
+        const existingProfessionalId = await ProfessionalModel.findById(schedule.professional_id);
+        if (!existingProfessionalId || existingProfessionalId == ""){
+            const error = new Error("Profissional não encontrado.");
+            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
+            throw error;
+        }
         
         // Se todas as validações passarem, apenas continua sem lançar erros
     }
@@ -64,13 +74,14 @@ class ScheduleService {
 
     // Cria um novo horário após validações
     static async createSchedule(schedule) {
-        this.validateSchedule(schedule); // Chama a função de validação
+        await this.validateSchedule(schedule); // Chama a função de validação
         return await ScheduleModel.create(schedule); // Cria o novo horário
     }
 
     // Atualiza informações de um horário existente após validações
     static async updateSchedule(id, schedule) {
-        this.validateSchedule(schedule); // Chama a função de validação
+        ValidateId.primaryKey(id,'Horário de Profissional'); // Chama a função de validação do id
+        await this.validateSchedule(schedule); // Chama a função de validação
 
         const updatedRows = await ScheduleModel.update(id, schedule);
         if (updatedRows === 0) {
@@ -84,6 +95,7 @@ class ScheduleService {
 
     // Deleta um horário pelo ID
     static async deleteSchedule(id) {
+        ValidateId.primaryKey(id,'Horário de Profissional'); // Chama a função de validação do id
         const deletedRows = await ScheduleModel.delete(id);
         if (deletedRows === 0) {
             const error = new Error("Horário não encontrado."); // Define a mensagem de erro
