@@ -13,8 +13,11 @@
 GET {{baseURL}}/schedules
 Accept: application/json
 
+### Listar horário com id específico
+GET {{baseURL}}/schedules/1
+Accept: application/json
+
 ### Listar todos os horários filtrados por profissional
-# FAZER
 GET {{baseURL}}/schedules?professional_id={{professional_id}}
 Accept: application/json
 

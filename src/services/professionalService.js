@@ -1,28 +1,30 @@
+const BaseService = require("./baseService");
+// Importa a classe base com os métodos CRUD genéricos
 const ProfessionalModel = require("../models/professionalModel");
 // Importa o Model responsável pelo acesso ao banco de dados (tabela profissionais)
 
 const validatePhone = require("../utils/validatePhone");
 // Importa a função de validação de telefone do arquivo validatePhone.js
-const ValidateId = require("../utils/validateId");
-// Importa a classe para validar IDs
 
-class ProfessionalService {
+class ProfessionalService extends BaseService {
+    constructor() {
+        super(ProfessionalModel);
+    }
+
     // Valida os dados do profissional antes de criar ou atualizar
-    static async validateProfessional(professional) {
+    async validate(professional) {
         if (
             !professional || 
             Object.keys(professional).length === 0 
         ) {
-            const error = new Error("Profissional não fornecido.");
-            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
-            throw error;
+            throw new this.ValidationError("Profissional não fornecido.");
         }
 
         const errors = [];
         // Verifica campos obrigatórios
         if (!professional.name) errors.push("Nome do profissional não fornecido.");
         if (!professional.phone) errors.push("Telefone do profissional não fornecido.");
-        if (ValidateId.isNull(professional.speciality_id)) 
+        if (this.ValidateId.isNull(professional.speciality_id)) 
             errors.push("Especialidade do profissional não fornecida.");
         
         if (!professional.active && professional.active !== 0) 
@@ -31,9 +33,7 @@ class ProfessionalService {
         
         if (errors.length > 0) { 
             errors[0] = "FALHA NA VALIDAÇÃO DO PROFISSIONAL: " + errors[0]; // Prefixa a primeira mensagem de erro
-            const error = new Error(errors.join(" ")); // Cria um erro com todas as mensagens de validação
-            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
-            throw error; // Lança o erro com status code
+            throw new this.ValidationError(errors.join(" ")); // Cria um erro com todas as mensagens de validação
         }
 
         // VALIDAÇÕES DE NOME
@@ -48,11 +48,7 @@ class ProfessionalService {
 
         // FAZER: Verificação da existência da especialidade_id no banco de dados
         // VALIDAÇÕES DE ESPECIALIDADE
-        if (
-            typeof professional.speciality_id !== "number" || 
-            !Number.isInteger(professional.speciality_id)  ||
-            professional.speciality_id <= 0
-        ) 
+        if (this.ValidateId.isInvalid(professional.speciality_id)) 
             errors.push("Especialidade com formato inválido.");
         
         // VALIDAÇÕES DE STATUS DO PROFISSIONAL ("ATIVO")
@@ -64,74 +60,34 @@ class ProfessionalService {
 
         if (errors.length > 0) { 
             errors[0] = "FALHA NA VALIDAÇÃO DO PROFISSIONAL: " + errors[0]; // Prefixa a primeira mensagem de erro
-            const error = new Error(errors.join(" ")); // Cria um erro com todas as mensagens de validação
-            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
-            throw error; // Lança o erro com status code
+            throw new this.ValidationError(errors.join(" ")); // Cria um erro com todas as mensagens de validação
         }
 
         // Verifica se o id da especialidade do profissional já existe no banco apenas se as demais validações passarem
         const existingSpecialityId = await ProfessionalModel.findBySpecialityId(professional.speciality_id);
         if (!existingSpecialityId || existingSpecialityId == ""){
-            const error = new Error("Especialidade do profissional não encontrada.");
-            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
-            throw error;
+            throw new this.NotFoundError("Especialidade do profissional não encontrada.");
         }
 
         // Verifica se o profissional já existe no banco apenas se as demais validações passarem
         const existingName = await ProfessionalModel.findByName(professional.name);
         if (existingName){
-            const error = new Error("Profissional já cadastrado, forneça outro nome.");
-            error.statusCode = 409; // Define o status HTTP para 409 (conflito)
-            throw error;
+            throw new this.ConflictError("Profissional já cadastrado, forneça outro nome.");
         }
         
         // Se todas as validações passarem, apenas continua sem lançar erros
     }
 
-    // Busca todos os profissionais cadastrados
-    static async getAllProfessionals(speciality_id) {
-        // Busca os serviços filtrados por área do salão, se area_id for fornecido
-        if (speciality_id) {
-            return await ProfessionalModel.findBySpecialityId(speciality_id);
-        }
-
-        return await ProfessionalModel.findAll();
-    }
-
-    // FAZER: getAllProfessionalsBySpecialty(especialidade_id)
-
-    // Cria um novo profissional após validações
-    static async createProfessional(professional) {
-        await this.validateProfessional(professional); // Chama a função de validação
-
-        return await ProfessionalModel.create(professional); // Cria o novo profissional
-    }
-
-    // Atualiza informações de um profissional existente
-    static async updateProfessional(id, professional) {
-        ValidateId.primaryKey(id, 'Profissional'); // Chama a função de validação do id
-        await this.validateProfessional(professional); // Chama a função de validação
-
-        const updatedRows = await ProfessionalModel.update(id, professional);
-        if (updatedRows === 0) {
-            const error = new Error("Profissional não encontrado."); // Define a mensagem de erro
-            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
-            throw error; // Lança o erro com status 404
-        }
-        return updatedRows;
-    }
-
-    // Deleta um profissional pelo ID
-    static async deleteProfessional(id) {
-        ValidateId.primaryKey(id,'Profissional'); // Chama a função de validação do id
+    /**
+     * Valida os filtros recebidos pela URL 
+     * EX: (?speciality_id=1)
+     */
+    async validateFilters(filters, resourceName) {
+        // Se o usuário passou o filtro speciality_id na URL
         
-        const deletedRows = await ProfessionalModel.delete(id);
-        if (deletedRows === 0) {
-            const error = new Error("Profissional não encontrado."); // Define a mensagem de erro
-            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
-            throw error; // Lança o erro com status 404
-        }
-        return deletedRows;
+        this.ValidateId.primaryKey(filters.speciality_id, resourceName);
+        
+        // Adicionar validações para outros filtros da URL aqui...
     }
 }
 
