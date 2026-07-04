@@ -2,8 +2,8 @@
 # TESTES DO MÓDULO DE SERVIÇOS (ISSUE #10)
 # ==========================================
 @baseURL = http://localhost:3000
-@professional_id_1 = 5
-@professional_id_2 = 6
+@professional_id_1 = 10
+@professional_id_2 = 8
 @speciality_id = 1
 
 # ==========================================
@@ -12,6 +12,10 @@
 
 ### Listar todos os profissionais
 GET {{baseURL}}/professionals
+Accept: application/json
+
+### Listar profissional por id 
+GET {{baseURL}}/professionals/1
 Accept: application/json
 
 ### Listar todos os profissionais filtrados pela especialidade
@@ -74,7 +78,7 @@ Accept: application/json
 # CENÁRIOS DE ERRO (VALIDAÇÕES DA ISSUE #10)
 # ==========================================
 
-# ------------------------------------------
+# ------------------------------------------ 
 # TESTES DE CRIAÇÃO (POST)
 # ------------------------------------------
 

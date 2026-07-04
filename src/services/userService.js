@@ -1,15 +1,20 @@
+const BaseService = require("./baseService");
+// Importa a classe base com os métodos CRUD genéricos
 const UserModel = require("../models/userModel");
 // Importa o Model responsável pelo acesso ao banco de dados (tabela users)
 const validateEmail = require("../utils/validateEmail");
 // Importa a função utilitária que valida o formato de e-mail
-class UserService {
+
+class UserService extends BaseService {
+    constructor() {
+        super(UserModel);
+    }
+
     // Valida os dados do usuário antes de criar ou atualizar
-    static async validateUser(user) {
+    async validate(user) {
         // Verifica se o objeto user foi fornecido, caso contrário lança um erro
         if (!user) {
-            const error = new Error("Usuário não fornecido.");
-            error.statusCode = 400;
-            throw error;
+            throw new this.ValidationError("Usuário não fornecido.");
         }
 
         const errors = [];
@@ -17,17 +22,25 @@ class UserService {
         if (!user.name) errors.push("Nome do usuário não fornecido.");
         if (!user.email) errors.push("E-mail do usuário não fornecido.");
         if (!user.password_hash) errors.push("Senha do usuário não fornecida.");
+        if (this.ValidateId.isNull(user.role_id)) user.role_id = 1; 
+        // Define perfil_id padrão como 1 (cliente) caso não seja fornecido
         if (errors.length > 0) { 
-            errors[0] = "FALHA NA VALIDAÇÃO DO USUÁRIO: " + errors[0]; // Prefixa a primeira mensagem de erro
-            const error = new Error(errors.join(" ")); // Cria um erro com todas as mensagens de validação
-            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
-            throw error; // Lança o erro com status code
+            errors[0] = "FALHA NA VALIDAÇÃO DO USUÁRIO: " + errors[0];
+            throw new this.ValidationError(errors.join(" "));
         }
             // Une em um erro todas as mensagens de validação de campos obrigatórios
 
         // FAZER: Implementar validação de perfil_id (opcional, mas se fornecido deve ser válido)
-        if (!user.role_id) user.role_id = 1; 
-        // Define perfil_id padrão como 1 (cliente) caso não seja fornecido
+        // VALIDAÇÕES DE PERFIL_ID
+        // Formato
+        if (this.ValidateId.isInvalid(user.role_id))
+            errors.push("Perfil com formato inválido.");
+        else {
+            // Unicidade
+            const existingRole = await UserModel.findByRoleId(user.role_id);
+            if (!existingRole)
+                throw new this.NotFoundError("Perfil não encontrado."); // Impede cadastro de perfis não existentes
+        }
 
         // VALIDAÇÕES DE NOME
         if (typeof user.name !== "string") 
@@ -51,54 +64,27 @@ class UserService {
             // Unicidade
             const existingEmail = await UserModel.findByEmail(user.email);
             if (existingEmail)
-                errors.push("E-mail já cadastrado."); // Impede cadastro de e-mails duplicados
+                throw new this.ConflictError("E-mail já cadastrado."); // Impede cadastro de e-mails duplicados
         }        
 
         if (errors.length > 0) { 
-            errors[0] = "FALHA NA VALIDAÇÃO DO USUÁRIO: " + errors[0]; // Prefixa a primeira mensagem de erro
-            const error = new Error(errors.join(" ")); // Cria um erro com todas as mensagens de validação
-            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
-            throw error; // Lança o erro com status code
+            errors[0] = "FALHA NA VALIDAÇÃO DO USUÁRIO: " + errors[0];
+            throw new this.ValidationError(errors.join(" "));
         }
         
         // Se todas as validações passarem, apenas continua sem lançar erros
     }
 
-    // Busca todos os usuários cadastrados
-    static async getAllUsers() {
-        return await UserModel.findAll();
-    }
-
-    // Cria um novo usuário após validações
-    static async createUser(user) {
-        this.validateUser(user); // Chama a função de validação
-        return await UserModel.create(user); // Cria o novo usuário
-    }
-
-    // Atualiza informações de um usuário existente após validações
-    static async updateUser(id, user) {
-        this.validateUser(user); // Chama a função de validação
-
-        const updatedRows = await UserModel.update(id, user);
-        if (updatedRows === 0) {
-            const error = new Error("Usuário não encontrado."); // Define a mensagem de erro
-            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
-            throw error; // Lança o erro com status 404
-        }
-
-        return updatedRows;
-    }
-
-    // Deleta um usuário pelo ID
-    static async deleteUser(id) {
-        const deletedRows = await UserModel.delete(id);
-        if (deletedRows === 0) {
-            const error = new Error("Usuário não encontrado."); // Define a mensagem de erro
-            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
-            throw error; // Lança o erro com status 404
-        }
-
-        return deletedRows;
+    /**
+     * Valida os filtros recebidos pela URL 
+     * EX: (?role_id=1)
+     */
+    async validateFilters(filters) {
+        // Se o usuário passou o filtro role_id na URL
+        
+        this.ValidateId.primaryKey(filters.role_id, "Perfil");
+                
+        // Adicionar validações para outros filtros da URL aqui...
     }
 }
 

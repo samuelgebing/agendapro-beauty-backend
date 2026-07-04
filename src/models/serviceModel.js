@@ -1,11 +1,12 @@
-const db = require('../config/database');
-// Importa a conexão pool com o banco de dados
+const db = require('../config/database'); // Instância de conexão do banco de dados
 
-class ServiceModel {
-    // Busca todos os serviços
-    static async findAll() {
-        const [rows] = await db.query('SELECT * FROM services');
-        return rows;
+const BaseModel = require("./baseModel");
+// Importa a classe base para modelos
+
+class ServiceModel extends BaseModel {
+    constructor() {
+        super('services', ['name', 'area_id', 'min_duration', 'price']);
+        // 'area_id' deve ser verificado no service
     }
 
     // Busca um serviço pela área do salão
@@ -20,32 +21,6 @@ class ServiceModel {
         const [rows] = await db.query('SELECT * FROM services WHERE name = ?',
             [name]);
         return rows[0];
-    }
-
-    // Cria um novo serviço
-    static async create(service) {
-        const { name, area_id, min_duration, price } = service;
-        const [result] = await db.query(
-            'INSERT INTO services (name, area_id, min_duration, price) VALUES (?, ?, ?, ?)',
-            [name, area_id, min_duration, price]
-        );
-        return result.insertId; // Retorna o ID do serviço criado
-    }
-
-    // Atualiza um serviço existente
-    static async update(id, service) {
-        const { name, area_id, min_duration, price } = service;
-        const [result] = await db.query(
-            'UPDATE services SET name = ?, area_id = ?, min_duration = ?, price = ? WHERE id = ? ',
-            [name, area_id, min_duration, price, id]
-        );
-        return result.affectedRows; // Retorna o número de linhas afetadas
-    }
-
-    // Deleta um serviço pelo ID
-    static async delete(id) {
-        const [result] = await db.query('DELETE FROM services WHERE id = ?', [id]);
-        return result.affectedRows; // Retorna o número de linhas afetadas
     }
 }
 

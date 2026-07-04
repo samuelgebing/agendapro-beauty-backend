@@ -1,8 +1,15 @@
-// SPRINT 2: CRUD para serviços
-const ServiceService = require('../services/serviceService');
-// Importa o serviço que contém a lógica de negócio para manipular serviços
+const BaseController = require('./baseController'); 
+// Importa a classe base com os métodos CRUD genéricos
+const ServiceService = require('../services/serviceService'); 
+// Importa o serviço específico com a lógica de negócio para manipular
 
-class ServiceController {
+class ServiceController extends BaseController {
+    constructor() {
+        // Passa o serviço específico e as mensagens personalizadas para o construtor pai (BaseController)
+        super(ServiceService, "Serviço");
+    }
+
+    /*
     // Método para listar todos os serviços
     static async getAll(req, res) {
         try {
@@ -19,50 +26,8 @@ class ServiceController {
             res.status(error.statusCode).json({ error: error.message }); // Em caso de erro, retorna status 500(erro interno)
         }
     }
-
-    // Método para criar um novo serviço
-    static async create(req, res) {
-        try {
-            const id = await ServiceService.createService(req.body); 
-            // Chama o service para criar serviço
-
-            res.status(201).json({ message: 'Serviço criado com sucesso.', id }); 
-            // Retorna status 201(criado) e o ID
-        } catch (error) {
-            if(!error.statusCode) error.statusCode = 500; 
-            // Se não houver statusCode, define como 500 (erro interno do servidor)
-            res.status(error.statusCode).json({ error: error.message }); 
-            // Em caso de erro interno do servidor, retorna status 500
-        }
-    }
-
-    // Método para atualizar um serviço existente
-    static async update(req, res) {
-        try {
-            const id = req.params.id; // Pega o ID da URL
-            await ServiceService.updateService(id, req.body); // Chama o service para atualizar
-            res.json({ message: 'Serviço atualizado com sucesso.' });
-        } catch (error) {
-            if(!error.statusCode) error.statusCode = 400; 
-            // Se não houver statusCode, define como 400 (erro de validação)
-            res.status(error.statusCode).json({ error: error.message }); 
-            // Retorna erro se não encontrar ou problema nos dados
-        }
-    }
-
-    // Método para deletar um serviço
-    static async delete(req, res) {
-        try {
-            const id = req.params.id; // Pega o ID da URL
-            await ServiceService.deleteService(id); // Chama o service para deletar
-            res.json({ message: 'Serviço deletado com sucesso.' });
-        } catch (error) {
-            if(!error.statusCode) error.statusCode = 400; 
-            // Se não houver statusCode, define como 400 (erro de validação)
-            res.status(error.statusCode).json({ error: error.message }); // Retorna erro se serviço não encontrado
-        }
-    }
+    */
 }
 
-module.exports = ServiceController;
+module.exports = new ServiceController();
 // Exporta o Controller para ser usado nas rotas
