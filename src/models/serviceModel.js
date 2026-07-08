@@ -12,13 +12,13 @@ class ServiceModel extends BaseModel {
     // Busca um serviço pela área do salão
     static async findByAreaId(area_id) {
         const query = 'SELECT s.id, s.area_id, s.name, s.min_duration, s.price FROM services s, areas a WHERE a.id = ? AND s.area_id = a.id';
-        const [rows] = await db.query(query, [area_id]);
+        const [rows] = await db.execute(query, [area_id]);
         return rows;
     }
 
     // Busca um serviço pelo nome
     static async findByName(name) {
-        const [rows] = await db.query('SELECT * FROM services WHERE name = ?',
+        const [rows] = await db.execute('SELECT * FROM services WHERE name = ?',
             [name]);
         return rows[0];
     }

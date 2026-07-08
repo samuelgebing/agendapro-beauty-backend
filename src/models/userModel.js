@@ -11,14 +11,14 @@ class UserModel extends BaseModel {
 
     // Busca um usuário pelo email
     static async findByEmail(email) {
-        const [rows] = await db.query('SELECT * FROM users WHERE email = ?',
+        const [rows] = await db.execute('SELECT * FROM users WHERE email = ?',
             [email]);
         return rows[0];
     }
 
     // Busca um usuário pelo role_id
     static async findByRoleId(role_id) {
-        const [rows] = await db.query('SELECT * FROM roles WHERE id = ?',
+        const [rows] = await db.execute('SELECT * FROM roles WHERE id = ?',
             [role_id]);
         return rows[0];
     }
