@@ -2,7 +2,7 @@
 # TESTES (EXTRA) DO MÓDULO DE USUÁRIOS (ISSUE #10)
 # ==========================================
 @baseURL = http://localhost:3000
-@user_id = 5
+@user_id = 6
 
 # ==========================================
 # CENÁRIOS DE SUCESSO (VALIDAÇÕES DA ISSUE #10)
@@ -10,6 +10,10 @@
 
 ### Listar todos os usuários
 GET {{baseURL}}/users
+Accept: application/json
+
+### Listar usuário com id específico
+GET {{baseURL}}/users/1
 Accept: application/json
 
 ### Criar um novo usuário
@@ -150,6 +154,7 @@ Content-Type: application/json
 }
 
 ### [409 Conflict] Atualizar usuário com name repetido (erro esperado)
+#Fazer
 PUT {{baseURL}}/professionals/{{user_id}}
 Content-Type: application/json
 

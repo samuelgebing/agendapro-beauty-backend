@@ -13,6 +13,10 @@
 GET {{baseURL}}/services
 Accept: application/json
 
+### Listar serviço com id específico
+GET {{baseURL}}/services/1
+Accept: application/json
+
 ### Listar todos os serviços filtrados por área
 GET {{baseURL}}/services?area_id={{area_service_id}}
 Accept: application/json
@@ -190,7 +194,7 @@ Content-Type: application/json
     "price": "50 reais"
 }
 
-### [400 Bad Request] Atualizar serviço com name repetido (erro esperado)
+### [409 Conflict] Atualizar serviço com name repetido (erro esperado)
 PUT {{baseURL}}/services/{{service_id}}
 Content-Type: application/json
 

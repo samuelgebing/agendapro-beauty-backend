@@ -1,3 +1,4 @@
+const { ValidationError, NotFoundError } = require('./appErrors');
 // Classe para validar se o id tem um formato válido
 class ValidateId {
     static isNull(id,entity = null) {
@@ -9,9 +10,7 @@ class ValidateId {
                 return true; // Indica que deve usar a mensagem personalizada
 
             // Se foi declarada a entidade, é chave primária - throw error
-            const error = new Error(`ID de ${entity} não fornecido.`); // Define a mensagem de erro
-            error.statusCode = 404; // Define o status HTTP para 404 (não encontrado)
-            throw error; // Lança o erro com status 404
+            throw new NotFoundError(`ID de ${entity} não fornecido.`); // Define a mensagem de erro
         }
     }
 
@@ -26,9 +25,7 @@ class ValidateId {
                 return true; // Indica que deve usar a mensagem personalizada
 
             // Se foi declarada a entidade, é chave primária - throw error
-            const error = new Error(`ID de ${entity} com formato inválido.`); // Define a mensagem de erro
-            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
-            throw error; // Lança o erro com status 400
+            throw new ValidationError(`ID de ${entity} com formato inválido.`); // Define a mensagem de erro
         }
     }
 
