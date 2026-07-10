@@ -31,6 +31,8 @@ class BaseModel {
 
     /**
      * R - READ ALL: Retorna todos os registros da tabela com suporte a filtros dinâmicos.
+     * filters = {} --> getAll
+     * filters = {'campoUm':valor,'campoDois':valor} --> getByCampoUmAndCampoDois
      */
     findAll = async (filters = {}) => {
         const cleanFilters = this.filterData(filters);
@@ -47,6 +49,30 @@ class BaseModel {
 
         const [rows] = await this.db.execute(query, values);
         return rows;
+    }
+
+    /**
+     * R - READ ONE: Busca um único registro pelo filtro
+     */
+    findOneBy = async (filters = {}) => {
+        const cleanFilters = this.filterData(filters);
+        
+        const keys = Object.keys(cleanFilters);
+        let query = `SELECT * FROM ${this.tableName}`;
+        let values = [];
+
+        if (keys.length > 0) {
+            const whereClauses = keys.map(key => `${key} = ?`).join(' AND ');
+            query += ` WHERE ${whereClauses}`;
+            values = Object.values(cleanFilters);
+        }
+
+        query += ` LIMIT 1`;
+
+        const [rows] = await this.db.execute(query, values);
+        
+        // Retorna o primeiro objeto encontrado ou null se o array vier vazio
+        return rows.length > 0 ? rows[0] : null;
     }
 
     /**
