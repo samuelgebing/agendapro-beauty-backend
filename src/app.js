@@ -16,6 +16,9 @@ const serviceRoutes = require('./routes/serviceRoutes');
 const blockedHoursRoutes = require('./routes/blockedHoursRoutes');
 // Importa as rotas relacionadas aos horários bloqueados dos profissionais
 
+const workingHoursRoutes = require('./routes/workingHoursRoutes');
+// Importa as rotas relacionadas aos horários de trabalho dos profissionais
+
 const scheduleRoutes = require('./routes/scheduleRoutes');
 // Importa as rotas relacionadas aos horários dos profissionais
 
@@ -48,7 +51,11 @@ app.use('/services', serviceRoutes);
 
 // Rotas da aplicação
 app.use('/blocks', blockedHoursRoutes);
-// Define que todas as requisições iniciadas com /blocks serão encaminhadas para o arquivo blockedScheduleRoutes
+// Define que todas as requisições iniciadas com /blocks serão encaminhadas para o arquivo blockedHoursRoutes
+
+// Rotas da aplicação
+app.use('/works', workingHoursRoutes);
+// Define que todas as requisições iniciadas com /works serão encaminhadas para o arquivo workingHoursRoutes
 
 // Rotas da aplicação
 app.use('/schedules', scheduleRoutes);
