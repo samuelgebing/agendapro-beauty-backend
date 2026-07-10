@@ -1,5 +1,6 @@
+// IMPORTAÇÕES PARA BaseService E TODAS AS CLASSES FILHAS
 const ValidateId = require("../utils/validateId");
-// Importa a classe para validar IDs em BaseService e todas as classes filhas
+const ValidateTime = require("../utils/validateTime");
 const { 
     AppError, ValidationError, NotFoundError, ConflictError 
 } = require('../utils/appErrors'); 
@@ -9,6 +10,7 @@ class BaseService {
     constructor(model) {
         this.model = typeof model === 'function' ? new model() : model;
         this.ValidateId = ValidateId; 
+        this.ValidateTime = ValidateTime; 
         // Disponibiliza a classe ValidateId para as classes filhas
 
         this.AppError = AppError;
@@ -35,7 +37,7 @@ class BaseService {
     getById = async (id, resourceName = "Registro") => {
         this.ValidateId.primaryKey(id, resourceName); // Valida o ID antes de buscar
 
-        const item = await this.model.findById(id);
+        const item = await this.model.findOneBy({'id':id});
         if (!item) throw new NotFoundError(`${resourceName} não encontrado.`);
         return item;
     }

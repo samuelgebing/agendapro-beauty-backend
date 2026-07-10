@@ -7,5 +7,6 @@ const createBaseRouter = require('./baseRouter');
 const router = createBaseRouter(ServiceController);
 
 // Adicionar rotas específicas, se necessário
+router.get('/:id/schedules', ServiceController.getAvailableSchedules); // Listar todos os slots de um serviço específico (objetivo é os livres)
 
 module.exports = router;

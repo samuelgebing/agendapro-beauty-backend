@@ -2,7 +2,7 @@
 # TESTES DO MÓDULO DE SERVIÇOS (ISSUE #12)
 # ==========================================
 @baseURL = http://localhost:3000
-@blocked_hour_id = 10
+@blocked_hour_id = 11
 @professional_id = 1
 
 # ==========================================

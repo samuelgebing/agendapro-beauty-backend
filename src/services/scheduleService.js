@@ -175,6 +175,66 @@ class ScheduleService extends BaseService {
         }
         return slots;
     }
+
+    _getDayAgenda(slots, schedules) {
+        // Filtra o array mantendo apenas os slots que NÃO têm sobreposição
+        const availableSlots = slots.filter(slot => {
+            const slotStart = slot.start;
+            const slotEnd = slot.end;
+
+            
+            // .some() retorna true se encontrar QUALQUER agendamento que sobreponha este slot
+            const isOccupied = schedules.some(sched => {
+                // Transforma para exibir ao usuário
+                // 2024-06-01T13:00:00.000Z --> 2024-06-01 10:00:00
+                sched.start_date_hour = this.ValidateTime.convert(new Date(sched.start_date_hour), 'datetime');
+                sched.end_date_hour = this.ValidateTime.convert(new Date(sched.end_date_hour), 'datetime');
+                // Pega apenas o horário
+                const schedStart = this.ValidateTime.convert(sched.start_date_hour, 'hourShort');
+                const schedEnd = this.ValidateTime.convert(sched.end_date_hour, 'hourShort');
+
+                // Transforma o "created_at"
+                sched.created_at = this.ValidateTime.convert(new Date(sched.created_at), 'datetime');
+
+                // Lógica de colisão/sobreposição de horários
+                return slotStart < schedEnd && slotEnd > schedStart;
+            });
+
+            // Se NÃO estiver ocupado, mantém o slot na lista
+            return !isOccupied;
+        });
+
+        const agenda = { availableSlots, schedules };
+
+        return agenda;
+    }
+
+
+    async getAgenda(service_id, professional_id = null, date = null) {
+        const service = await this.serviceService.getById(service_id, "Serviço");
+        if (!this.ValidateId.isNull(professional_id)) {
+            this.ValidateId.isInvalid(professional_id, "Profissional");
+            // validar data - UTILS
+            // é opcional
+
+            if (date) {
+                const professionalSchedules = await this.professionalService.findAllSchedules(professional_id, date);
+            } else {
+                const professionalSchedules = await this.professionalService.findAllSchedules(professional_id);
+            }
+            return {
+                service,
+                professionalSchedules
+            };
+        } else {
+            // Se professional_id não for fornecido, apenas retorna o serviço
+            return { service };
+        }
+
+        this.ValidateId.primaryKey(professional_id, "Profissional"); // Valida o ID antes de buscar
+        const schedules = await this.model.findAllSchedules(professional_id);
+        return schedules;
+    }
 }
 
 module.exports = ScheduleService;

@@ -72,6 +72,24 @@ class BlockedHoursService extends BaseService {
         
         // Adicionar validações para outros filtros da URL aqui...
     }
+    
+    // Busca um registro pelo professional_id
+    getByProfessionalId = async (professionalId) => {
+        this.ValidateId.primaryKey(id, 'Profissional'); // Valida o ID antes de buscar
+
+        const item = await this.model.findByProfessionalId(id);
+        if (!item) throw new NotFoundError(`Nenhum "${resourceName}" encontrado.`);
+        return item;
+    }
+    
+    // Busca um registro pelo professional_id e pela data
+    getByProfessionalAndDate = async (professionalId, date) => {
+        this.ValidateId.primaryKey(id, 'Profissional'); // Valida o ID antes de buscar
+
+        const item = await this.model.findByProfessionalId(id);
+        if (!item) throw new NotFoundError(`Nenhum "${resourceName}" encontrado.`);
+        return item;
+    }
 }
 
 module.exports = BlockedHoursService;
