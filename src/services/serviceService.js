@@ -3,9 +3,30 @@ const BaseService = require("./baseService");
 const ServiceModel = require("../models/serviceModel");
 // Importa o Model responsável pelo acesso ao banco de dados (tabela serviços)
 
+const ProfessionalService = require("./professionalService");
+// Importa o serviço de profissionais para validação de horários disponíveis
+const ScheduleService = require("./scheduleService");
+// Importa o serviço de horários para validação de horários disponíveis
+
 class ServiceService extends BaseService {
     constructor() {
         super(ServiceModel);
+    }
+
+    // Evita o travamento circular ao carregar o ScheduleService
+    get scheduleService() {
+        if (!this._scheduleService) {
+            this._scheduleService = new ScheduleService();
+        }
+        return this._scheduleService;
+    }
+
+    // Evita o travamento circular ao carregar o ProfessionalService
+    get professionalService() {
+        if (!this._professionalService) {
+            this._professionalService = new ProfessionalService();
+        }
+        return this._professionalService;
     }
 
     // Valida os dados do serviço antes de criar ou atualizar
@@ -79,6 +100,53 @@ class ServiceService extends BaseService {
         this.ValidateId.primaryKey(filters.area_id, "Área do Serviço");
         
         // Adicionar validações para outros filtros da URL aqui...
+    }
+
+    async getAllAgenda(service_id) {
+
+    }
+
+    async getAvailableSchedules(service_id, professional_id = null, date = null) {
+        // Schedules
+        // GET {{baseURL}}/services/{{service_id}}/schedules
+        // GET {{baseURL}}/services/{{service_id}}/schedules?professional_id=1
+        // GET {{baseURL}}/services/{{service_id}}/schedules?professional_id=1&date=2026-06-20
+        const service = await this.getById(service_id, "Serviço"); 
+        const minDuration = service.min_duration;
+        /*
+        const professionalSchedules = await new ProfessionalService().findAllSchedules(professional_id);
+        this.ValidateId.primaryKey(professional_id, "Profissional"); // Valida o ID antes de buscar
+        */
+
+        const professional = await this.professionalService.getById(professional_id, "Profissional");
+        
+        // validar data - UTILS
+        // lembrar que é opcional
+
+        const potencialSlots = await this.scheduleService.generatePotentialSlots(professional_id, minDuration, date);
+        /*
+        // Busca os horários disponíveis para o serviço, profissional e data fornecidos
+        const schedules = await new ScheduleModel().findAvailableSchedules(
+            service_id, professional_id, date, minDuration
+        );
+
+        if (!schedules || schedules.length === 0) {
+            throw new this.NotFoundError("Nenhum horário disponível encontrado.");
+        }
+        */
+
+        const schedules = await this.scheduleService.getAll({ 
+            professional_id,
+            service_id
+        });
+
+        const agenda = await this.scheduleService._getDayAgenda(potencialSlots, schedules);
+        
+        return { 
+            service, 
+            professional,
+            agenda
+        };
     }
 }
 

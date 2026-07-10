@@ -6,7 +6,7 @@ const ScheduleService = require('../services/scheduleService');
 class ScheduleController extends BaseController {
     constructor() {
         // Passa o serviço específico e as mensagens personalizadas para o construtor pai (BaseController)
-        super(ScheduleService, "Horário");
+        super(ScheduleService, "Agendamento");
     }
 }
 

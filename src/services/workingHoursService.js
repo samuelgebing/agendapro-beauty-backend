@@ -1,33 +1,33 @@
 const BaseService = require("./baseService");
 // Importa a classe base com os métodos CRUD genéricos
-const BlockedHoursModel = require("../models/blockedHoursModel");
+const WorkingHoursModel = require("../models/workingHoursModel");
 // Importa o Model responsável pelo acesso ao banco de dados (tabela schedules)
 const ProfessionalModel = require("../models/professionalModel");
 // Importa o Model para validar o professional_id
 
-class BlockedHoursService extends BaseService {
+class WorkingHoursService extends BaseService {
     constructor() {
-        super(BlockedHoursModel);
+        super(WorkingHoursModel);
     }
 
     // Valida os dados do horário antes de criar ou atualizar
     // OBS: sem id
-    async validate(blockedHour) {
-        // Verifica se o objeto blockedHour foi fornecido, caso contrário lança um erro
+    async validate(workingHour) {
+        // Verifica se o objeto workingHour foi fornecido, caso contrário lança um erro
         if (
-            !blockedHour || 
-            Object.keys(blockedHour).length === 0
+            !workingHour || 
+            Object.keys(workingHour).length === 0
         ) {
-            throw new this.ValidationError("Bloqueio de Horário não fornecido.");
+            throw new this.ValidationError("Horário de trabalho não fornecido.");
         }
 
         const errors = [];
         // Verifica campos obrigatórios
-        if (this.ValidateId.isNull(blockedHour.professional_id)) 
+        if (this.ValidateId.isNull(workingHour.professional_id)) 
             errors.push("Profissional não fornecido.");
-        if (!blockedHour.start) errors.push("Data de início do bloqueio não fornecida.");
-        if (!blockedHour.end) errors.push("Data de término do bloqueio não fornecida.");
-        if (!blockedHour.reason) errors.push("Motivo não fornecido.");
+        if (!workingHour.start_hour) errors.push("Hora inicial não fornecida.");
+        if (!workingHour.end_hour) errors.push("Hora final não fornecida.");
+        if (!workingHour.weekday) errors.push("Dia da semana não fornecido.");
         if (errors.length > 0) { 
             errors[0] = "FALHA NA VALIDAÇÃO DO HORÁRIO: " + errors[0]; // Prefixa a primeira mensagem de erro
             throw new this.ValidationError(errors.join(" ")); // Cria um erro com todas as mensagens de validação
@@ -35,14 +35,15 @@ class BlockedHoursService extends BaseService {
             // Une em um erro todas as mensagens de validação de campos obrigatórios
 
         // VALIDAÇÕES DE PROFESSIONAL_ID
-        if (this.ValidateId.isInvalid(blockedHour.professional_id)) 
+        if (this.ValidateId.isInvalid(workingHour.professional_id)) 
             errors.push("Profissional com formato inválido.");
 
+        /*
         // FAZER: 
-        // VALIDAÇÕES DE DATA DE INÍCIO E TÉRMINO
-        if (typeof blockedHour.start !== "string") 
+        // VALIDAÇÕES DE DATA INICIAL E FINAL
+        if (typeof workingHour.start_hour !== "string") 
             errors.push("Data de início com formato inválido.");
-        if (typeof blockedHour.end !== "string") 
+        if (typeof workingHour.end_hour !== "string") 
             errors.push("Data de término com formato inválido.");
 
         if (errors.length > 0) { 
@@ -51,9 +52,10 @@ class BlockedHoursService extends BaseService {
             error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
             throw error; // Lança o erro com status code
         }
+        */
 
         // Verifica se o id da área do serviço já existe no banco apenas se as demais validações passarem
-        const existingProfessionalId = await new ProfessionalModel().findById(blockedHour.professional_id);
+        const existingProfessionalId = await new ProfessionalModel().findById(workingHour.professional_id);
         if (!existingProfessionalId || existingProfessionalId == ""){
             throw new this.NotFoundError("Profissional não encontrado.");
         }
@@ -72,25 +74,7 @@ class BlockedHoursService extends BaseService {
         
         // Adicionar validações para outros filtros da URL aqui...
     }
-    
-    // Busca um registro pelo professional_id
-    getByProfessionalId = async (professionalId) => {
-        this.ValidateId.primaryKey(id, 'Profissional'); // Valida o ID antes de buscar
-
-        const item = await this.model.findByProfessionalId(id);
-        if (!item) throw new NotFoundError(`Nenhum "${resourceName}" encontrado.`);
-        return item;
-    }
-    
-    // Busca um registro pelo professional_id e pela data
-    getByProfessionalAndDate = async (professionalId, date) => {
-        this.ValidateId.primaryKey(id, 'Profissional'); // Valida o ID antes de buscar
-
-        const item = await this.model.findByProfessionalId(id);
-        if (!item) throw new NotFoundError(`Nenhum "${resourceName}" encontrado.`);
-        return item;
-    }
 }
 
-module.exports = BlockedHoursService;
+module.exports = WorkingHoursService;
 // Exporta a classe para ser utilizada pelos controllers

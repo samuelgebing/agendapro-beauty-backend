@@ -11,6 +11,15 @@ class ProfessionalService extends BaseService {
         super(ProfessionalModel);
     }
 
+    get workingHoursModel() {
+        if (!this._serviceService) {
+            const WorkingHoursModel = require("../models/workingHoursModel");
+            // Importa o Model para validar o user_id
+            this._workingHoursModel = new WorkingHoursModel();
+        }
+        return this._workingHoursModel;
+    }
+
     // Valida os dados do profissional antes de criar ou atualizar
     async validate(professional) {
         if (
@@ -88,6 +97,53 @@ class ProfessionalService extends BaseService {
         this.ValidateId.primaryKey(filters.speciality_id, resourceName);
         
         // Adicionar validações para outros filtros da URL aqui...
+    }
+
+    async getWorkingHoursByWeekday(professional_id, weekday) {
+        this.ValidateId.primaryKey(professional_id, "Profissional");
+        if(![0,1,2,3,4,5,6].includes(weekday))
+            throw new this.ValidationError("Dia da semana com formato inválido.");
+
+        const workingHours = await this.workingHoursModel.findOneBy(professional_id, weekday);
+        return workingHours;
+    }
+    
+    async getAgenda(professional_id, date = null) {
+        const service = await this.getById(service_id, "Serviço");
+        if (!this.ValidateId.isNull(professional_id)) {
+            this.ValidateId.isInvalid(professional_id, "Profissional");
+            // validar data - UTILS
+            // é opcional
+
+            if (date) {
+                const professionalSchedules = await this.findAllSchedules(professional_id, date);
+            } else {
+                const professionalSchedules = await this.findAllSchedules(professional_id);
+            }
+            return {
+                service,
+                professionalSchedules
+            };
+        } else {
+            // Se professional_id não for fornecido, apenas retorna o serviço
+            return { service };
+        }
+
+        this.ValidateId.primaryKey(professional_id, "Profissional"); // Valida o ID antes de buscar
+        const schedules = await this.model.findAllSchedules(professional_id);
+        return schedules;
+    }
+
+    static async findAllSchedules(professionalId) {
+        const professional = await this.getById(professionalId, "Profissional");         
+        const blockedHours = await this.findBlockedHours(professionalId);
+        const workingHours = await this.findWorkingHours(professionalId);
+
+        return {
+            ...professional,
+            blockedHours,
+            workingHours
+        };
     }
 }
 
