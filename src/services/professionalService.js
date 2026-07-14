@@ -11,15 +11,6 @@ class ProfessionalService extends BaseService {
         super(ProfessionalModel);
     }
 
-    get workingHoursModel() {
-        if (!this._serviceService) {
-            const WorkingHoursModel = require("../models/workingHoursModel");
-            // Importa o Model para validar o user_id
-            this._workingHoursModel = new WorkingHoursModel();
-        }
-        return this._workingHoursModel;
-    }
-
     // Valida os dados do profissional antes de criar ou atualizar
     async validate(professional) {
         if (
@@ -73,13 +64,13 @@ class ProfessionalService extends BaseService {
         }
 
         // Verifica se o id da especialidade do profissional já existe no banco apenas se as demais validações passarem
-        const existingSpecialityId = await ProfessionalModel.findBySpecialityId(professional.speciality_id);
+        const existingSpecialityId = await this.model.findBySpecialityId(professional.speciality_id);
         if (!existingSpecialityId || existingSpecialityId == ""){
             throw new this.NotFoundError("Especialidade do profissional não encontrada.");
         }
 
         // Verifica se o profissional já existe no banco apenas se as demais validações passarem
-        const existingName = await ProfessionalModel.findByName(professional.name);
+        const existingName = await this.model.findByName(professional.name);
         if (existingName){
             throw new this.ConflictError("Profissional já cadastrado, forneça outro nome.");
         }
@@ -144,6 +135,15 @@ class ProfessionalService extends BaseService {
             blockedHours,
             workingHours
         };
+    }
+
+    get workingHoursModel() {
+        if (!this._serviceService) {
+            const WorkingHoursModel = require("../models/workingHoursModel");
+            // Importa o Model para validar o user_id
+            this._workingHoursModel = new WorkingHoursModel();
+        }
+        return this._workingHoursModel;
     }
 }
 

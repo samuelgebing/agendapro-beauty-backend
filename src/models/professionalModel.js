@@ -8,20 +8,22 @@ class ProfessionalModel extends BaseModel {
         // 'speciality_id' deve ser verificado no service
     }
 
-    static async findBySpecialityId(speciality_id) {
+    async findBySpecialityId(speciality_id) {
         // console.log('SELECT p.id, p.name, p.speciality_id, p.phone, p.active FROM professionals p, specialities s WHERE s.id = ? AND p.speciality_id = s.id');
-        const [rows] = this.findAll({'speciality_id' : speciality_id});
-        return rows;
+        const rows = await this.findAll({'speciality_id' : speciality_id});
+        return rows || [];
     }
 
     // Busca um profissional pelo nome
-    static async findByName(name) {
-        const [rows] = this.findOneBy('name', name);
-        return rows[0];
+    async findByName(name) {
+        // Remove espaços em branco residuais nas pontas do nome antes de buscar
+        const cleanName = name ? name.trim() : '';
+        const row = await this.findOneBy({'name' : cleanName});
+        return row; 
     }
 
     // FAZER?: findByPhone(telefone)
 }
 
-module.exports = ProfessionalModel;
+module.exports = new ProfessionalModel();
 // Exporta a classe ProfessionalModel para ser usada nos services
