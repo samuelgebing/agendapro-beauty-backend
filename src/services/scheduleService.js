@@ -110,7 +110,7 @@ class ScheduleService extends BaseService {
             schedule.end_date_hour
         );
 
-        if (conflict) {
+        if (conflict.length > 0) {
             throw new this.ConflictError("Profissional já possui agendamento neste horário.");
         }
 
@@ -183,8 +183,12 @@ class ScheduleService extends BaseService {
             const slotEnd = slot.end;
 
             
+            const schedulesList = Array.isArray(schedules) 
+                ? schedules 
+                : (schedules?.rows || schedules?.data || []);            console.log(schedulesList);
+            console.log(schedulesList);
             // .some() retorna true se encontrar QUALQUER agendamento que sobreponha este slot
-            const isOccupied = schedules.some(sched => {
+            const isOccupied = schedulesList.some(sched => {
                 // Transforma para exibir ao usuário
                 // 2024-06-01T13:00:00.000Z --> 2024-06-01 10:00:00
                 sched.start_date_hour = this.ValidateTime.convert(new Date(sched.start_date_hour), 'datetime');
@@ -210,26 +214,26 @@ class ScheduleService extends BaseService {
     }
 
 
-    async getAgenda(service_id, professional_id = null, date = null) {
-        const service = await this.serviceService.getById(service_id, "Serviço");
-        if (!this.ValidateId.isNull(professional_id)) {
-            this.ValidateId.isInvalid(professional_id, "Profissional");
-            // validar data - UTILS
-            // é opcional
+    async getProfessionalAgenda(professional_id, date = null) {
+        this.ValidateId.isInvalid(professional_id, "Profissional");
+        // validar data - UTILS
+        // é opcional
 
-            if (date) {
-                const professionalSchedules = await this.professionalService.findAllSchedules(professional_id, date);
-            } else {
-                const professionalSchedules = await this.professionalService.findAllSchedules(professional_id);
-            }
-            return {
-                service,
-                professionalSchedules
-            };
+        let professionalSchedules;
+        if (date) {
+            this.ValidateTime.isInvalid(date);
+            date = this.ValidateTime.convert(date,'date');
+            professionalSchedules = await this.model.findConflicts(
+                professional_id, 
+                `${date} 00:00`,
+                `${date} 23:59`
+            );
         } else {
-            // Se professional_id não for fornecido, apenas retorna o serviço
-            return { service };
+            professionalSchedules = await this.model.findOneBy(professional_id);
         }
+        return {
+            professionalSchedules
+        };
 
         this.ValidateId.primaryKey(professional_id, "Profissional"); // Valida o ID antes de buscar
         const schedules = await this.model.findAllSchedules(professional_id);

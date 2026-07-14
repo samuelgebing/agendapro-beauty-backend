@@ -2,7 +2,7 @@
 # TESTES DO MÓDULO DE HORÁRIOS DE PROFISSIONAIS (ISSUE #11)
 # ==========================================
 @baseURL = http://localhost:3000
-@schedule_id = 16
+@schedule_id = 24
 @professional_id = 1
 
 # ==========================================
@@ -10,7 +10,7 @@
 # ==========================================
 
 ### Listar todos os horários
-GET {{baseURL}}/schedules
+GET {{baseURL}}/works
 Accept: application/json
 
 ### Listar horário com id específico
@@ -22,7 +22,7 @@ GET {{baseURL}}/schedules?professional_id={{professional_id}}
 Accept: application/json
 
 ### Criar um novo horário com sucesso
-POST {{baseURL}}/schedules
+POST {{baseURL}}/works
 Content-Type: application/json
 
 {
@@ -33,7 +33,7 @@ Content-Type: application/json
 }
 
 ### Atualizar um horário existente (substitua @schedule_id)
-PUT {{baseURL}}/schedules/{{schedule_id}}
+PUT {{baseURL}}/works/{{schedule_id}}
 Content-Type: application/json
 
 {
@@ -44,7 +44,7 @@ Content-Type: application/json
 }
 
 ### Deletar um horário existente (substitua @schedule_id)
-DELETE {{baseURL}}/schedules/{{schedule_id}}
+DELETE {{baseURL}}/works/{{schedule_id}}
 Accept: application/json
 
 # ==========================================

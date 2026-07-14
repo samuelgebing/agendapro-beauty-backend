@@ -25,12 +25,7 @@ class ScheduleModel extends BaseModel {
         const query = `
             SELECT * FROM ${this.tableName} 
             WHERE professional_id = ? 
-              AND (
-                (start_date_hour <= ? AND end_date_hour > ?) OR
-                (start_date_hour < ? AND end_date_hour >= ?) OR
-                (? <= start_date_hour AND ? > start_date_hour)
-              )
-            LIMIT 1
+              AND start_date_hour >= ? AND end_date_hour <= ?
         `;
         const [rows] = await this.db.execute(query, [
             professionalId,  
@@ -38,7 +33,7 @@ class ScheduleModel extends BaseModel {
             endDateHour, endDateHour,
             startDateHour, endDateHour
         ]);
-        return rows.length > 0 ? rows[0] : null;
+        return rows;              
     }
 
     /*

@@ -32,8 +32,11 @@ GET {{baseURL}}/services/{{service_id}}/schedules?professional_id=1
 Accept: application/json
 
 ### Listar horários de um serviço específico filtrando por profissional e data (substitua @service_id)
-# Fazer
 GET {{baseURL}}/services/{{service_id}}/schedules?professional_id=1&date=2024-06-01 
+Accept: application/json
+
+### Retornar bloqueio de um profissional
+GET {{baseURL}}/services/{{service_id}}/schedules?professional_id=1&date=2026-01-01 
 Accept: application/json
 
 ### Criar um novo serviço com sucesso

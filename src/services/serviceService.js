@@ -135,10 +135,10 @@ class ServiceService extends BaseService {
         }
         */
 
-        const schedules = await this.scheduleService.getAll({ 
+        const schedules = await this.scheduleService.getAll( 
             professional_id,
             service_id
-        });
+        );
 
         const agenda = await this.scheduleService._getDayAgenda(potencialSlots, schedules);
         
