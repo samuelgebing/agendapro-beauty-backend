@@ -37,7 +37,7 @@ class BaseService {
     getById = async (id, resourceName = "Registro") => {
         this.ValidateId.primaryKey(id, resourceName); // Valida o ID antes de buscar
 
-        const item = await this.model.findOneBy({'id':id});
+        const item = await this.model.findById(id);
         if (!item) throw new NotFoundError(`${resourceName} não encontrado.`);
         return item;
     }

@@ -17,7 +17,8 @@ class BaseModel {
     /**
      * Filtra o corpo da requisição mantendo apenas as colunas autorizadas.
      */
-    filterData = (data) => {
+    filterData = (data, isWriteOp = false) => {
+        if (!isWriteOp) return data; // não verifica todas as colunas em buscas via GET, por exemplo
         if (this.allowedColumns.length === 0) return data;
         
         const filtered = {};
@@ -90,8 +91,8 @@ class BaseModel {
      * C - CREATE: Insere um novo registro no banco (MySQL Nativo).
      */
     create = async (data) => {
-        const cleanData = this.filterData(data);
-        const columns = Object.keys(cleanData).join(', ');
+        const cleanData = this.filterData(data, true);
+        const columns = Object.keys(cleanData).map(col => `\`${col}\``).join(', ');        
         const placeholders = Object.keys(cleanData).map(() => '?').join(', ');
         const values = Object.values(cleanData);
 
@@ -107,7 +108,7 @@ class BaseModel {
      * Retorna 'null' se o registro não existir (affectedRows === 0).
      */
     update = async (id, data) => {
-        const cleanData = this.filterData(data);
+        const cleanData = this.filterData(data, true);
         const keys = Object.keys(cleanData);
 
         // Se nenhum campo válido foi enviado para atualização, apenas retorna o registro atual
