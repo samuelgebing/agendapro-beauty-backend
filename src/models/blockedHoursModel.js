@@ -10,25 +10,34 @@ class BlockedHoursModel extends BaseModel {
         // 'professional_id' deve ser verificado no service
     }
 
-    static async findByProfessionalId(professionalId) {
+    async findByProfessionalId(professionalId) {
+        const rows = await this.findAll({'professional_id' : professionalId});
+        return rows || [];
+    }
+    
+    // Precisa do sql por causa dos parâmetros específicos
+    async findByProfessionalAndDate(professionalId, startDate, endDate) {
         const [rows] = await db.execute(
-            'SELECT * FROM blocked_hours WHERE professional_id = ?',
-            [professionalId]
+            `SELECT * FROM blocked_hours 
+             WHERE professional_id = ? 
+                AND start <= ?
+                AND end >= ?`,
+            [professionalId, endDate, startDate]
         );
         return rows;
     }
     
-    static async findByProfessionalAndDate(professionalId, startDate, endDate) {
+    // Precisa do sql por causa dos parâmetros específicos
+    async findByDate(start,end) {
         const [rows] = await db.execute(
             `SELECT * FROM blocked_hours 
-             WHERE professional_id = ? 
-                AND start >= ? 
-                AND end <= ?`,
-            [professionalId, startDate, endDate]
+             WHERE start <= ? 
+                AND end >= ?`,
+            [end, start]
         );
         return rows;
     }
 }
 
-module.exports = BlockedHoursModel;
+module.exports = new BlockedHoursModel();
 // Exporta a classe BlockedHoursModel para ser usada nos services
