@@ -10,22 +10,33 @@ class WorkingHoursModel extends BaseModel {
         // 'professional_id' deve ser verificado no service
     }
 
-    static async findByProfessionalId(professionalId) {
-        const [rows] = await db.execute(
-            'SELECT * FROM working_hours WHERE professional_id = ?',
-            [professionalId]
-        );
-        return rows;
+    async findByProfessionalId(professionalId) {
+        const rows = await this.findOneBy({'professional_id' : professionalId});
+        return rows || [];
     }
 
-    static async findByProfessionalAndWeekday(professionalId, weekday) {
-        const [rows] = await db.execute(
-            'SELECT * FROM working_hours WHERE professional_id = ? AND weekday = ?',
-            [professionalId, weekday]
-        );
-        return rows;
+    async findByProfessionalAndWeekday(professionalId, weekday) {
+        const rows = await this.findAll({
+            'professional_id' : professionalId,
+            'weekday' : weekday
+        });
+        return rows || [];
+    }
+
+    /**
+     * Busca agendamentos ativos de um profissional em uma data específica
+     * Evita que horários sejam sobrepostos na agenda
+     */
+    async findConflicts(professionalId, weekday, startHour, endHour) {
+        const rows = await this.findAll({
+            'professional_id' : professionalId,
+            'weekday' : weekday, 
+            'start_hour' : startHour,
+            'end_hour' : endHour
+        });
+        return rows || [];         
     }
 }
 
-module.exports = WorkingHoursModel;
+module.exports = new WorkingHoursModel();
 // Exporta a classe WorkingHoursModel para ser usada nos services
