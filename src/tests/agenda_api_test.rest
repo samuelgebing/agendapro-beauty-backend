@@ -47,32 +47,8 @@ Accept: application/json
 GET {{baseURL}}/agenda/available?date=2026-02-01
 Accept: application/json
 
-
-
-
-
-### Listar horários de um serviço específico (substitua @service_id)
-# Fazer
-GET {{baseURL}}/agenda/{{service_id}}/schedules
-Accept: application/json
-
-### Listar horários de um serviço específico filtrando por profissional (substitua @service_id)
-# Fazer
-GET {{baseURL}}/agenda/{{service_id}}/schedules?professional_id=1
-Accept: application/json
-
-### Listar horários de um serviço específico filtrando por profissional e data (substitua @service_id)
-GET {{baseURL}}/agenda/{{service_id}}/schedules?professional_id=1&date=2024-06-01 
-Accept: application/json
-
-### Retornar bloqueio de um profissional
-GET {{baseURL}}/agenda/{{service_id}}/schedules?professional_id=1&date=2026-01-01 
-Accept: application/json
-
 # ==========================================
-# CENÁRIOS DE ERRO (VALIDAÇÕES DA ISSUE #10)
+# CENÁRIOS DE ERRO 
 # ==========================================
 
-# ------------------------------------------
-# TESTES DE CRIAÇÃO (POST)
-# ------------------------------------------
+# Falta fazer
