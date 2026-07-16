@@ -2,7 +2,7 @@
 # TESTES DO MÓDULO DE AGENDAMENTOS
 # ==========================================
 @baseURL = http://localhost:3000
-@schedule_id = 14
+@schedule_id = 15
 @professional_id = 2
 @status_id = 2
 @service_id = 3
