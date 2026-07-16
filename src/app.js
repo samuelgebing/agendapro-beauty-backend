@@ -25,6 +25,9 @@ const scheduleRoutes = require('./routes/scheduleRoutes');
 const professionalRoutes = require('./routes/professionalRoutes');
 // Importa as rotas relacionadas aos profissionais
 
+const agendaRoutes = require('./routes/agendaRoutes');
+// Importa as rotas relacionadas à agenda dos profissionais
+
 const stubRoutesTest = require('./routes/stubRoutes_test');
 
 const errorMiddleware = require('./middlewares/errorMiddleware');
@@ -66,6 +69,10 @@ app.use('/schedules', scheduleRoutes);
 // Rotas da aplicação
 app.use('/professionals', professionalRoutes);
 // Define que todas as requisições iniciadas com /professionals serão encaminhadas para o arquivo professionalRoutes
+
+// Rotas da aplicação
+app.use('/agenda', agendaRoutes);
+// Define que todas as requisições iniciadas com /agenda serão encaminhadas para o arquivo agendaRoutes
 
 app.use('/test-base', stubRoutesTest);
 
