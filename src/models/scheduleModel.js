@@ -30,15 +30,15 @@ class ScheduleModel extends BaseModel {
         const query = `
             SELECT * FROM ${this.tableName} 
             WHERE professional_id = ? 
-              AND start_date_hour >= ? 
-              AND end_date_hour <= ?
+              AND start_date_hour < ? 
+              AND end_date_hour > ?
         `;
         
         // 2. CORREÇÃO: Passa exatamente os 3 parâmetros correspondentes às interrogações
         const [rows] = await this.db.execute(query, [
-            professionalId,  
-            startDateHour, 
-            endDateHour
+            professionalId, 
+            endDateHour,  
+            startDateHour
         ]);
         
         return rows;              

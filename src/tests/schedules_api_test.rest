@@ -157,6 +157,42 @@ Content-Type: application/json
     "end_date_hour": "2027-06-08 17:00:00"
 }
 
+### [409 Conflict] Criar agendamento com profissional e horário repetido (dentro de outro) (erro esperado)
+POST {{baseURL}}/schedules
+Content-Type: application/json
+
+{
+    "user_id": 2,
+    "professional_id": 3,
+    "service_id": 4,
+    "start_date_hour": "2027-06-08 16:10:00",
+    "end_date_hour": "2027-06-08 16:50:00"
+}
+
+### [409 Conflict] Criar agendamento com profissional e horário repetido (parcialmente dentro de outro) (erro esperado)
+POST {{baseURL}}/schedules
+Content-Type: application/json
+
+{
+    "user_id": 2,
+    "professional_id": 3,
+    "service_id": 4,
+    "start_date_hour": "2027-06-08 16:10:00",
+    "end_date_hour": "2027-06-08 17:10:00"
+}
+
+### [409 Conflict] Criar agendamento com profissional e horário repetido (outro está dentro dele) (erro esperado)
+POST {{baseURL}}/schedules
+Content-Type: application/json
+
+{
+    "user_id": 2,
+    "professional_id": 3,
+    "service_id": 4,
+    "start_date_hour": "2027-06-08 15:00:00",
+    "end_date_hour": "2027-06-08 18:00:00"
+}
+
 
 # ------------------------------------------
 # VALIDAÇÕES DOS IDs
