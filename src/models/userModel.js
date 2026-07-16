@@ -10,19 +10,17 @@ class UserModel extends BaseModel {
     }
 
     // Busca um usuário pelo email
-    static async findByEmail(email) {
-        const [rows] = await db.execute('SELECT * FROM users WHERE email = ?',
-            [email]);
-        return rows[0];
+    async findByEmail(email) {
+        const rows = await this.findAll({'email' : email});
+        return rows || [];
     }
 
     // Busca um usuário pelo role_id
-    static async findByRoleId(role_id) {
-        const [rows] = await db.execute('SELECT * FROM roles WHERE id = ?',
-            [role_id]);
-        return rows[0];
+    async findByRoleId(role_id) {
+        const rows = await this.findAll({'role_id' : role_id});
+        return rows || [];
     }
 }
 
-module.exports = UserModel;
+module.exports = new UserModel();
 // Exporta a classe UserModel para ser usada nos services

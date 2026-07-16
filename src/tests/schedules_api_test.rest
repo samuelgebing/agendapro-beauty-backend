@@ -10,7 +10,7 @@
 # ==========================================
 
 ### Listar todos os horários
-GET {{baseURL}}/works
+GET {{baseURL}}/schedules
 Accept: application/json
 
 ### Listar horário com id específico
@@ -22,11 +22,13 @@ GET {{baseURL}}/schedules?professional_id={{professional_id}}
 Accept: application/json
 
 ### Criar um novo horário com sucesso
-POST {{baseURL}}/works
+POST {{baseURL}}/schedules
 Content-Type: application/json
 
 {
+    "user_id": 2,
     "professional_id": 2,
+    "service_id": 1,
     "weekday": 5,
     "start_hour": "19:00:00",
     "end_hour": "23:00:00"

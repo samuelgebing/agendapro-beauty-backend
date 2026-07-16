@@ -27,7 +27,7 @@ class BaseService {
             typeof this.validateFilters === 'function' && 
             Object.keys(filters).length > 0
         ) {
-            await this.validateFilters(filters, resourceName);
+            filters = await this.validateFilters(filters, resourceName);
         }
 
         return await this.model.findAll(filters); 

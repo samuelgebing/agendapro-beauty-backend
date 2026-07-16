@@ -77,10 +77,12 @@ class WorkingHoursService extends BaseService {
      */
     async validateFilters(filters, resourceName) {
         // Se o usuário passou o filtro professional_id na URL
-        
-        this.ValidateId.primaryKey(filters.professional_id, resourceName);
+        if (filters.professional_id)
+            this.ValidateId.primaryKey(filters.professional_id, resourceName);
         
         // Adicionar validações para outros filtros da URL aqui...
+
+        return filters;
     }
 }
 

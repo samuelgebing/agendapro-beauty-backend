@@ -46,6 +46,8 @@ class StubServiceTest extends BaseService {
         if (filters.id) {
             this.ValidateId.primaryKey(filters.id, "Stub");
         }
+
+        return filters;
     }
 }
 

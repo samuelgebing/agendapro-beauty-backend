@@ -96,10 +96,12 @@ class ServiceService extends BaseService {
      */
     async validateFilters(filters) {
         // Se o usuário passou o filtro area_id na URL
-        
-        this.ValidateId.primaryKey(filters.area_id, "Área do Serviço");
+        if (filters.area_id)
+            this.ValidateId.primaryKey(filters.area_id, "Área do Serviço");
         
         // Adicionar validações para outros filtros da URL aqui...
+
+        return filters;
     }
 
     async getAllAgenda(service_id) {

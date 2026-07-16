@@ -7,4 +7,4 @@ class StubModelTest extends BaseModel {
     }
 }
 
-module.exports = StubModelTest;
+module.exports = new StubModelTest();

@@ -12,9 +12,13 @@ class ScheduleModel extends BaseModel {
     }
 
     findByServiceId = async (serviceId) => {
-        const [rows] = await db.execute('SELECT * FROM schedules WHERE service_id = ?', 
-            [serviceId]);
-        return rows;
+        // console.log(SELECT sc.id, sc.start_date_hour, sc.end_date_hour
+        // p.id, p.name, sp.name
+        // se.id, a.name, a.description, se.name, se.min_duration, se.price 
+        // FROM schedules sc, professionals p, specialities sp, services se, areas a 
+        // WHERE sc.service_id = ? AND sc.service_id = se.id);
+        const rows = await this.findAll({'service_id' : serviceId});
+        return rows || [];
     }
 
     /**
@@ -22,17 +26,21 @@ class ScheduleModel extends BaseModel {
      * Evita que horários sejam sobrepostos na agenda
      */
     async findConflicts(professionalId, startDateHour, endDateHour) {
+        // 1. Query limpa com exatamente 3 marcadores de posição para o dia
         const query = `
             SELECT * FROM ${this.tableName} 
             WHERE professional_id = ? 
-              AND start_date_hour >= ? AND end_date_hour <= ?
+              AND start_date_hour >= ? 
+              AND end_date_hour <= ?
         `;
+        
+        // 2. CORREÇÃO: Passa exatamente os 3 parâmetros correspondentes às interrogações
         const [rows] = await this.db.execute(query, [
             professionalId,  
-            startDateHour, startDateHour,
-            endDateHour, endDateHour,
-            startDateHour, endDateHour
+            startDateHour, 
+            endDateHour
         ]);
+        
         return rows;              
     }
 
@@ -99,5 +107,5 @@ class ScheduleModel extends BaseModel {
     */
 }
 
-module.exports = ScheduleModel;
+module.exports = new ScheduleModel();
 // Exporta a classe ScheduleModel para ser usada nos services

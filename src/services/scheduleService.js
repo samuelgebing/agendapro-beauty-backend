@@ -138,6 +138,8 @@ class ScheduleService extends BaseService {
         }
 
         // Adicionar validações para outros filtros da URL aqui...
+
+        return filters;
     }
 
     async generatePotentialSlots(service_id, professional_id, date) {
