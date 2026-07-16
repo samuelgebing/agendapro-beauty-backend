@@ -7,7 +7,7 @@ const BlockedHoursModel = require('./blockedHoursModel');
 
 class ScheduleModel extends BaseModel {
     constructor() {
-        super('schedules', ['service_id', 'professional_id', 'user_id', 'start_date_hour', 'end_date_hour', 'status']);
+        super('schedules', ['service_id', 'professional_id', 'user_id', 'start_date_hour', 'end_date_hour', 'status_id']);
         // professional_id deve ser verificado no service
     }
 
