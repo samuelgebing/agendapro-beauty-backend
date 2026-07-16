@@ -2,8 +2,8 @@
 # TESTES DO MÓDULO DE SERVIÇOS (ISSUE #12)
 # ==========================================
 @baseURL = http://localhost:3000
-@blocked_hour_id = 11
-@professional_id = 1
+@blocked_hour_id = 13
+@professional_id = 3
 
 # ==========================================
 # CENÁRIOS DE SUCESSO (VALIDAÇÕES DA ISSUE #12)
@@ -22,13 +22,11 @@ GET {{baseURL}}/blocks?professional_id={{professional_id}}
 Accept: application/json
 
 ### Listar todos os bloqueios de horário filtrados pela data
-#Fazer
-GET {{baseURL}}/blocks?date=2026-01-15
+GET {{baseURL}}/blocks?date=2027-01-15
 Accept: application/json
 
 ### Listar todos os bloqueios de horário filtrados pelo profissional e pela data
-#Fazer
-GET {{baseURL}}/blocks?professional_id={{professional_id}}&date=2026-01-15
+GET {{baseURL}}/blocks?professional_id={{professional_id}}&date=2027-01-15
 Accept: application/json
 
 ### Criar um novo bloqueio de horário com sucesso
@@ -37,7 +35,7 @@ Content-Type: application/json
 
 {
     "professional_id": 4,
-    "start": "2027-01-01 00:00",
+    "start": "2027-01-02 00:00",
     "end": "2027-01-31 23:59",
     "reason": "Motivo do bloqueio"
 }
@@ -47,7 +45,7 @@ PUT {{baseURL}}/blocks/{{blocked_hour_id}}
 Content-Type: application/json
 
 {
-    "professional_id": 3,
+    "professional_id": 4,
     "start": "2027-01-01 10:00",
     "end": "2027-02-28 23:59",
     "reason": "Janeiro e fevereiro bloqueados"

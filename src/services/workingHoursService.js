@@ -28,37 +28,45 @@ class WorkingHoursService extends BaseService {
         if (!workingHour.start_hour) errors.push("Hora inicial não fornecida.");
         if (!workingHour.end_hour) errors.push("Hora final não fornecida.");
         if (!workingHour.weekday) errors.push("Dia da semana não fornecido.");
+
+        // VALIDAÇÕES DE HORA INICIAL E FINAL
+        if (this.ValidateTime.isInvalid(workingHour.start_hour)) 
+            errors.push("Data de início com formato inválido.");
+        if (this.ValidateTime.isInvalid(workingHour.end_hour)) 
+            errors.push("Data de término com formato inválido.");
+
+        if (workingHour.start_hour >= workingHour.end_hour)
+            errors.push("Hora de início deve ser menor que a hora final.");
+
+        // VALIDAÇÕES DE PROFESSIONAL_ID
+        if (this.ValidateId.isInvalid(workingHour.professional_id)) 
+            errors.push("ID de profissional com formato inválido.");
+
+        // VALIDAÇÕES DE DIA DA SEMANA
+        if (![0,1,2,3,4,5,6].includes(workingHour.weekday))
+            errors.push("Dia da semana com formato inválido.");
+        
         if (errors.length > 0) { 
             errors[0] = "FALHA NA VALIDAÇÃO DO HORÁRIO: " + errors[0]; // Prefixa a primeira mensagem de erro
             throw new this.ValidationError(errors.join(" ")); // Cria um erro com todas as mensagens de validação
         }
             // Une em um erro todas as mensagens de validação de campos obrigatórios
 
-        // VALIDAÇÕES DE PROFESSIONAL_ID
-        if (this.ValidateId.isInvalid(workingHour.professional_id)) 
-            errors.push("Profissional com formato inválido.");
-
-        /*
-        // FAZER: 
-        // VALIDAÇÕES DE DATA INICIAL E FINAL
-        if (typeof workingHour.start_hour !== "string") 
-            errors.push("Data de início com formato inválido.");
-        if (typeof workingHour.end_hour !== "string") 
-            errors.push("Data de término com formato inválido.");
-
-        if (errors.length > 0) { 
-            errors[0] = "FALHA NA VALIDAÇÃO DO HORÁRIO: " + errors[0]; // Prefixa a primeira mensagem de erro
-            const error = new Error(errors.join(" ")); // Cria um erro com todas as mensagens de validação
-            error.statusCode = 400; // Define o status HTTP para 400 (erro de validação)
-            throw error; // Lança o erro com status code
-        }
-        */
-
         // Verifica se o id da área do serviço já existe no banco apenas se as demais validações passarem
-        const existingProfessionalId = await new ProfessionalModel().findById(workingHour.professional_id);
+        const existingProfessionalId = await ProfessionalModel.findById(workingHour.professional_id);
         if (!existingProfessionalId || existingProfessionalId == ""){
             throw new this.NotFoundError("Profissional não encontrado.");
         }
+
+        // Verifica se já não existe cadastro totalmente igual
+        const conflict = await this.model.findConflicts(
+            workingHour.professional_id, 
+            workingHour.weekday, 
+            workingHour.start_hour, 
+            workingHour.end_hour
+        );
+        if (conflict.length > 0)
+            throw new this.ConflictError("Horário de trabalho já cadastrado para esse profissional.");
         
         // Se todas as validações passarem, apenas continua sem lançar erros
     }
@@ -69,10 +77,12 @@ class WorkingHoursService extends BaseService {
      */
     async validateFilters(filters, resourceName) {
         // Se o usuário passou o filtro professional_id na URL
-        
-        this.ValidateId.primaryKey(filters.professional_id, resourceName);
+        if (filters.professional_id)
+            this.ValidateId.primaryKey(filters.professional_id, resourceName);
         
         // Adicionar validações para outros filtros da URL aqui...
+
+        return filters;
     }
 }
 

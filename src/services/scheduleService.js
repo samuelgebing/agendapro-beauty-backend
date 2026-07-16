@@ -31,17 +31,17 @@ class ScheduleService extends BaseService {
 
     // Evita o travamento circular ao carregar o ScheduleService
     get userService() {
-        if (!this._serviceService) {
+        if (!this._userService) {
             const UserService = require("./userService");
             // Importa o Model para validar o user_id
-            this._userService = new ServiceService();
+            this._userService = new UserService();
         }
         return this._userService;
     }
 
     // Valida os dados do horário antes de criar ou atualizar
     // OBS: sem id
-    async validate(schedule) {
+    validate = async (schedule) => {
         // Verifica se o objeto schedule foi fornecido, caso contrário lança um erro
         if (
             !schedule ||
@@ -58,8 +58,6 @@ class ScheduleService extends BaseService {
             errors.push("Serviço não fornecido.");
         if (this.ValidateId.isNull(schedule.user_id))
             errors.push("Usuário não fornecido.");
-        if (!schedule.date)
-            errors.push("Data do agendamento não fornecida.");
         if (!schedule.start_date_hour)
             errors.push("Data e hora de início do agendamento não fornecida.");
         if (!schedule.end_date_hour)
@@ -91,17 +89,19 @@ class ScheduleService extends BaseService {
             }
         }
 
-        if (this.ValidateTime.isInvalid(schedule.end_hour))
+        if (this.ValidateTime.isInvalid(schedule.end_date_hour))
             errors.push("Data e horário de término com formato inválido.");
 
         if (errors.length > 0) {
             throw new this.ValidationError("FALHA NA VALIDAÇÃO DO AGENDAMENTO: " + errors.join(" "));
         }
 
+        console.log(schedule);
+
         // Garante que o profissional e o serviço existem no sistema antes de agendar
-        await new ProfessionalService().getById(schedule.professional_id, "Profissional");
-        await new ServiceService().getById(schedule.service_id, "Serviço");
-        await new UserService().getById(schedule.user_id, "Usuário");
+        await this.professionalService.getById(schedule.professional_id, "Profissional");
+        await this.serviceService.getById(schedule.service_id, "Serviço");
+        await this.userService.getById(schedule.user_id, "Usuário");
 
         // 4. Validação de Conflito de Horário (Garante a unicidade da agenda)
         const conflict = await this.model.findConflicts(
@@ -110,12 +110,13 @@ class ScheduleService extends BaseService {
             schedule.end_date_hour
         );
 
-        if (conflict) {
+        if (conflict.length > 0) {
             throw new this.ConflictError("Profissional já possui agendamento neste horário.");
         }
 
-        if (!schedule.status) {
-            schedule.status = 'confirmed';
+        // FAZER: Validar com o banco
+        if (!schedule.status_id) {
+            schedule.status_id = 1;
         }
 
         // Se todas as validações passarem, apenas continua sem lançar erros
@@ -138,6 +139,8 @@ class ScheduleService extends BaseService {
         }
 
         // Adicionar validações para outros filtros da URL aqui...
+
+        return filters;
     }
 
     async generatePotentialSlots(service_id, professional_id, date) {
@@ -183,8 +186,12 @@ class ScheduleService extends BaseService {
             const slotEnd = slot.end;
 
             
+            const schedulesList = Array.isArray(schedules) 
+                ? schedules 
+                : (schedules?.rows || schedules?.data || []);            console.log(schedulesList);
+            console.log(schedulesList);
             // .some() retorna true se encontrar QUALQUER agendamento que sobreponha este slot
-            const isOccupied = schedules.some(sched => {
+            const isOccupied = schedulesList.some(sched => {
                 // Transforma para exibir ao usuário
                 // 2024-06-01T13:00:00.000Z --> 2024-06-01 10:00:00
                 sched.start_date_hour = this.ValidateTime.convert(new Date(sched.start_date_hour), 'datetime');
@@ -210,26 +217,26 @@ class ScheduleService extends BaseService {
     }
 
 
-    async getAgenda(service_id, professional_id = null, date = null) {
-        const service = await this.serviceService.getById(service_id, "Serviço");
-        if (!this.ValidateId.isNull(professional_id)) {
-            this.ValidateId.isInvalid(professional_id, "Profissional");
-            // validar data - UTILS
-            // é opcional
+    async getProfessionalAgenda(professional_id, date = null) {
+        this.ValidateId.isInvalid(professional_id, "Profissional");
+        // validar data - UTILS
+        // é opcional
 
-            if (date) {
-                const professionalSchedules = await this.professionalService.findAllSchedules(professional_id, date);
-            } else {
-                const professionalSchedules = await this.professionalService.findAllSchedules(professional_id);
-            }
-            return {
-                service,
-                professionalSchedules
-            };
+        let professionalSchedules;
+        if (date) {
+            this.ValidateTime.isInvalid(date);
+            date = this.ValidateTime.convert(date,'date');
+            professionalSchedules = await this.model.findConflicts(
+                professional_id, 
+                `${date} 00:00`,
+                `${date} 23:59`
+            );
         } else {
-            // Se professional_id não for fornecido, apenas retorna o serviço
-            return { service };
+            professionalSchedules = await this.model.findOneBy(professional_id);
         }
+        return {
+            professionalSchedules
+        };
 
         this.ValidateId.primaryKey(professional_id, "Profissional"); // Valida o ID antes de buscar
         const schedules = await this.model.findAllSchedules(professional_id);

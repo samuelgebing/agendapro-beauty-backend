@@ -1,0 +1,85 @@
+# ==========================================
+# TESTES DE VALIDAÇÃO DA ARQUITETURA BASE
+# ==========================================
+@baseURL = http://localhost:3000
+@stub_id = 1
+
+# ==========================================
+# CENÁRIOS DE SUCESSO
+# ==========================================
+
+### 1. Listar todos os stubs (Read All)
+# Valida se o BaseModel monta o SELECT genérico e retorna um array JSON
+GET {{baseURL}}/test-base
+Accept: application/json
+
+
+### 2. Criar um novo stub (Create)
+# Valida a interceptação do corpo JSON pelas camadas Controller -> Service -> Model
+POST {{baseURL}}/test-base
+Content-Type: application/json
+
+{
+    "name": "Registro Cobaia",
+    "description": "Validando persistência genérica das classes abstratas"
+}
+
+
+### 3. Listar stub por ID específico (Read One)
+# Valida se a base consegue filtrar chaves primárias dinamicamente
+GET {{baseURL}}/test-base/{{stub_id}}
+Accept: application/json
+
+
+### 4. Atualizar um stub existente (Update)
+# Valida o mapeamento de colunas injetado no construtor do BaseModel pelo PUT
+PUT {{baseURL}}/test-base/{{stub_id}}
+Content-Type: application/json
+
+{
+    "name": "Registro Cobaia Atualizado",
+    "description": "Campos modificados com sucesso via PUT genérico"
+}
+
+
+### 5. Deletar um stub existente (Delete)
+# Valida a remoção física do registro. Deve retornar HTTP 200 ou 204 No Content
+DELETE {{baseURL}}/test-base/{{stub_id}}
+Accept: application/json
+
+
+# ==========================================
+# CENÁRIOS DE ERRO E EXCEÇÕES CUSTOMIZADAS
+# ==========================================
+
+### 6. Erro de Validação - Campo Obrigatório (Lança ValidationError)
+# Deve retornar erro HTTP 400 estruturado pelo seu errorMiddleware
+POST {{baseURL}}/test-base
+Content-Type: application/json
+
+{
+    "description": "Falha proposital por não enviar a propriedade name"
+}
+
+
+### 7. Erro de Validação - Regra de Negócio (Lança ConflictError)
+# Valida se a base captura erros de regras de unicidade e responde com HTTP 409
+POST {{baseURL}}/test-base
+Content-Type: application/json
+
+{
+    "name": "Conflito",
+    "description": "Nome proibido pelo validador do service"
+}
+
+
+### 8. Erro de Busca - Registro Inexistente (Lança NotFoundError)
+# Valida se o ID válido mas inexistente retorna HTTP 404 formatado
+GET {{baseURL}}/test-base/9999
+Accept: application/json
+
+
+### 9. Erro de Formato de ID (Lança erro via ValidateId)
+# Valida se o envio de caracteres alfanuméricos onde se espera a PK ativa o status 400
+GET {{baseURL}}/test-base/texto-invalido
+Accept: application/json

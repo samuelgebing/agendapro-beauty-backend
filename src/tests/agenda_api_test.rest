@@ -1,0 +1,54 @@
+# ==========================================
+# TESTES DO MÓDULO DE AGENDA
+# ==========================================
+@baseURL = http://localhost:3000
+@service_id = 1
+@professional_id = 1
+
+# ==========================================
+# CENÁRIOS DE SUCESSO
+# ==========================================
+
+### Listar todos os agendamentos
+GET {{baseURL}}/agenda
+Accept: application/json
+
+### Listar todos os agendamentos de um profissional
+GET {{baseURL}}/agenda?professional_id={{professional_id}}
+Accept: application/json
+
+### Listar todos os agendamentos de um profissional
+GET {{baseURL}}/agenda?service_id={{service_id}}
+Accept: application/json
+
+### Listar todos os agendamentos em uma data
+# FAZER?
+GET {{baseURL}}/agenda?date=2024-06-04
+Accept: application/json
+
+### Buscar os horários/slots livres de um profissional 
+### para um serviço e uma data 
+### (já com agendamentos e bloqueio em um turno)
+GET {{baseURL}}/agenda/available?professional_id=3&service_id=3&date=2024-06-08
+Accept: application/json
+
+### Buscar os horários/slots livres de um profissional 
+### para um serviço e uma data 
+### (já com agendamentos e bloqueio de dias anteriores até dias posteriores)
+GET {{baseURL}}/agenda/available?professional_id=2&service_id=3&date=2024-06-02
+Accept: application/json
+
+### Buscar horários mas dentro de um bloqueio considerando o profissional
+GET {{baseURL}}/agenda/available?professional_id=2&service_id=3&date=2026-02-05
+Accept: application/json
+
+### Buscar os horários com bloqueio considerando a data
+# FAZER?
+GET {{baseURL}}/agenda/available?date=2026-02-01
+Accept: application/json
+
+# ==========================================
+# CENÁRIOS DE ERRO 
+# ==========================================
+
+# Falta fazer

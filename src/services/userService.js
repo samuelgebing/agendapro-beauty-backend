@@ -81,10 +81,12 @@ class UserService extends BaseService {
      */
     async validateFilters(filters) {
         // Se o usuário passou o filtro role_id na URL
-        
-        this.ValidateId.primaryKey(filters.role_id, "Perfil");
+        if (filters.role_id)
+            this.ValidateId.primaryKey(filters.role_id, "Perfil");
                 
         // Adicionar validações para outros filtros da URL aqui...
+
+        return filters;
     }
 }
 

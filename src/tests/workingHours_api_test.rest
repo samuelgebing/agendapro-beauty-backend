@@ -2,7 +2,7 @@
 # TESTES DO MÓDULO DE HORÁRIOS DO PROFISSIONAL
 # ==========================================
 @baseURL = http://localhost:3000
-@working_hour_id = 22
+@working_hour_id = 28
 @professional_id = 1
 
 # ==========================================
@@ -82,9 +82,9 @@ Content-Type: application/json
 
 {
     "professional_id": -1,
-    "start": "2027-01-01 10:00",
-    "end": "2027-02-28 23:59",
-    "reason": "Janeiro e fevereiro bloqueados"
+    "weekday": 3,
+    "start_hour": "09:30",
+    "end_hour": "12:00"
 }
 
 ### [404 Not Found] Criar bloqueio com id do profissional válido, mas inexistente (erro esperado)
@@ -93,9 +93,9 @@ Content-Type: application/json
 
 {
     "professional_id": 9999,
-    "start": "2027-01-01 10:00",
-    "end": "2027-02-28 23:59",
-    "reason": "Janeiro e fevereiro bloqueados"
+    "weekday": 3,
+    "start_hour": "09:30",
+    "end_hour": "12:00"
 }
 
 ### [400 Bad Request] Criar bloqueio com todos os campos inválidos (erro esperado)
@@ -104,21 +104,44 @@ Content-Type: application/json
 
 {
     "professional_id": 0,
-    "start": 1,
-    "end": 2,
-    "reason": 3
+    "weekday": 7,
+    "start_hour": 9.30,
+    "end_hour": 12.00
 }
 
-### [409 Conflict] Criar bloqueio com dados (profissional, inicío e fim) repetido (erro esperado)
-#Fazer
+### [400 Bad Request] Criar bloqueio com hora inicial maior que hora final (erro esperado)
 POST {{baseURL}}/works
 Content-Type: application/json
 
 {
     "professional_id": 1,
-    "start": "2026-01-01 00:00",
-    "end": "2026-01-31 23:59",
-    "reason": "Férias cadastradas em redundância"
+    "weekday": 3,
+    "start_hour": "12:30",
+    "end_hour": "12:00"
+}
+
+# FALTA: validar se (parte de) um horário coincide com outro
+
+### [400 Bad Request] Criar bloqueio com hora inicial igual que hora final (erro esperado)
+POST {{baseURL}}/works
+Content-Type: application/json
+
+{
+    "professional_id": 1,
+    "weekday": 3,
+    "start_hour": "12:00",
+    "end_hour": "12:00"
+}
+
+### [409 Conflict] Criar bloqueio com dados (profissional, inicío e fim) repetido (erro esperado)
+POST {{baseURL}}/works
+Content-Type: application/json
+
+{
+    "professional_id": 1,
+    "weekday": 1,
+    "start_hour": "09:00",
+    "end_hour": "17:00"
 }
 
 # ------------------------------------------
@@ -130,10 +153,10 @@ PUT {{baseURL}}/works/9999
 Content-Type: application/json
 
 {
-    "professional_id": 1,
-    "start": "2026-01-01 00:00",
-    "end": "2026-01-31 23:59",
-    "reason": "Bloqueio inexistente"
+    "professional_id": 4,
+    "weekday": 3,
+    "start_hour": "09:30",
+    "end_hour": "12:00"
 }
 
 ### [400 Bad Request] Atualizar bloqueio com id inválido (string) (erro esperado)
@@ -141,10 +164,10 @@ PUT {{baseURL}}/works/texto
 Content-Type: application/json
 
 {
-    "professional_id": 1,
-    "start": "2026-01-01 00:00",
-    "end": "2026-01-31 23:59",
-    "reason": "Bloqueio com id inválido"
+    "professional_id": 4,
+    "weekday": 3,
+    "start_hour": "09:30",
+    "end_hour": "12:00"
 }
 
 ### [400 Bad Request] Atualizar bloqueio com id inválido (0) (erro esperado)
@@ -152,10 +175,10 @@ PUT {{baseURL}}/works/0
 Content-Type: application/json
 
 {
-    "professional_id": 1,
-    "start": "2026-01-01 00:00",
-    "end": "2026-01-31 23:59",
-    "reason": "Bloqueio com id inválido"
+    "professional_id": 4,
+    "weekday": 3,
+    "start_hour": "09:30",
+    "end_hour": "12:00"
 }
 
 ### [400 Bad Request] Atualizar bloqueio com id inválido (número decimal) (erro esperado)
@@ -163,10 +186,10 @@ PUT {{baseURL}}/works/0.5
 Content-Type: application/json
 
 {
-    "professional_id": 1,
-    "start": "2026-01-01 00:00",
-    "end": "2026-01-31 23:59",
-    "reason": "Bloqueio com id inválido"
+    "professional_id": 4,
+    "weekday": 3,
+    "start_hour": "09:30",
+    "end_hour": "12:00"
 }
 
 ### [400 Bad Request] Atualizar bloqueio com id inválido (booleano) (erro esperado)
@@ -174,10 +197,10 @@ PUT {{baseURL}}/works/true
 Content-Type: application/json
 
 {
-    "professional_id": 1,
-    "start": "2026-01-01 00:00",
-    "end": "2026-01-31 23:59",
-    "reason": "Bloqueio com id inválido"
+    "professional_id": 4,
+    "weekday": 3,
+    "start_hour": "09:30",
+    "end_hour": "12:00"
 }
 
 ### [400 Bad Request] Atualizar bloqueio com id inválido (undefined) (erro esperado)
@@ -185,10 +208,10 @@ PUT {{baseURL}}/works/undefined
 Content-Type: application/json
 
 {
-    "professional_id": 1,
-    "start": "2026-01-01 00:00",
-    "end": "2026-01-31 23:59",
-    "reason": "Bloqueio com id inválido"
+    "professional_id": 4,
+    "weekday": 3,
+    "start_hour": "09:30",
+    "end_hour": "12:00"
 }
 
 ### [400 Bad Request] Atualizar bloqueio com todos os campos inválidos (erro esperado)
@@ -197,21 +220,20 @@ Content-Type: application/json
 
 {
     "professional_id": 0,
-    "start": 1,
-    "end": 2,
-    "reason": 3
+    "weekday": 7,
+    "start_hour": 9.30,
+    "end_hour": 12.00
 }
 
 ### [409 Conflict] Atualizar bloqueio com dados (profissional, inicío e fim) repetido (erro esperado)
-#Fazer
 PUT {{baseURL}}/works/{{working_hour_id}}
 Content-Type: application/json
 
 {
     "professional_id": 1,
-    "start": "2026-01-01 00:00",
-    "end": "2026-01-31 23:59",
-    "reason": "Férias atualizadas em redundância"
+    "weekday": 1,
+    "start_hour": "09:00",
+    "end_hour": "17:00"
 }
 
 # ------------------------------------------

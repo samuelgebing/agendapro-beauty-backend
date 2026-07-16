@@ -1,49 +1,85 @@
 # ==========================================
-# TESTES DO MÓDULO DE HORÁRIOS DE PROFISSIONAIS (ISSUE #11)
+# TESTES DO MÓDULO DE AGENDAMENTOS
 # ==========================================
 @baseURL = http://localhost:3000
-@schedule_id = 16
-@professional_id = 1
+@schedule_id = 14
+@professional_id = 2
+@status_id = 2
+@service_id = 3
+@user_id = 1
 
 # ==========================================
 # CENÁRIOS DE SUCESSO (VALIDAÇÕES DA ISSUE #11)
 # ==========================================
 
-### Listar todos os horários
+### Listar todos os agendamentos
 GET {{baseURL}}/schedules
 Accept: application/json
 
-### Listar horário com id específico
+### Listar agendamentos com id específico
 GET {{baseURL}}/schedules/1
 Accept: application/json
 
-### Listar todos os horários filtrados por profissional
+### Listar todos os agendamentos filtrados por data
+# FAZER?
+GET {{baseURL}}/schedules?date=2024-06-01
+Accept: application/json
+
+### Listar todos os agendamentos filtrados por data
+# FAZER?
+GET {{baseURL}}/schedules?start_date_hour="2024-06-01 10:00:00"
+Accept: application/json
+
+### Listar todos os agendamentos filtrados por usuário
+GET {{baseURL}}/schedules?status_id={{status_id}}
+Accept: application/json
+
+### Listar todos os agendamentos filtrados por usuário
+GET {{baseURL}}/schedules?user_id={{user_id}}
+Accept: application/json
+
+### Listar todos os agendamentos filtrados por serviço
+GET {{baseURL}}/schedules?service_id={{service_id}}
+Accept: application/json
+
+### Listar todos os agendamentos filtrados por profissional
 GET {{baseURL}}/schedules?professional_id={{professional_id}}
 Accept: application/json
 
-### Criar um novo horário com sucesso
+### Listar todos os agendamentos filtrados por profissional e status
+GET {{baseURL}}/schedules?professional_id={{professional_id}}&status_id={{status_id}}
+Accept: application/json
+
+### Listar todos os agendamentos filtrados por profissional e status e serviço
+GET {{baseURL}}/schedules?professional_id={{professional_id}}&status_id={{status_id}}&service_id={{service_id}}
+Accept: application/json
+
+### Criar um novo agendamento com sucesso
 POST {{baseURL}}/schedules
 Content-Type: application/json
 
 {
+    "user_id": 2,
     "professional_id": 2,
-    "weekday": 5,
-    "start_hour": "19:00:00",
-    "end_hour": "23:00:00"
+    "service_id": 1,
+    "start_date_hour": "2026-07-20 10:00:00",
+    "end_date_hour": "2026-07-20 11:30:00"
 }
 
-### Atualizar um horário existente (substitua @schedule_id)
+### Atualizar um agendamento existente (substitua @schedule_id)
 PUT {{baseURL}}/schedules/{{schedule_id}}
 Content-Type: application/json
 
 {
-    "professional_id": 2,
-    "weekday": 4,
-    "start_hour": "04:00:00",
-    "end_hour": "08:00:00"
+    "user_id": 3,
+    "professional_id": 3,
+    "service_id": 3,
+    "status_id": 3,
+    "start_date_hour": "2026-07-31 20:00:00",
+    "end_date_hour": "2026-07-31 21:30:00"
 }
 
-### Deletar um horário existente (substitua @schedule_id)
+### Deletar um agendamento existente (substitua @schedule_id)
 DELETE {{baseURL}}/schedules/{{schedule_id}}
 Accept: application/json
 
@@ -55,13 +91,13 @@ Accept: application/json
 # TESTES DE CRIAÇÃO (POST)
 # ------------------------------------------
 
-### [400 Bad Request] Criar serviço sem passá-lo
+### [400 Bad Request] Criar agendamento sem passá-lo
 POST {{baseURL}}/schedules
 Content-Type: application/json
 
 {}
 
-### [400 Bad Request] Criar serviço sem passar os campos obrigatórios
+### [400 Bad Request] Criar agendamento sem passar os campos obrigatórios
 POST {{baseURL}}/schedules
 Content-Type: application/json
 
@@ -69,50 +105,64 @@ Content-Type: application/json
     "campo_inexistente": ""
 }
 
-### [400 Bad Request] Criar serviço com id de profissional inválido (erro esperado)
-POST {{baseURL}}/schedules
-Content-Type: application/json
-
-{
-    "professional_id": "Samuel",
-    "weekday": 4,
-    "start_hour": "04:00:00",
-    "end_hour": "08:00:00"
-}
-
-### [404 Not Found] Criar serviço com id de profissional válido, mas inexistente (erro esperado)
-POST {{baseURL}}/schedules
-Content-Type: application/json
-
-{
-    "professional_id": 9999,
-    "weekday": 4,
-    "start_hour": "04:00:00",
-    "end_hour": "08:00:00"
-}
-
-### [400 Bad Request] Criar serviço com todos os campos inválidos (erro esperado)
+### [400 Bad Request] Criar agendamento com todos os campos inválidos (erro esperado)
+# FAZER: validação de status (conforme db)
 POST {{baseURL}}/schedules
 Content-Type: application/json
 
 {    
-    "professional_id": "Samuel",
-    "weekday": 7,
-    "start_hour": 4.30,
-    "end_hour": 8.00
+    "user_id": "Usuário",
+    "professional_id": "Profissional",
+    "service_id": "Serviço",
+    "status_id": "Status", 
+    "start_date_hour": "Data e hora de início",
+    "end_date_hour": "Data e hora de término"
 }
 
-### [409 Conflict] Criar serviço com name repetido (erro esperado)
-.. VERIFICAR
-    POST {{baseURL}}/schedules
-    Content-Type: application/json
-..
-.. {
-    "name": "Corte de Cabelo",
-    "area_id": 1,
-    "min_duration": 30,
-    "price": 50.00
-.. }
+### [404 Not Found] Criar agendamento com ids válidos, mas inexistentes (erro esperado)
+# FAZER (devolve um por vez)
+POST {{baseURL}}/schedules
+Content-Type: application/json
+
+{
+    "user_id": 9999,
+    "professional_id": 9999,
+    "service_id": 9999,
+    "status_id": 9999,
+    "start_date_hour": "2026-07-30 20:00:00",
+    "end_date_hour": "2026-07-30 21:30:00"
+}
+
+### [409 Conflict] Criar agendamento totalmente repetido (erro esperado)
+POST {{baseURL}}/schedules
+Content-Type: application/json
+
+{
+    "user_id": 3,
+    "professional_id": 3,
+    "service_id": 5,
+    "start_date_hour": "2027-06-08 16:00:00",
+    "end_date_hour": "2027-06-08 17:00:00"
+}
+
+### [409 Conflict] Criar agendamento com profissional e horário repetido (erro esperado)
+POST {{baseURL}}/schedules
+Content-Type: application/json
+
+{
+    "user_id": 2,
+    "professional_id": 3,
+    "service_id": 4,
+    "start_date_hour": "2027-06-08 16:00:00",
+    "end_date_hour": "2027-06-08 17:00:00"
+}
+
+
+# ------------------------------------------
+# VALIDAÇÕES DOS IDs
+# ------------------------------------------
+
+# FAZER: todas as validações de tipo
 
 # ------------------------------------------
 # TESTES DE ALTERAÇÃO (PUT)
@@ -123,10 +173,11 @@ PUT {{baseURL}}/schedules/9999
 Content-Type: application/json
 
 {
-    "professional_id": 2,
-    "weekday": 4,
-    "start_hour": "04:00:00",
-    "end_hour": "08:00:00"
+    "user_id": 3,
+    "professional_id": 1,
+    "service_id": 5,
+    "start_date_hour": "2027-06-08 16:00:00",
+    "end_date_hour": "2027-06-08 17:00:00"
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (string) (erro esperado)
@@ -134,10 +185,11 @@ PUT {{baseURL}}/schedules/texto
 Content-Type: application/json
 
 {
-    "professional_id": 2,
-    "weekday": 4,
-    "start_hour": "04:00:00",
-    "end_hour": "08:00:00"
+    "user_id": 3,
+    "professional_id": 3,
+    "service_id": 5,
+    "start_date_hour": "2027-06-08 16:00:00",
+    "end_date_hour": "2027-06-08 17:00:00"
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (0) (erro esperado)
@@ -145,10 +197,11 @@ PUT {{baseURL}}/schedules/0
 Content-Type: application/json
 
 {
-    "professional_id": 2,
-    "weekday": 4,
-    "start_hour": "04:00:00",
-    "end_hour": "08:00:00"
+    "user_id": 3,
+    "professional_id": 3,
+    "service_id": 5,
+    "start_date_hour": "2027-06-08 16:00:00",
+    "end_date_hour": "2027-06-08 17:00:00"
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (número decimal) (erro esperado)
@@ -156,10 +209,11 @@ PUT {{baseURL}}/schedules/0.5
 Content-Type: application/json
 
 {
-    "professional_id": 2,
-    "weekday": 4,
-    "start_hour": "04:00:00",
-    "end_hour": "08:00:00"
+    "user_id": 3,
+    "professional_id": 3,
+    "service_id": 5,
+    "start_date_hour": "2027-06-08 16:00:00",
+    "end_date_hour": "2027-06-08 17:00:00"
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (booleano) (erro esperado)
@@ -167,10 +221,11 @@ PUT {{baseURL}}/schedules/true
 Content-Type: application/json
 
 {
-    "professional_id": 2,
-    "weekday": 4,
-    "start_hour": "04:00:00",
-    "end_hour": "08:00:00"
+    "user_id": 3,
+    "professional_id": 3,
+    "service_id": 5,
+    "start_date_hour": "2027-06-08 16:00:00",
+    "end_date_hour": "2027-06-08 17:00:00"
 }
 
 ### [400 Bad Request] Atualizar serviço com id inválido (undefined) (erro esperado)
@@ -178,34 +233,49 @@ PUT {{baseURL}}/schedules/undefined
 Content-Type: application/json
 
 {
-    "professional_id": 2,
-    "weekday": 4,
-    "start_hour": "04:00:00",
-    "end_hour": "08:00:00"
+    "user_id": 3,
+    "professional_id": 3,
+    "service_id": 5,
+    "start_date_hour": "2027-06-08 16:00:00",
+    "end_date_hour": "2027-06-08 17:00:00"
 }
 
-### [400 Bad Request] Atualizar serviço com todos os campos inválidos (erro esperado)
+### [400 Bad Request] Atualizar agendamento com todos os campos inválidos (erro esperado)
 PUT {{baseURL}}/schedules/{{schedule_id}}
 Content-Type: application/json
 
 {
-    "professional_id": "Samuel",
-    "weekday": 7,
-    "start_hour": 4.30,
-    "end_hour": 8.00
+    "user_id": "Usuário",
+    "professional_id": "Profissional",
+    "service_id": "Serviço",
+    "status_id": "Status", 
+    "start_date_hour": "Data e hora de início",
+    "end_date_hour": "Data e hora de término"
 }
 
-### [400 Bad Request] Atualizar serviço com name repetido (erro esperado)
-.. VERIFICAR
-    PUT {{baseURL}}/schedules/{{schedule_id}}
-    Content-Type: application/json
+### [409 Conflict] Atualizar agendamento de modo totalmente conflitante (repetido) (erro esperado)
+PUT {{baseURL}}/schedules/{{schedule_id}}
+Content-Type: application/json
 
-.. {
-    "name": "Corte de Cabelo",
-    "area_id": 1,
-    "min_duration": 30,
-    "price": 50.00
-.. }
+{
+    "user_id": 3,
+    "professional_id": 3,
+    "service_id": 5,
+    "start_date_hour": "2027-06-08 16:00:00",
+    "end_date_hour": "2027-06-08 17:00:00"
+}
+
+### [409 Conflict] Atualizar agendamento com profissional e horário repetido (erro esperado)
+PUT {{baseURL}}/schedules/{{schedule_id}}
+Content-Type: application/json
+
+{
+    "user_id": 2,
+    "professional_id": 3,
+    "service_id": 4,
+    "start_date_hour": "2027-06-08 16:00:00",
+    "end_date_hour": "2027-06-08 17:00:00"
+}
 
 # ------------------------------------------
 # TESTES DE EXCLUSÃO (DELETE)
