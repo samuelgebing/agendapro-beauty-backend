@@ -242,6 +242,28 @@ class ScheduleService extends BaseService {
         const schedules = await this.model.findAllSchedules(professional_id);
         return schedules;
     }
+
+    updateStatus = async (id, data, resourceName = "Registro") => {
+        this.ValidateId.primaryKey(id, resourceName); // Valida o ID antes de buscar
+        // Verifica se o objeto schedule foi fornecido, caso contrário lança um erro
+        console.log(data);
+        if (
+            !data ||
+            Object.keys(data).length === 0
+        ) {
+            throw new this.ValidationError("Agendamento não fornecido.");
+        }
+
+        const { status_id } = data;
+
+        if (!status_id) throw new this.ValidationError("Status não fornecido para atualização.");
+
+        const item = await this.model.updateStatus(id, data);
+        if (!item || item === 0) 
+            throw new NotFoundError(`${resourceName} não encontrado para atualização.`);
+        
+        return item; 
+    }
 }
 
 module.exports = ScheduleService;

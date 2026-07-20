@@ -4,6 +4,7 @@ const BaseModel = require("./baseModel");
 const WorkingHoursModel = require('./workingHoursModel');
 const BlockedHoursModel = require('./blockedHoursModel');
 */
+const ScheduleStatusModel = require('./scheduleStatusModel');
 
 class ScheduleModel extends BaseModel {
     constructor() {
@@ -42,6 +43,31 @@ class ScheduleModel extends BaseModel {
         ]);
         
         return rows;              
+    }
+
+    updateStatus = async (id, data) => {
+        // Não verifica colunas obrigatórias, pois terá apenas status_id
+        const status = data.status_id;
+
+        // Se status_id não foi enviado para atualização, apenas retorna o registro atual
+        if (!status) return this.findById(id);
+
+        const cleanData = { status_id: status };
+        const keys = Object.keys(cleanData);
+
+        const setClause = keys.map(key => `${key} = ?`).join(', ');
+        const values = [...Object.values(cleanData), id]; // Junta os campos com o ID no final do array
+
+        const query = `UPDATE ${this.tableName} SET ${setClause} WHERE id = ?`;
+        const [result] = await this.db.execute(query, values);
+
+        // No MySQL2 nativo, usamos affectedRows para saber se o registro foi encontrado
+        if (result.affectedRows === 0) {
+            return null; 
+        }
+
+        // Retorna o objeto completo já atualizado buscando do banco
+        return this.findById(id);
     }
 
     /*

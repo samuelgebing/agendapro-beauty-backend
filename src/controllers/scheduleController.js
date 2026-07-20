@@ -8,6 +8,18 @@ class ScheduleController extends BaseController {
         // Passa o serviço específico e as mensagens personalizadas para o construtor pai (BaseController)
         super(ScheduleService, "Agendamento");
     }
+
+    updateStatus = async (req, res, next) => {
+        try {
+            const data = await this.service.updateStatus(req.params.id, req.body, this.resourceName);
+            return res.status(200).json({
+                message: this.messages.updateSuccess,
+                data
+            });
+        } catch (error) {
+            next(error); // Passa o erro para o middleware de tratamento de erros do Express
+        }
+    }
 }
 
 module.exports = new ScheduleController();

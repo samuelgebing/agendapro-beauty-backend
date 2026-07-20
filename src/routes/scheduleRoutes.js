@@ -7,5 +7,6 @@ const createBaseRouter = require('./baseRouter');
 const router = createBaseRouter(ScheduleController);
 
 // Adicionar rotas específicas, se necessário
+router.patch('/:id', ScheduleController.updateStatus);   // Editar apenas status (PATCH)
 
 module.exports = router;

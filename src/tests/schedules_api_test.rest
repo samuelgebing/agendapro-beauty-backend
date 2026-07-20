@@ -2,7 +2,7 @@
 # TESTES DO MÓDULO DE AGENDAMENTOS
 # ==========================================
 @baseURL = http://localhost:3000
-@schedule_id = 15
+@schedule_id = 16
 @professional_id = 2
 @status_id = 2
 @service_id = 3
@@ -30,7 +30,7 @@ Accept: application/json
 GET {{baseURL}}/schedules?start_date_hour="2024-06-01 10:00:00"
 Accept: application/json
 
-### Listar todos os agendamentos filtrados por usuário
+### Listar todos os agendamentos filtrados por status
 GET {{baseURL}}/schedules?status_id={{status_id}}
 Accept: application/json
 
@@ -82,6 +82,15 @@ Content-Type: application/json
 ### Deletar um agendamento existente (substitua @schedule_id)
 DELETE {{baseURL}}/schedules/{{schedule_id}}
 Accept: application/json
+
+### Atualizar apenas o status 
+### de um agendamento existente (substitua @status_id)
+PATCH {{baseURL}}/schedules/{{schedule_id}}
+Content-Type: application/json
+
+{
+    "status_id": {{status_id}}
+}
 
 # ==========================================
 # CENÁRIOS DE ERRO (VALIDAÇÕES DA ISSUE #11)
