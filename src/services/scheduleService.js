@@ -7,6 +7,9 @@ class ScheduleService extends BaseService {
     constructor() {
         super(ScheduleModel);
         this.durationMinutesSlots = 15; // Define opções de horário a cada 15 minutos
+
+        const TWO_HOURS_IN_MS = 2 * 60 * 60 * 1000;
+        this.timeBeforeCancellation = TWO_HOURS_IN_MS; 
     }
 
     // Evita o travamento circular ao carregar o ScheduleService
@@ -259,7 +262,7 @@ class ScheduleService extends BaseService {
         // Cancelados e Concluídos não podem ser editados
         // Pendente --> Confirmado --> Concluído/Cancelado
         // Pendente --> Cancelado
-        await this.checkCurrentStatus(id,status_id);
+        await this.validateNewStatus(id,status_id);
         const item = await this.model.updateStatus(id, status_id);
         if (!item || item === 0) 
             throw new NotFoundError(`${resourceName} não encontrado para atualização.`);
@@ -267,10 +270,11 @@ class ScheduleService extends BaseService {
         return item; 
     }
 
-    checkCurrentStatus = async (id, status) => {
+    validateNewStatus = async (id, status) => {
         const newStatus = Number(status);
         const schedule = await this.getById(id, this.resourceName);
         const currentStatus = Number(schedule.status_id);
+        console.log(schedule);
 
         if (currentStatus === newStatus)
             throw new this.ValidationError("O agendamento já possui o status informado.");
@@ -290,6 +294,18 @@ class ScheduleService extends BaseService {
                 if (newStatus === 3) // Concluído
                     throw new this.ValidationError("Agendamentos pendentes devem ser confirmados primeiro.");
                 break;
+        }
+
+        // Valida se ainda não ultrapassou o horário limite para cancelamento
+        if (newStatus === 4) {
+            const now = new Date();
+            const currentData = new Date (schedule.start_date_hour);
+            const limitDateToCancel = new Date(currentData.getTime() - this.timeBeforeCancellation);
+            if (now >= limitDateToCancel) {
+                // Converte os milissegundos de volta para horas legíveis apenas para a mensagem
+                const hoursText = this.timeBeforeCancellation / (1000 * 60 * 60);
+                throw new this.ValidationError(`Agendamentos só podem ser cancelados até ${hoursText} horas antes.`);
+            }
         }
         
         // Se estiver tudo certo, apenas continua        
