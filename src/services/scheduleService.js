@@ -96,8 +96,6 @@ class ScheduleService extends BaseService {
             throw new this.ValidationError("FALHA NA VALIDAÇÃO DO AGENDAMENTO: " + errors.join(" "));
         }
 
-        console.log(schedule);
-
         // Garante que o profissional e o serviço existem no sistema antes de agendar
         await this.professionalService.getById(schedule.professional_id, "Profissional");
         await this.serviceService.getById(schedule.service_id, "Serviço");
@@ -188,8 +186,8 @@ class ScheduleService extends BaseService {
             
             const schedulesList = Array.isArray(schedules) 
                 ? schedules 
-                : (schedules?.rows || schedules?.data || []);            console.log(schedulesList);
-            console.log(schedulesList);
+                : (schedules?.rows || schedules?.data || []);            
+                
             // .some() retorna true se encontrar QUALQUER agendamento que sobreponha este slot
             const isOccupied = schedulesList.some(sched => {
                 // Transforma para exibir ao usuário
@@ -246,7 +244,6 @@ class ScheduleService extends BaseService {
     updateStatus = async (id, data, resourceName = "Registro") => {
         this.ValidateId.primaryKey(id, resourceName); // Valida o ID antes de buscar
         // Verifica se o objeto schedule foi fornecido, caso contrário lança um erro
-        console.log(data);
         if (
             !data ||
             Object.keys(data).length === 0
@@ -256,13 +253,46 @@ class ScheduleService extends BaseService {
 
         const { status_id } = data;
 
-        if (!status_id) throw new this.ValidationError("Status não fornecido para atualização.");
+        if (!status_id) 
+            throw new this.ValidationError("Status não fornecido para atualização.");
 
-        const item = await this.model.updateStatus(id, data);
+        // Cancelados e Concluídos não podem ser editados
+        // Pendente --> Confirmado --> Concluído/Cancelado
+        // Pendente --> Cancelado
+        await this.checkCurrentStatus(id,status_id);
+        const item = await this.model.updateStatus(id, status_id);
         if (!item || item === 0) 
             throw new NotFoundError(`${resourceName} não encontrado para atualização.`);
         
         return item; 
+    }
+
+    checkCurrentStatus = async (id, status) => {
+        const newStatus = Number(status);
+        const schedule = await this.getById(id, this.resourceName);
+        const currentStatus = Number(schedule.status_id);
+
+        if (currentStatus === newStatus)
+            throw new this.ValidationError("O agendamento já possui o status informado.");
+
+        switch (currentStatus) {
+            // Não pode alterar
+            case 4: // Cancelado
+            case 3: // Concluído
+                throw new this.ValidationError("Não é permitido alterar o status de agendamentos cancelados ou concluídos.");
+            // Alteração não permitida
+            case 2: // Confirmado
+                if (newStatus === 1) // Pendente
+                    throw new this.ValidationError("Não é permitido alterar o status de agendamentos de 'confirmado' para 'pendente'.");
+                break;
+            // Alteração não permitida
+            case 1: // Pendente
+                if (newStatus === 3) // Concluído
+                    throw new this.ValidationError("Agendamentos pendentes devem ser confirmados primeiro.");
+                break;
+        }
+        
+        // Se estiver tudo certo, apenas continua        
     }
 }
 

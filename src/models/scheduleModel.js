@@ -45,9 +45,8 @@ class ScheduleModel extends BaseModel {
         return rows;              
     }
 
-    updateStatus = async (id, data) => {
+    updateStatus = async (id, status) => {
         // Não verifica colunas obrigatórias, pois terá apenas status_id
-        const status = data.status_id;
 
         // Se status_id não foi enviado para atualização, apenas retorna o registro atual
         if (!status) return this.findById(id);

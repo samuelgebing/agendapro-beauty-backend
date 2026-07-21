@@ -1,6 +1,14 @@
 USE agendapro_beauty;
 
 -- Inserting mock data
+INSERT INTO schedule_status (
+    name, description
+) VALUES 
+('Pendente', 'O agendamento ainda não foi confirmado.'),
+('Confirmado', 'O agendamento foi confirmado.'),
+('Concluído', 'O agendamento foi concluído.'),
+('Cancelado', 'O agendamento foi cancelado.');
+
 INSERT INTO schedules (
     user_id, professional_id, service_id, status_id, 
     start_date_hour, end_date_hour, created_at
