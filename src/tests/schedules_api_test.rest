@@ -92,6 +92,20 @@ Content-Type: application/json
     "status_id": {{status_id}}
 }
 
+### Reagendar horário (substitua @schedule_id)
+### 1) Alterar status de @schedule_id para cancelado
+### 2) Criar novo agendamento 
+PATCH {{baseURL}}/schedules/{{schedule_id}}/reschedule
+Content-Type: application/json
+
+{
+    "user_id": 3,
+    "professional_id": 3,
+    "service_id": 3,
+    "start_date_hour": "2026-09-28 20:00:00",
+    "end_date_hour": "2026-09-28 21:30:00"
+}
+
 # ==========================================
 # CENÁRIOS DE ERRO (VALIDAÇÕES DA ISSUE #11)
 # ==========================================

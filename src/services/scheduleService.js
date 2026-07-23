@@ -274,7 +274,6 @@ class ScheduleService extends BaseService {
         const newStatus = Number(status);
         const schedule = await this.getById(id, this.resourceName);
         const currentStatus = Number(schedule.status_id);
-        console.log(schedule);
 
         if (currentStatus === newStatus)
             throw new this.ValidationError("O agendamento já possui o status informado.");
@@ -298,17 +297,61 @@ class ScheduleService extends BaseService {
 
         // Valida se ainda não ultrapassou o horário limite para cancelamento
         if (newStatus === 4) {
-            const now = new Date();
-            const currentData = new Date (schedule.start_date_hour);
-            const limitDateToCancel = new Date(currentData.getTime() - this.timeBeforeCancellation);
-            if (now >= limitDateToCancel) {
-                // Converte os milissegundos de volta para horas legíveis apenas para a mensagem
+            if (!this._hasMinimumTimeAdvance(schedule.start_date_hour)) {
                 const hoursText = this.timeBeforeCancellation / (1000 * 60 * 60);
                 throw new this.ValidationError(`Agendamentos só podem ser cancelados até ${hoursText} horas antes.`);
             }
         }
         
         // Se estiver tudo certo, apenas continua        
+    }
+
+    async reschedule(id, data, resourceName = "Registro") {
+        // 1º) Valida tudo
+        this.ValidateId.primaryKey(id, resourceName); // Valida o ID antes de buscar
+        // informações obrigatórias
+        const { start_date_hour, end_date_hour } = data;
+        if (!start_date_hour || !end_date_hour) 
+            throw new this.ValidationError("Data e hora do novo agendamento são obrigatórios.");
+
+        // 2º) Validações obrigatórias antes das mudanças
+        if (!this._hasMinimumTimeAdvance(start_date_hour)) {
+            const hoursText = this.timeBeforeCancellation / (1000 * 60 * 60);
+            throw new this.ValidationError(`Novos agendamentos devem ser criados com no mínimo ${hoursText} horas de antecedência.`);
+        }
+
+        // 3º) Cria o novo agendamento
+        if (!data.status_id) data.status_id = 1; // define o status
+        const item = await this.create(data); // cria o novo agendamento
+        if (!item || item === 0) 
+            throw new NotFoundError(`Não foi possível criar o novo horário para ${resourceName}.`);
+        
+        // 4º) Cancela o agendamento anterior
+        try {
+            // updateStatus invocará automaticamente validateNewStatus, garantindo a idempotência
+            await this.updateStatus(id, { status_id: 4 }, resourceName); 
+        } catch (error) {
+            // Fallback defensivo: Se a atualização falhar ou violar as regras do agendamento antigo,
+            // desfaz a criação do novo para não gerar duplicidade ou dados órfãos.
+            if (item.id) {
+                await this.delete(item.id); // Ajuste para o seu método de exclusão (ex: this.model.destroy)
+            }
+            throw error; // Repassa o erro original (ex: "Não é permitido alterar o status...")
+        }
+
+        return item; 
+
+    }
+
+    _hasMinimumTimeAdvance(targetDate) {
+        const target = new Date(targetDate);
+        const now = new Date();
+        
+        // Calcula a diferença absoluta em milissegundos entre as duas datas
+        const differenceInMs = Math.abs(target.getTime() - now.getTime());
+        
+        // Retorna true se a distância for maior ou igual ao tempo mínimo exigido
+        return differenceInMs >= this.timeBeforeCancellation;
     }
 }
 
