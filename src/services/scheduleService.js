@@ -7,6 +7,9 @@ class ScheduleService extends BaseService {
     constructor() {
         super(ScheduleModel);
         this.durationMinutesSlots = 15; // Define opções de horário a cada 15 minutos
+
+        const TWO_HOURS_IN_MS = 2 * 60 * 60 * 1000;
+        this.timeBeforeCancellation = TWO_HOURS_IN_MS; 
     }
 
     // Evita o travamento circular ao carregar o ScheduleService
@@ -95,8 +98,6 @@ class ScheduleService extends BaseService {
         if (errors.length > 0) {
             throw new this.ValidationError("FALHA NA VALIDAÇÃO DO AGENDAMENTO: " + errors.join(" "));
         }
-
-        console.log(schedule);
 
         // Garante que o profissional e o serviço existem no sistema antes de agendar
         await this.professionalService.getById(schedule.professional_id, "Profissional");
@@ -188,8 +189,8 @@ class ScheduleService extends BaseService {
             
             const schedulesList = Array.isArray(schedules) 
                 ? schedules 
-                : (schedules?.rows || schedules?.data || []);            console.log(schedulesList);
-            console.log(schedulesList);
+                : (schedules?.rows || schedules?.data || []);            
+                
             // .some() retorna true se encontrar QUALQUER agendamento que sobreponha este slot
             const isOccupied = schedulesList.some(sched => {
                 // Transforma para exibir ao usuário
@@ -241,6 +242,116 @@ class ScheduleService extends BaseService {
         this.ValidateId.primaryKey(professional_id, "Profissional"); // Valida o ID antes de buscar
         const schedules = await this.model.findAllSchedules(professional_id);
         return schedules;
+    }
+
+    updateStatus = async (id, data, resourceName = "Registro") => {
+        this.ValidateId.primaryKey(id, resourceName); // Valida o ID antes de buscar
+        // Verifica se o objeto schedule foi fornecido, caso contrário lança um erro
+        if (
+            !data ||
+            Object.keys(data).length === 0
+        ) {
+            throw new this.ValidationError("Agendamento não fornecido.");
+        }
+
+        const { status_id } = data;
+
+        if (!status_id) 
+            throw new this.ValidationError("Status não fornecido para atualização.");
+
+        // Cancelados e Concluídos não podem ser editados
+        // Pendente --> Confirmado --> Concluído/Cancelado
+        // Pendente --> Cancelado
+        await this.validateNewStatus(id,status_id);
+        const item = await this.model.updateStatus(id, status_id);
+        if (!item || item === 0) 
+            throw new NotFoundError(`${resourceName} não encontrado para atualização.`);
+        
+        return item; 
+    }
+
+    validateNewStatus = async (id, status) => {
+        const newStatus = Number(status);
+        const schedule = await this.getById(id, this.resourceName);
+        const currentStatus = Number(schedule.status_id);
+
+        if (currentStatus === newStatus)
+            throw new this.ValidationError("O agendamento já possui o status informado.");
+
+        switch (currentStatus) {
+            // Não pode alterar
+            case 4: // Cancelado
+            case 3: // Concluído
+                throw new this.ValidationError("Não é permitido alterar o status de agendamentos cancelados ou concluídos.");
+            // Alteração não permitida
+            case 2: // Confirmado
+                if (newStatus === 1) // Pendente
+                    throw new this.ValidationError("Não é permitido alterar o status de agendamentos de 'confirmado' para 'pendente'.");
+                break;
+            // Alteração não permitida
+            case 1: // Pendente
+                if (newStatus === 3) // Concluído
+                    throw new this.ValidationError("Agendamentos pendentes devem ser confirmados primeiro.");
+                break;
+        }
+
+        // Valida se ainda não ultrapassou o horário limite para cancelamento
+        if (newStatus === 4) {
+            if (!this._hasMinimumTimeAdvance(schedule.start_date_hour)) {
+                const hoursText = this.timeBeforeCancellation / (1000 * 60 * 60);
+                throw new this.ValidationError(`Agendamentos só podem ser cancelados até ${hoursText} horas antes.`);
+            }
+        }
+        
+        // Se estiver tudo certo, apenas continua        
+    }
+
+    async reschedule(id, data, resourceName = "Registro") {
+        // 1º) Valida tudo
+        this.ValidateId.primaryKey(id, resourceName); // Valida o ID antes de buscar
+        // informações obrigatórias
+        const { start_date_hour, end_date_hour } = data;
+        if (!start_date_hour || !end_date_hour) 
+            throw new this.ValidationError("Data e hora do novo agendamento são obrigatórios.");
+
+        // 2º) Validações obrigatórias antes das mudanças
+        if (!this._hasMinimumTimeAdvance(start_date_hour)) {
+            const hoursText = this.timeBeforeCancellation / (1000 * 60 * 60);
+            throw new this.ValidationError(`Novos agendamentos devem ser criados com no mínimo ${hoursText} horas de antecedência.`);
+        }
+
+        // 3º) Cria o novo agendamento
+        if (!data.status_id) data.status_id = 1; // define o status
+        const item = await this.create(data); // cria o novo agendamento
+        if (!item || item === 0) 
+            throw new NotFoundError(`Não foi possível criar o novo horário para ${resourceName}.`);
+        
+        // 4º) Cancela o agendamento anterior
+        try {
+            // updateStatus invocará automaticamente validateNewStatus, garantindo a idempotência
+            await this.updateStatus(id, { status_id: 4 }, resourceName); 
+        } catch (error) {
+            // Fallback defensivo: Se a atualização falhar ou violar as regras do agendamento antigo,
+            // desfaz a criação do novo para não gerar duplicidade ou dados órfãos.
+            if (item.id) {
+                await this.delete(item.id); // Ajuste para o seu método de exclusão (ex: this.model.destroy)
+            }
+            throw error; // Repassa o erro original (ex: "Não é permitido alterar o status...")
+        }
+
+        return item; 
+
+    }
+
+    _hasMinimumTimeAdvance(targetDate) {
+        const target = new Date(targetDate);
+        const now = new Date();
+        
+        // Calcula a diferença absoluta em milissegundos entre as duas datas
+        const differenceInMs = Math.abs(target.getTime() - now.getTime());
+        
+        // Retorna true se a distância for maior ou igual ao tempo mínimo exigido
+        return differenceInMs >= this.timeBeforeCancellation;
     }
 }
 

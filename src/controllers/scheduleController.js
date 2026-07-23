@@ -6,7 +6,34 @@ const ScheduleService = require('../services/scheduleService');
 class ScheduleController extends BaseController {
     constructor() {
         // Passa o serviço específico e as mensagens personalizadas para o construtor pai (BaseController)
-        super(ScheduleService, "Agendamento");
+        super(ScheduleService, "Agendamento", {
+            statusUpdateSuccess: `Status de Agendamento atualizado com sucesso.`,
+            rescheduleSuccess: `Horário reagendado com sucesso.`
+        });
+    }
+
+    updateStatus = async (req, res, next) => {
+        try {
+            const data = await this.service.updateStatus(req.params.id, req.body, this.resourceName);
+            return res.status(200).json({
+                message: this.messages.statusUpdateSuccess,
+                data
+            });
+        } catch (error) {
+            next(error); // Passa o erro para o middleware de tratamento de erros do Express
+        }
+    }
+
+    reschedule = async (req, res, next) => {
+        try {
+            const data = await this.service.reschedule(req.params.id, req.body, this.resourceName);
+            return res.status(200).json({
+                message: this.messages.rescheduleSuccess,
+                data
+            });
+        } catch (error) {
+            next(error); // Passa o erro para o middleware de tratamento de erros do Express
+        }
     }
 }
 
