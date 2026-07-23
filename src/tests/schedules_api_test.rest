@@ -4,7 +4,7 @@
 @baseURL = http://localhost:3000
 @schedule_id = 16
 @professional_id = 2
-@status_id = 4
+@status_id = 2
 @service_id = 3
 @user_id = 1
 
@@ -52,6 +52,18 @@ Accept: application/json
 
 ### Listar todos os agendamentos filtrados por profissional e status e serviço
 GET {{baseURL}}/schedules?professional_id={{professional_id}}&status_id={{status_id}}&service_id={{service_id}}
+Accept: application/json
+
+### Listar todos os agendamentos filtrados por usuário
+GET {{baseURL}}/schedules?user_id={{user_id}}
+Accept: application/json
+
+### Listar todos os agendamentos filtrados por usuário e status
+GET {{baseURL}}/schedules?user_id={{user_id}}&status_id={{status_id}}
+Accept: application/json
+
+### Listar todos os agendamentos filtrados por usuário e status e serviço
+GET {{baseURL}}/schedules?user_id={{user_id}}&status_id={{status_id}}&service_id={{service_id}}
 Accept: application/json
 
 ### Criar um novo agendamento com sucesso
