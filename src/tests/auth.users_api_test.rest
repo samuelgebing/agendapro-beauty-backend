@@ -1,0 +1,135 @@
+@baseURL = http://localhost:3000
+@id_do_usuario = 5
+
+### Substituir conforme o usuário desejado (muda a cada login)
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGlmcnMuZWR1LmJyIiwicm9sZSI6MywiaWF0IjoxNzgxNDE3NTU4LCJleHAiOjE3ODE0MjExNTh9.PUB7Cc2p125bTne5BeuxzNww-cb-U_VlOHy2bJcLZ6o
+
+### Listar todos os usuários
+GET {{baseURL}}/users
+Accept: application/json
+
+### Criar um novo usuário
+POST {{baseURL}}/users
+Content-Type: application/json
+
+{
+    "nome": "Carlos Almeida",
+    "email": "carlos@example.com",
+    "senha_hash": "hashed_password",
+    "perfil_id": 1
+}
+
+### Criar usuário com email inválido (erro esperado)
+POST {{baseURL}}/users
+Content-Type: application/json
+
+{
+    "nome": "Teste Email Invalido",
+    "email": "email_invalido",
+    "senha_hash": "hashed_password",
+    "perfil_id": 1
+}
+
+### Criar usuário com email repetido (erro esperado)
+POST {{baseURL}}/users
+Content-Type: application/json
+
+{
+    "nome": "Carlos Almeida",
+    "email": "carlos@example.com",
+    "senha_hash": "hashed_password",
+    "perfil_id": 1
+}
+
+### Atualizar um usuário existente (substitua @id_do_usuario)
+PUT {{baseURL}}/users/{{id_do_usuario}}
+Content-Type: application/json
+
+{
+    "nome": "Carlos de Almeida Atualizado",
+    "email": "carlosatualizado@example.com",
+    "senha_hash": "updated_hashed_password",
+    "perfil_id": 1
+}
+
+### Atualizar usuário inexistente (erro esperado)
+PUT {{baseURL}}/users/9999
+Content-Type: application/json
+
+{
+    "nome": "Usuario Inexistente",
+    "email": "inexistente@example.com",
+    "senha_hash": "hashed_password",
+    "perfil_id": 1
+}
+
+### Deletar um usuário existente (substitua @id_do_usuario)
+DELETE {{baseURL}}/users/{{id_do_usuario}}
+Accept: application/json
+
+### Deletar um usuário inexistente (erro esperado)
+DELETE {{baseURL}}/users/9999
+Accept: application/json
+
+
+
+### Rota pública (acesso livre)
+GET {{baseURL}}/public/home
+Content-Type: application/json
+
+### Cadastro de novo usuário comum
+POST {{baseURL}}/auth/create
+Content-Type: application/json
+
+{
+    "nome": "Novo Usuário",
+    "email": "novo@ifrs.edu.br",
+    "senha_hash": "senha123",
+    "perfil_id": 1
+}
+
+### Cadastro de novo admin
+POST {{baseURL}}/auth/create
+Content-Type: application/json
+
+{
+    "nome": "Novo Admin",
+    "email": "admin@ifrs.edu.br",
+    "senha_hash": "senha456",
+    "perfil_id": 3
+}
+
+### Login do novo usuário (pegar o token gerado abaixo)
+POST {{baseURL}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "novo@ifrs.edu.br",
+    "senha_hash": "senha123"
+}
+
+### Login do usuário comum (usuário já existente no banco) - não funciona, pois não foi encriptado
+POST {{baseURL}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "joao@example.com",
+    "senha_hash": "$2b$10$example_hash_1"
+}
+
+### Login do administrador
+POST {{baseURL}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@ifrs.edu.br",
+    "senha_hash": "senha456"
+}
+
+### Acesso ao painel (rota protegida, requer token de qualquer usuário autenticado)
+GET {{baseURL}}/protected/dashboard
+Authorization: Bearer {{token}}
+
+### Acesso à área admin (rota protegida, requer token de usuário com role "admin")
+GET {{baseURL}}/protected/admin
+Authorization: Bearer {{token}}
