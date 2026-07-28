@@ -51,6 +51,21 @@ function errorMiddleware(err, req, res, next) {
         console.error(`\n🔥 [${req.method}] ${req.url} - Error Stack:`, err.stack, '\n');
         errorResponse.stack = err.stack; 
         errorResponse.rawError = err; // Mostra propriedades extras (ex: o .code do mysql)
+
+        // Se existir uma causa original (o erro do banco), anexa ela detalhadamente no JSON de dev
+
+        if (err.cause) {
+            errorResponse.rawError = {
+                message: err.cause.message,
+                code: err.code || err.cause.code,
+                errno: err.errno || err.cause.errno,
+                sqlMessage: err.sqlMessage || err.cause.sqlMessage,
+                sql: err.sql || err.cause.sql,
+                dbStack: err.cause.stack // O stack original do baseModel.js fica guardado aqui de forma limpa
+            };
+        } else {
+            errorResponse.rawError = err;
+        }
     } else {
         // Em produção, faz o log silencioso e limpo para o administrador
         console.error(`🚨 [ERROR_LOG] [${new Date().toISOString()}] [${req.method}] ${req.url} - ${errorMessage}`);
