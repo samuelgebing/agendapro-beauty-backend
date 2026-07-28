@@ -2,7 +2,7 @@
 # TESTES (EXTRA) DO MÓDULO DE USUÁRIOS (ISSUE #10)
 # ==========================================
 @baseURL = http://localhost:3000
-@user_id = 6
+@user_id = 12
 
 # ==========================================
 # CENÁRIOS DE SUCESSO (VALIDAÇÕES DA ISSUE #10)
@@ -21,9 +21,9 @@ POST {{baseURL}}/users
 Content-Type: application/json
 
 {
-    "name": "Carlos Almeida",
-    "email": "carlos@example.com",
-    "password_hash": "hashed_password",
+    "name": "Teste Silva",
+    "email": "testesilva@example.com",
+    "password_hash": "senha_hash_silva",
     "role_id": 1
 }
 
@@ -32,9 +32,9 @@ PUT {{baseURL}}/users/{{user_id}}
 Content-Type: application/json
 
 {
-    "name": "Carlos de Almeida Atualizado",
-    "email": "carlosatualizado@example.com",
-    "password_hash": "updated_hashed_password",
+    "name": "Teste de Almeida Atualizado 2",
+    "email": "testeatualizado@example.com",
+    "password_hash": "senha_hash_4",
     "role_id": 1
 }
 
