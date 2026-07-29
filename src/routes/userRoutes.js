@@ -6,6 +6,7 @@ const createBaseRouter = require('./baseRouter');
 // Cria o roteador com todo o CRUD padrão já embutido
 const router = createBaseRouter(UserController);
 
+router.post('/login', UserController.login);   // Editar apenas status (PATCH)
 // Adicionar rotas específicas, se necessário
 
 module.exports = router;

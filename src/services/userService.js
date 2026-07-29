@@ -115,6 +115,35 @@ class UserService extends BaseService {
         
         return item; 
     }
+    
+    // Método para autenticar o usuário e gerar token JWT
+    login = async (data, resourceName = "Registro") => {
+        const { email, password_hash } = data;
+
+        // Busca o usuário pelo e-mail
+        const [user] = await this.model.findByEmail(email);
+        if (!user) {
+            throw new this.NotFoundError(`${resourceName} não encontrado`);
+        }
+
+        // Verifica se a senha fornecida é válida
+        const valid = await bcrypt.compare(password_hash, user.password_hash);
+        if (!valid) {
+            throw new this.ValidationError(`${resourceName} com senha inválida`);
+        }
+
+        // Gera o token JWT
+        const token = jwt.sign(
+            { email: user.email, role: user.role_id },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        // APENAS VALIDAR AS ROTAS - middleware
+        
+        // Retorna o token e o usuário para o controller
+        return { token, user: { email: user.email, role_id: user.role_id } };
+    }
 }
 
 module.exports = UserService;

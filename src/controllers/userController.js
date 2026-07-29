@@ -7,7 +7,9 @@ const { ConflictError } = require('../utils/appErrors');
 class UserController extends BaseController {
     constructor() {
         // Passa o serviço específico e as mensagens personalizadas para o construtor pai (BaseController)
-        super(UserService, "Usuário");
+        super(UserService, "Usuário", {
+            loginSuccess: "Login realizado com sucesso"
+        });
     }
 
     update = async (req, res, next) => {
@@ -30,6 +32,18 @@ class UserController extends BaseController {
                 }
             }
 
+            next(error); // Passa o erro para o middleware de tratamento de erros do Express
+        }
+    }
+
+    login = async (req, res, next) => {
+        try {
+            const data = await this.service.login(req.body, this.resourceName);
+            return res.status(200).json({
+                message: this.messages.loginSuccess,
+                data
+            });
+        } catch (error) {
             next(error); // Passa o erro para o middleware de tratamento de erros do Express
         }
     }
