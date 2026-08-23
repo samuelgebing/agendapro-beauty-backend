@@ -1,0 +1,14 @@
+- impedir novos cadastros de consulta com profissionais não ativos
+- crud de especialidades
+- crud de papeis
+- exclusão apenas de si mesmo se não for admin
+- criação de usuários apenas por visitantes ou admins
+- uso do ownershipMiddleware
+- listar agendamentos por data
+- funcionamento do papel 0 - visitante
+- criação do profissional - atualmente precisa criar o usuário e o profissional, inclusive repetindo o nome...
+- validar criação de profissionais (principalmente quanto ao login)
+- vincular usuário e profissional
+
+- validações de erro nas rotas
+- verificar tópicos faltantes nos arquivos "full_..."

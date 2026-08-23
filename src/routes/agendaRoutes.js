@@ -3,12 +3,20 @@ const router = express.Router(); // Cria um roteador limpo para ter controle da 
 const AgendaController = require('../controllers/agendaController');
 const createBaseRouter = require('./baseRouter');
 
-// 1. REGISTRA A ROTA ESPECÍFICA PRIMEIRO (Alta prioridade)
+// REGISTRA A ROTA ESPECÍFICA PRIMEIRO (Alta prioridade)
 // Isso impede que a palavra "available" seja capturada pelo parâmetro dinâmico ":id"
 router.get('/available', AgendaController.getAgenda);
 
-// 2. EXTRAI E COPIA AS ROTAS DO CRUD PADRÃO PARA O NOSSO ROTEADOR
-const baseRouter = createBaseRouter(AgendaController);
+// EXTRAI E COPIA AS ROTAS DO CRUD PADRÃO PARA O ROUTER
+const baseRouter = createBaseRouter(AgendaController, {
+    // getAgenda: [] --> é livre
+    // getClientAgenda --> FAZER
+    // getProfessionalAgenda --> Fazer
+    getAll: [3], // Apenas admins podem ver tudo
+    getById: [3], // Apenas admins podem ver detalhes de um agendamento específico
+
+    // Não possui rotas CUD - create, update e delete é em scheduleRoutes
+});
 router.use('/', baseRouter); 
 
 module.exports = router;

@@ -1,7 +1,6 @@
 # ==========================================
 # TESTES DO MÓDULO DE AGENDA
 # ==========================================
-@baseURL = http://localhost:3000
 @service_id = 1
 @professional_id = 1
 
@@ -11,11 +10,11 @@
 
 ### Listar todos os agendamentos
 GET {{baseURL}}/agenda
-Accept: application/json
+Authorization: Bearer {{token}}
 
 ### Listar todos os agendamentos de um profissional
 GET {{baseURL}}/agenda?professional_id={{professional_id}}
-Accept: application/json
+Authorization: Bearer {{token}}
 
 ### Listar todos os agendamentos de um profissional
 GET {{baseURL}}/agenda?service_id={{service_id}}

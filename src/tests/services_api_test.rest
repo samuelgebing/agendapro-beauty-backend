@@ -1,7 +1,6 @@
 # ==========================================
 # TESTES DO MÓDULO DE SERVIÇOS
 # ==========================================
-@baseURL = http://localhost:3000
 @service_id = 9
 @area_service_id = 1
 

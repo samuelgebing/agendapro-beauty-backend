@@ -1,0 +1,12 @@
+{
+    "rest-client.environmentVariables": {
+        "$shared": {
+            "baseURL": "http://localhost:3000",
+            "token_admin": "Cole o token gerado aqui após rodar users_api_test.rest",
+            "token_profissional": "Cole o token gerado aqui após rodar users_api_test.rest",
+            "token_cliente": "Cole o token gerado aqui após rodar users_api_test.rest"
+            , "token": "Comente esta linha ou cole o token desejado dentre as opções acima"
+            // OBS: "," na linha acima é para facilitar o comentário
+        }
+    }
+}

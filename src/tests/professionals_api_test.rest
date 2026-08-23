@@ -1,7 +1,6 @@
 # ==========================================
 # TESTES DO MÓDULO DE SERVIÇOS (ISSUE #10)
 # ==========================================
-@baseURL = http://localhost:3000
 @professional_id_1 = 13
 @professional_id_2 = 14
 @speciality_id = 1

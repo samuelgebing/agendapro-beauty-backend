@@ -116,7 +116,68 @@ class AgendaService extends ScheduleService {
 
         return finalAgenda;
     }
+
+    // TESTAR
+    async getClientAgenda(client_id, filters = {}) {
+        this.ValidateId.primaryKey(client_id, "Cliente");
+        const { service_id, professional_id, date } = filters;
+
+        // Parâmetros opcionais (cliente pode querer ver todos os agendamentos de todos os serviços)
+        if (service_id) this.ValidateId.primaryKey(service_id, "Serviço");
+        if (professional_id) this.ValidateId.primaryKey(professional_id, "Profissional"); 
+
+        const user_id = { client_id }; // Adapta para os padrões do banco
+
+        let clientSchedules;
+        if (date) {
+            this.ValidateTime.isInvalid(date);
+            // Garante que a string final seja exatamente "2024-06-04"
+            const formattedDate = date.trim(); 
+        
+            clientSchedules = await this.model.findConflicts(
+                user_id, 
+                `${formattedDate} 00:00:00`,
+                `${formattedDate} 23:59:59`
+            );
+        } else {
+            clientSchedules = await this.model.findAllSchedules(user_id);
+        }
+
+    // IMPRIME O RETORNO BRUTO DO BANCO DE DADOS
+    console.log("Retorno Bruto do Banco:", clientSchedules);
+    console.log("=============================");
+
+        const rawList = Array.isArray(clientSchedules) 
+            ? clientSchedules 
+            : (clientSchedules?.rows || clientSchedules?.data || []);
+
+        const formattedList = rawList.map(item => {
+            // Garante a leitura de dados puros caso venha encapsulado pelo Sequelize
+            const sched = typeof item.toJSON === 'function' ? item.toJSON() : (item.dataValues || item);
+            
+            return {
+                ...sched,
+                // Transforma: "2024-06-04T17:00:00.000Z" --> "2024-06-04 14:00:00"
+                start_date_hour: this.ValidateTime.convert(new Date(sched.start_date_hour), 'datetime'),
+                end_date_hour: this.ValidateTime.convert(new Date(sched.end_date_hour), 'datetime'),
+                created_at: sched.created_at ? this.ValidateTime.convert(new Date(sched.created_at), 'datetime') : null
+            };
+        });
+
+        console.log("Retorno Formatado Local:", formattedList);
+        console.log("=============================");
+
+        return {
+            // Retorna a lista com as strings já convertidas
+            clientSchedules: formattedList
+        };
+
+        this.ValidateId.primaryKey(user_id, "Cliente"); // Valida o ID antes de buscar
+        const schedules = await this.model.findAllSchedules(user_id);
+        return schedules;
+    }
     
+    // TESTAR
     // Voltado para o profissional --> mostra detalhes dos agendamentos
     async getProfessionalAgenda(professional_id, date = null) {
         this.ValidateId.isInvalid(professional_id, "Profissional");

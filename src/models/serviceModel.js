@@ -12,7 +12,7 @@ class ServiceModel extends BaseModel {
     // Busca um serviço pela área do salão
     async findByAreaId(area_id) {
         // console.log(SELECT s.id, s.area_id, s.name, s.min_duration, s.price FROM services s, areas a WHERE a.id = ? AND s.area_id = a.id);
-        const rows = await this.findAll({'speciality_id' : speciality_id});
+        const rows = await this.findAll({'area_id' : area_id});
         return rows || [];
     }
 

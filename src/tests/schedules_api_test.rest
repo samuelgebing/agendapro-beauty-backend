@@ -1,8 +1,7 @@
 # ==========================================
 # TESTES DO MÓDULO DE AGENDAMENTOS
 # ==========================================
-@baseURL = http://localhost:3000
-@schedule_id = 16
+@schedule_id = 23
 @professional_id = 2
 @status_id = 2
 @service_id = 3
@@ -17,7 +16,7 @@ GET {{baseURL}}/schedules
 Accept: application/json
 
 ### Listar agendamentos com id específico
-GET {{baseURL}}/schedules/1
+GET {{baseURL}}/schedules/{{schedule_id}}
 Accept: application/json
 
 ### Listar todos os agendamentos filtrados por data
@@ -74,8 +73,8 @@ Content-Type: application/json
     "user_id": 2,
     "professional_id": 2,
     "service_id": 1,
-    "start_date_hour": "2026-07-20 10:00:00",
-    "end_date_hour": "2026-07-20 11:30:00"
+    "start_date_hour": "2027-07-20 10:00:00",
+    "end_date_hour": "2027-07-20 11:30:00"
 }
 
 ### Atualizar um agendamento existente (substitua @schedule_id)
@@ -164,8 +163,8 @@ Content-Type: application/json
     "professional_id": 9999,
     "service_id": 9999,
     "status_id": 9999,
-    "start_date_hour": "2026-07-30 20:00:00",
-    "end_date_hour": "2026-07-30 21:30:00"
+    "start_date_hour": "2027-07-30 20:00:00",
+    "end_date_hour": "2027-07-30 21:30:00"
 }
 
 ### [409 Conflict] Criar agendamento totalmente repetido (erro esperado)
