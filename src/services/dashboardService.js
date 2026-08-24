@@ -86,13 +86,20 @@ class DashboardService extends BaseService {
             schedulesByClient = await this.model.countSchedulesByClient();
         }
 
-        // Total por período (com/sem id)
-        if (filters.start && filters.end) {
-            schedulesByDateRange = await this.model.countSchedulesByDateRange(filters.start, filters.end);
-        } else {
-            schedulesByDateRange = await this.model.countSchedulesByDateRange();
-        }
+        // Total por período (com/sem data)
+        let start = filters.start ? filters.start : '1900/01/01 00:00:00';
+        let end = filters.end ? filters.end : `${new Date().getFullYear() + 100}/12/31`;
 
+        // Se o usuário passou datas personalizadas, garante que usem hífens ou barras corretas para o SQL
+        start = start.replace(/-/g, '/');
+        end = end.replace(/-/g, '/');
+
+        // Adiciona os horários limite apenas se eles já não estiverem inclusos na string
+        if (!start.includes(':')) start = `${start} 00:00:00`;
+        if (!end.includes(':')) end = `${end} 23:59:59`;
+        
+        schedulesByDateRange = await this.model.countSchedulesByDateRange(start, end);
+        
         return {
             total_agendamentos: allSchedules,
             agendamentos_por_profissional: schedulesByProfessional,

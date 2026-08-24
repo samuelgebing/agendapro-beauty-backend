@@ -11,3 +11,23 @@ Content-Type: application/json
 ### Listar todos os agendamentos
 GET {{baseURL}}/dashboard
 Authorization: Bearer {{login.response.body.data.token}}
+
+### Listar todos os agendamentos
+GET {{baseURL}}/dashboard?professional_id=1
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Listar todos os agendamentos
+GET {{baseURL}}/dashboard?professional_id=1&status_id=2
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Listar todos os agendamentos
+GET {{baseURL}}/dashboard?professional_id=1&status_id=2&user_id=3
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Listar todos os agendamentos
+GET {{baseURL}}/dashboard?professional_id=1&status_id=2&user_id=3&start=2025-01-01
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Listar todos os agendamentos
+GET {{baseURL}}/dashboard?professional_id=1&status_id=2&user_id=3&start=2025-01-01&end=2026-10-01
+Authorization: Bearer {{login.response.body.data.token}}

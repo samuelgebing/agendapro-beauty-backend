@@ -71,24 +71,19 @@ class DashboardModel extends BaseModel {
         }
     }
 
-    async countSchedulesByDateRange(startDate = null, endDate = null) {
-        if (!startDate || !endDate) {
-            const [rows] = await db.execute(
-                `SELECT DATE_FORMAT(start_date_hour, '%Y-%m') AS periodo, COUNT(*) AS quantidade 
-                 FROM schedules
-                 GROUP BY periodo
-                 ORDER BY periodo DESC`
-            );
-            return rows; // Retorna agrupado por mês se não informar período
-        } else {
-            const [rows] = await db.execute(
-                `SELECT COUNT(*) AS quantidade 
-                FROM schedules 
-                WHERE start_date_hour BETWEEN ? AND ?`,
-                [startDate, endDate]
-            );
-        }
-        return rows[0]?.quantidade || 0; // Retorna diretamente o número
+    async countSchedulesByDateRange(startDate, endDate) {
+        let query = `SELECT DATE_FORMAT(start_date_hour, '%Y-%m') AS periodo, COUNT(*) AS quantidade 
+            FROM schedules
+            WHERE start_date_hour BETWEEN ? AND ?
+                GROUP BY periodo
+                ORDER BY periodo DESC`
+
+        console.log(query);
+
+        const [rows] = await db.execute(query, [startDate, endDate]);            
+        console.log('start:', startDate);
+        console.log('end:', endDate);
+        return rows; // Retorna diretamente o número
     }
 }
 
