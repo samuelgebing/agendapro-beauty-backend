@@ -1,14 +1,31 @@
-- impedir novos cadastros de consulta com profissionais não ativos
-- crud de especialidades
+- listar / busca de agendamentos por data
 - crud de papeis
-- exclusão apenas de si mesmo se não for admin
-- criação de usuários apenas por visitantes ou admins
-- uso do ownershipMiddleware
-- listar agendamentos por data
+- crud de especialidades
+- permitir que profissionais vejam APENAS seus horários de trabalho (OBS: busca por professional_id já funciona em blocks e works)
+
 - funcionamento do papel 0 - visitante
-- criação do profissional - atualmente precisa criar o usuário e o profissional, inclusive repetindo o nome...
-- validar criação de profissionais (principalmente quanto ao login)
+- restrições para profissionais inativos:
+  - impedir novas interações e cadastros de agendamento com profissionais não ativos
+- apenas admins podem criar outros admins
+
+- DEFINIR REGRA DE EXCLUSÃO: exclusão apenas de si mesmo se não for admin **VS** impedir exclusão do usuário atual (logado)?
+- criação de usuários apenas por visitantes ou admins
+- impedir que usuários comuns (clientes/profissionais) criem outras contas de seu próprio tipo ou de terceiros
+- VALIDAR REGRA DE ADMIN: administradores podem alterar dados de outros usuários?
+- serviços e especialidades não deveriam estar vinculados?
+
+- uso do ownershipMiddleware (VÍNCULOS E PROPRIEDADE):
+  - impedir que um profissional/cliente altere outro profissional/cliente, apenas a si mesmo
+  - impedir que profissionais alterem serviços, bloqueios de horário e horários de trabalho com os quais não tenham vínculo
+  - impedir que profissionais/clientes visualizem dados com os quais não tenham vínculo
+  - profissional deve poder excluir? dados a ele vinculados
+
+- impedir que profissionais criem agendamentos
+- impedir que profissionais excluam agendamentos próprios? e de outros (apenas clientes podem?)
 - vincular usuário e profissional
+- validar criação de profissionais (principalmente quanto ao login)
+- criação de profissionais é livre? Ou precisa ser por algum admin?
+- criação do profissional - atualmente precisa criar o usuário e o profissional, inclusive repetindo o nome...
 
 - validações de erro nas rotas
 - verificar tópicos faltantes nos arquivos "full_..."

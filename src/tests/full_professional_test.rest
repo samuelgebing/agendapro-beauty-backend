@@ -46,6 +46,7 @@ Content-Type: application/json
 
 ### FAZER: a proibição
 ### FORBIDDEN/UNAUTHORIZED: Criar um novo profissional com sucesso
+# Sem o atributo "active" (o padrão é 1, ou seja, ativo)
 # @name professional_create
 POST {{baseURL}}/professionals
 Authorization: Bearer {{login.response.body.data.token}}
@@ -54,8 +55,7 @@ Content-Type: application/json
 {
     "name": "Profissional teste para agendamentos",
     "speciality_id": 1,
-    "phone": "(54) 99999-9999",
-    "active": 2
+    "phone": "(54) 99999-9999"
 }
 
 # FAZER: a proibição
@@ -92,9 +92,35 @@ Content-Type: application/json
 
 {
     "professional_id": {{professional.response.body.data.id}},
-    "weekday": 2,
+    "weekday": 1,
     "start_hour": "09:00",
     "end_hour": "11:00"
+}
+
+### Criar um segundo novo horário com sucesso
+# @name works_create_2
+POST {{baseURL}}/works
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "professional_id": {{professional.response.body.data.id}},
+    "weekday": 2,
+    "start_hour": "11:00",
+    "end_hour": "13:00"
+}
+
+### Criar um terceiro novo horário com sucesso
+# @name works_create_3
+POST {{baseURL}}/works
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "professional_id": {{professional.response.body.data.id}},
+    "weekday": 3,
+    "start_hour": "13:00",
+    "end_hour": "15:00"
 }
 
 ### Criar um novo bloqueio de horário com sucesso
@@ -105,12 +131,25 @@ Content-Type: application/json
 
 {
     "professional_id": {{professional.response.body.data.id}},
-    "start": "2040-01-02 00:00",
+    "start": "2040-01-01 00:00",
     "end": "2040-01-31 23:59",
-    "reason": "Motivo do bloqueio teste"
+    "reason": "Bloqueio teste - janeiro de 2040"
 }
 
-### FAZER: a proibição
+### Criar um segundo novo bloqueio de horário com sucesso
+# @name block_create_2
+POST {{baseURL}}/blocks
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "professional_id": {{professional.response.body.data.id}},
+    "start": "2040-02-01 00:00",
+    "end": "2040-02-28 23:59",
+    "reason": "Bloqueio teste - fevereiro de 2040"
+}
+
+### FAZER: a proibição (mesmo usuário)
 ### FORBIDDEN/UNAUTHORIZED: Criar um novo agendamento com sucesso
 # @name schedule_create
 POST {{baseURL}}/schedules
@@ -125,16 +164,44 @@ Content-Type: application/json
     "end_date_hour": "2040-07-20 11:30:00"
 }
 
+### FAZER: a proibição (mesmo usuário)
+### FORBIDDEN/UNAUTHORIZED: Criar um segundo novo agendamento com sucesso
+# @name schedule_create_2
+POST {{baseURL}}/schedules
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "user_id": {{user.response.body.data.id}},
+    "professional_id": {{professional.response.body.data.id}},
+    "service_id": {{service_create.response.body.data.id}},
+    "start_date_hour": "2041-08-20 10:00:00",
+    "end_date_hour": "2041-08-20 11:30:00"
+}
+
 # ==========================================
 # VISUALIZAR RESULTADOS ATÉ ENTÃO (READ)
 # ==========================================
+
+### Listar bloqueios de horário pelo id do profissional
+GET {{baseURL}}/blocks?professional_id={{professional.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
 
 ### Listar bloqueio de horário pelo id
 GET {{baseURL}}/blocks/{{block_create.response.body.data.id}}
 Authorization: Bearer {{login.response.body.data.token}}
 
-### Listar horários do profissional
+### FAZER: a permissão
+### Listar horários do profissional pelo seu id
+GET {{baseURL}}/works?professional_id={{professional.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Listar horários do profissional pelo id do horário
 GET {{baseURL}}/works/{{works_create.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Listar agendamentos pelo id do profissional
+GET {{baseURL}}/schedules?professional_id={{professional.response.body.data.id}}
 Authorization: Bearer {{login.response.body.data.token}}
 
 ### Listar agendamento com id específico
@@ -157,7 +224,7 @@ Authorization: Bearer {{login.response.body.data.token}}
 # ROTAS DE ALTERAÇÃO - UPDATE
 # ==========================================
 
-### FORBIDDEN/UNAUTHORIZED: Atualizar um profissional existente
+### Atualizar-se (profissional existente)
 # @name professional_update
 PUT {{baseURL}}/professionals/{{professional.response.body.data.id}}
 Authorization: Bearer {{login.response.body.data.token}}
@@ -165,6 +232,19 @@ Content-Type: application/json
 
 {
     "name": "Profissional teste atualizado",
+    "speciality_id": 2,
+    "phone": "(54) 88888-8888",
+    "active": 1
+}
+
+### FORBIDDEN/UNAUTHORIZED: Atualizar um (outro) profissional existente
+# @name professional_create_update
+PUT {{baseURL}}/professionals/{{professional_create.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "name": "Profissional teste para agendamento atualizado",
     "speciality_id": 2,
     "phone": "(54) 88888-8888",
     "active": 1
@@ -254,12 +334,25 @@ Content-Type: application/json
 # VISUALIZAR RESULTADOS ATÉ ENTÃO (READ)
 # ==========================================
 
+### Listar bloqueios de horário pelo id do profissional
+GET {{baseURL}}/blocks?professional_id={{professional_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
 ### Listar bloqueio de horário pelo id
 GET {{baseURL}}/blocks/{{block_update.response.body.data.id}}
 Authorization: Bearer {{login.response.body.data.token}}
 
-### Listar todo os horários pelo id
+### FAZER: a permissão
+### Listar horários do profissional pelo seu id
+GET {{baseURL}}/works?professional_id={{professional_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Listar horários do profissional pelo id do horário
 GET {{baseURL}}/works/{{works_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Listar agendamentos pelo id do profissional
+GET {{baseURL}}/schedules?professional_id={{professional_update.response.body.data.id}}
 Authorization: Bearer {{login.response.body.data.token}}
 
 ### Listar agendamento com id específico
@@ -274,8 +367,13 @@ Authorization: Bearer {{login.response.body.data.token}}
 GET {{baseURL}}/users/{{user_update.response.body.data.id}}
 Authorization: Bearer {{login.response.body.data.token}}
 
-### Listar profissional por id 
+### Listar próprio profissional por id 
 GET {{baseURL}}/professionals/{{professional_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### FAZER: a proibição
+### FORBIDDEN/UNAUTHORIZED: Listar outro profissional por id 
+GET {{baseURL}}/professionals/{{professional_create_update.response.body.data.id}}
 Authorization: Bearer {{login.response.body.data.token}}
 
 ### FAZER: a proibição
@@ -302,12 +400,16 @@ Content-Type: application/json
 # VISUALIZAR RESULTADOS ATÉ ENTÃO (READ)
 # ==========================================
 
+### Listar agendamentos pelo id do profissional
+GET {{baseURL}}/schedules?professional_id={{professional_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
 ### Listar agendamento com id específico
 GET {{baseURL}}/schedules/{{schedule_status_update.response.body.data.id}}
 Authorization: Bearer {{login.response.body.data.token}}
 
 # ==========================================
-# ROTAS DE EXCLUSÃO - DELETE (é feito com admin)
+# ROTAS DE EXCLUSÃO - DELETE (admin X profissional)
 # ==========================================
 
 ### Logar como admin para poder excluir
@@ -320,32 +422,82 @@ Content-Type: application/json
     "password_hash": "senha_"
 }
 
-### Deletar um agendamento existente
+### FORBIDDEN/UNAUTHORIZED (profissional): Deletar um agendamento existente
+DELETE {{baseURL}}/schedules/{{schedule_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### (admin): Deletar um agendamento existente
 DELETE {{baseURL}}/schedules/{{schedule_update.response.body.data.id}}
 Authorization: Bearer {{login_admin.response.body.data.token}}
 
-### Deletar um usuário existente - cliente
+### (admin): Deletar agendamento 2
+DELETE {{baseURL}}/schedules/{{schedule_create_2.response.body.data.id}}
+Authorization: Bearer {{login_admin.response.body.data.token}}
+
+### FAZER: a proibição
+### FORBIDDEN/UNAUTHORIZED (profissional): Deletar um usuário existente - cliente
+DELETE {{baseURL}}/users/{{client_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### (admin): Deletar um usuário existente - cliente
 DELETE {{baseURL}}/users/{{client_update.response.body.data.id}}
 Authorization: Bearer {{login_admin.response.body.data.token}}
 
-### Deletar um usuário existente - profissional
+### (profissional): Deletar-se (usuário existente)
+# É possível enquanto durar a seção
+# FAZER: Mas deve ser proibido se for o mesmo usuário
 DELETE {{baseURL}}/users/{{user_update.response.body.data.id}}
-Authorization: Bearer {{login_admin.response.body.data.token}}
+Authorization: Bearer {{login.response.body.data.token}}
 
-### Deletar um bloqueio de horário existente
+### FAZER: a permissão?
+### (profissional): Deletar um bloqueio de horário existente
+DELETE {{baseURL}}/blocks/{{block_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### (admin): Deletar um bloqueio de horário existente
 DELETE {{baseURL}}/blocks/{{block_update.response.body.data.id}}
 Authorization: Bearer {{login_admin.response.body.data.token}}
 
-### Deletar um horário existente
+### (admin): Deletar bloqueio 2
+DELETE {{baseURL}}/blocks/{{block_create_2.response.body.data.id}}
+Authorization: Bearer {{login_admin.response.body.data.token}}
+
+### FAZER: a permissão
+### (profissional): Deletar um horário existente
+DELETE {{baseURL}}/works/{{works_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### (admin): Deletar um horário existente
 DELETE {{baseURL}}/works/{{works_update.response.body.data.id}}
 Authorization: Bearer {{login_admin.response.body.data.token}}
 
-### Deletar um serviço existente
+### (admin): Deletar um horário existente
+DELETE {{baseURL}}/works/{{works_create_2.response.body.data.id}}
+Authorization: Bearer {{login_admin.response.body.data.token}}
+
+### (admin): Deletar um horário existente
+DELETE {{baseURL}}/works/{{works_create_3.response.body.data.id}}
+Authorization: Bearer {{login_admin.response.body.data.token}}
+
+### (profissional): Deletar um serviço existente
+DELETE {{baseURL}}/services/{{service_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### (admin): Deletar um serviço existente
 DELETE {{baseURL}}/services/{{service_update.response.body.data.id}}
 Authorization: Bearer {{login_admin.response.body.data.token}}
 
-### Deletar um profissional existente
+### FAZER: a permissão
+### (profissional): Deletar-se (profissional existente)
 DELETE {{baseURL}}/professionals/{{professional_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### (admin): Deletar profissional (logado)
+DELETE {{baseURL}}/professionals/{{professional_update.response.body.data.id}}
+Authorization: Bearer {{login_admin.response.body.data.token}}
+
+### (admin): Deletar profissional (teste para agendamento)
+DELETE {{baseURL}}/professionals/{{professional_create_update.response.body.data.id}}
 Authorization: Bearer {{login_admin.response.body.data.token}}
 
 # ==========================================

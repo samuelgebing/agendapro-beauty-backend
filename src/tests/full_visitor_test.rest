@@ -1,5 +1,5 @@
 # Senha para o login (a inserção do usuário retorna encriptado)
-@password_hash = "$3nh@_TESTE"
+@password_hash = $3nh@_TESTE
 
 # ==========================================
 # CENÁRIOS DE SUCESSO (Papel 0 - visitante)
@@ -49,7 +49,7 @@ Content-Type: application/json
     "active": 1
 }
 
-### FORBIDDEN/UNAUTHORIZED: Criar um novo usuário
+### Criar um novo usuário
 # @name client_create
 POST {{baseURL}}/users
 Content-Type: application/json
@@ -81,7 +81,7 @@ POST {{baseURL}}/works
 Content-Type: application/json
 
 {
-    "professional_id": {{professional_create.response.body.data.id}},
+    "professional_id": 1,
     "weekday": 2,
     "start_hour": "09:00",
     "end_hour": "11:00"
@@ -94,7 +94,7 @@ POST {{baseURL}}/blocks
 Content-Type: application/json
 
 {
-    "professional_id": {{professional_create.response.body.data.id}},
+    "professional_id": 1,
     "start": "2040-01-02 00:00",
     "end": "2040-01-31 23:59",
     "reason": "Motivo do bloqueio teste"
@@ -168,7 +168,7 @@ Content-Type: application/json
 {
     "name": "Cliente teste atualizado",
     "email": "cliente_teste@example.com",
-    "password_hash": {{password_hash}},
+    "password_hash": "{{password_hash}}",
     "role_id": 1
 }
 
@@ -192,7 +192,7 @@ PUT {{baseURL}}/works/{{works_create.response.body.data.id}}
 Content-Type: application/json
 
 {
-    "professional_id": {{professional_update.response.body.data.id}},
+    "professional_id": 1,
     "weekday": 3,
     "start_hour": "09:30",
     "end_hour": "12:00"
@@ -205,7 +205,7 @@ Content-Type: application/json
 # Authorization: Bearer {{login.response.body.data.token}}
 
 {
-    "professional_id": {{professional_update.response.body.data.id}},
+    "professional_id": 1,
     "start": "2050-01-01 10:00",
     "end": "2050-02-28 23:59",
     "reason": "Bloqueio atualizado para janeiro e fevereiro"
@@ -218,7 +218,7 @@ PUT {{baseURL}}/schedules/{{schedule_create.response.body.data.id}}
 Content-Type: application/json
 
 {
-    "user_id": {{client_update.response.body.data.id}},
+    "user_id": 1,
     "professional_id": 2,
     "service_id": 2,
     "status_id": 2,
@@ -295,6 +295,8 @@ Content-Type: application/json
 DELETE {{baseURL}}/users/{{client.response.body.data.id}}
 Authorization: Bearer {{login_admin.response.body.data.token}}
 
+### NÃO FUNCIONARÃO (não houve criação/alteração dos itens a seguir):
+
 ### Deletar um agendamento existente
 DELETE {{baseURL}}/schedules/{{schedule_update.response.body.data.id}}
 # Authorization: Bearer {{login_admin.response.body.data.token}}
@@ -302,8 +304,6 @@ DELETE {{baseURL}}/schedules/{{schedule_update.response.body.data.id}}
 ### Deletar um usuário existente
 DELETE {{baseURL}}/users/{{client_update.response.body.data.id}}
 # Authorization: Bearer {{login_admin.response.body.data.token}}
-
-### NÃO FUNCIONARÃO (não houve criação/alteração dos itens a seguir):
 
 ### Deletar um bloqueio de horário existente
 DELETE {{baseURL}}/blocks/{{block_update.response.body.data.id}}
