@@ -28,6 +28,9 @@ const professionalRoutes = require('./routes/professionalRoutes');
 const agendaRoutes = require('./routes/agendaRoutes');
 // Importa as rotas relacionadas à agenda dos profissionais
 
+const dashboardRoutes = require('./routes/dashboardRoutes');
+// Importa as rotas relacionadas ao dashboard
+
 const stubRoutesTest = require('./routes/stubRoutes_test');
 
 const errorMiddleware = require('./middlewares/errorMiddleware');
@@ -73,6 +76,10 @@ app.use('/professionals', professionalRoutes);
 // Rotas da aplicação
 app.use('/agenda', agendaRoutes);
 // Define que todas as requisições iniciadas com /agenda serão encaminhadas para o arquivo agendaRoutes
+
+// Rotas da aplicação
+app.use('/dashboard', dashboardRoutes);
+// Define que todas as requisições iniciadas com /dashboard serão encaminhadas para o arquivo dashboardRoutes
 
 app.use('/test-base', stubRoutesTest);
 
