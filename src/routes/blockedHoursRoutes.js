@@ -4,7 +4,13 @@ const createBaseRouter = require('./baseRouter');
 // Importa a função que cria um roteador base com os endpoints de CRUD
 
 // Cria o roteador com todo o CRUD padrão já embutido
-const router = createBaseRouter(BlockedHoursController);
+const router = createBaseRouter(BlockedHoursController, {
+    getAll: [2,3],
+    getById: [2,3],
+    create: [2,3],
+    update: [2,3],
+    delete: [3]
+});
 
 // Adicionar rotas específicas, se necessário
 

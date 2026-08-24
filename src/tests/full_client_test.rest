@@ -1,0 +1,362 @@
+# Senha para o login (a inserção do usuário retorna encriptado)
+@password_hash = $3nh@_TESTE
+
+# ==========================================
+# CENÁRIOS DE SUCESSO (Papel 1 - cliente)
+# ==========================================
+
+### Criar um novo usuário
+# @name client
+POST {{baseURL}}/users
+Content-Type: application/json
+
+{
+    "name": "Cliente teste",
+    "email": "cliente_teste@example.com",
+    "password_hash": "{{password_hash}}",
+    "role_id": 1
+}
+
+### Logar e pegar o token
+# @name login
+POST {{baseURL}}/users/login
+Content-Type: application/json
+
+{
+    "email": "{{client.response.body.data.email}}",
+    "password_hash": "{{password_hash}}"
+}
+
+# ==========================================
+# ROTAS DE CRIAÇÃO - CREATE
+# ==========================================
+
+### FORBIDDEN/UNAUTHORIZED: Criar um novo profissional com sucesso
+# @name professional_create
+POST {{baseURL}}/professionals
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "name": "Profissional teste para agendamentos",
+    "speciality_id": 1,
+    "phone": "(54) 99999-9999",
+    "active": 1
+}
+
+# FAZER: a proibição
+### FORBIDDEN/UNAUTHORIZED: Criar um novo usuário
+# @name client_create
+POST {{baseURL}}/users
+Content-Type: application/json
+
+{
+    "name": "Cliente teste para agendamentos",
+    "email": "cliente_teste_agendamentos@example.com",
+    "password_hash": "{{password_hash}}",
+    "role_id": 1
+}
+
+### FORBIDDEN/UNAUTHORIZED: Criar um novo serviço com sucesso
+# @name service_create
+POST {{baseURL}}/services
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "name": "Tipo de serviço teste para agendamentos 2",
+    "area_id": 1,
+    "min_duration": 30,
+    "price": 50.00
+}
+
+### FORBIDDEN/UNAUTHORIZED: Criar um novo horário com sucesso
+# @name works_create
+POST {{baseURL}}/works
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "professional_id": 1,
+    "weekday": 2,
+    "start_hour": "09:00",
+    "end_hour": "11:00"
+}
+
+### FORBIDDEN/UNAUTHORIZED: Criar um novo bloqueio de horário com sucesso
+# @name block_create
+POST {{baseURL}}/blocks
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "professional_id": 1,
+    "start": "2040-01-02 00:00",
+    "end": "2040-01-31 23:59",
+    "reason": "Motivo do bloqueio teste"
+}
+
+### Criar um novo agendamento com sucesso
+# @name schedule_create
+POST {{baseURL}}/schedules
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "user_id": {{client.response.body.data.id}},
+    "professional_id": 1,
+    "service_id": 1,
+    "start_date_hour": "2040-07-20 10:00:00",
+    "end_date_hour": "2040-07-20 11:30:00"
+}
+
+# ==========================================
+# VISUALIZAR RESULTADOS ATÉ ENTÃO (READ)
+# ==========================================
+
+### FORBIDDEN/UNAUTHORIZED: Listar todos os bloqueios de horário
+GET {{baseURL}}/blocks/{{block_create.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### FORBIDDEN/UNAUTHORIZED: Listar todos os horários
+GET {{baseURL}}/works/{{works_create.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Listar agendamento com id específico
+GET {{baseURL}}/schedules/{{schedule_create.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### FORBIDDEN/UNAUTHORIZED: Listar serviço com id específico
+GET {{baseURL}}/services/{{service_create.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Listar usuário com id específico
+GET {{baseURL}}/users/{{client.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### FORBIDDEN/UNAUTHORIZED: Listar profissional por id 
+GET {{baseURL}}/professionals/{{professional_create.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+# ==========================================
+# ROTAS DE ALTERAÇÃO - UPDATE
+# ==========================================
+
+### FORBIDDEN/UNAUTHORIZED: Atualizar um profissional existente
+# @name professional_update
+PUT {{baseURL}}/professionals/{{professional_create.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "name": "Profissional teste para agendamentos atualizado",
+    "speciality_id": 2,
+    "phone": "(54) 88888-8888",
+    "active": 1
+}
+
+### Atualizar o próprio usuário 
+# @name client_update
+PUT {{baseURL}}/users/{{client.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "name": "Cliente teste atualizado",
+    "email": "cliente_teste@example.com",
+    "password_hash": "{{password_hash}}",
+    "role_id": 1
+}
+
+### FORBIDDEN/UNAUTHORIZED: Atualizar um serviço existente
+# @name service_update
+PUT {{baseURL}}/services/{{service_create.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "name": "Tipo de serviço teste para agendamentos atualizado",
+    "area_id": 2,
+    "min_duration": 45,
+    "price": 60.00
+}
+
+### FORBIDDEN/UNAUTHORIZED: Atualizar um horário existente
+# @name works_update
+PUT {{baseURL}}/works/{{works_create.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "professional_id": 1,
+    "weekday": 3,
+    "start_hour": "09:30",
+    "end_hour": "12:00"
+}
+
+### FORBIDDEN/UNAUTHORIZED: Atualizar um bloqueio de horário existente
+# @name block_update
+PUT {{baseURL}}/blocks/{{block_create.response.body.data.id}}
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.data.token}}
+
+{
+    "professional_id": 1,
+    "start": "2050-01-01 10:00",
+    "end": "2050-02-28 23:59",
+    "reason": "Bloqueio atualizado para janeiro e fevereiro"
+}
+
+### Atualizar um agendamento existente
+# @name schedule_update
+PUT {{baseURL}}/schedules/{{schedule_create.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+    "user_id": {{client_update.response.body.data.id}},
+    "professional_id": 2,
+    "service_id": 2,
+    "status_id": 2,
+    "start_date_hour": "2050-07-31 20:00:00",
+    "end_date_hour": "2050-07-31 21:30:00"
+}
+
+# ==========================================
+# VISUALIZAR RESULTADOS ATÉ ENTÃO (READ)
+# ==========================================
+
+### FORBIDDEN/UNAUTHORIZED: Listar todos os bloqueios de horário
+GET {{baseURL}}/blocks/{{block_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### FORBIDDEN/UNAUTHORIZED: Listar todos os horários
+GET {{baseURL}}/works/{{works_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Listar agendamento com id específico
+GET {{baseURL}}/schedules/{{schedule_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### FORBIDDEN/UNAUTHORIZED: Listar serviço com id específico
+GET {{baseURL}}/services/{{service_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Listar próprio usuário com id específico
+GET {{baseURL}}/users/{{client_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### FORBIDDEN/UNAUTHORIZED: Listar profissional por id 
+GET {{baseURL}}/professionals/{{professional_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+# ==========================================
+# ROTA DE ALTERAÇÃO - UPDATE - status
+# ==========================================
+
+### FAZER: a proibição
+### FORBIDDEN/UNAUTHORIZED: Atualizar apenas o status 
+### de um agendamento existente (substitua @status_id)
+# @name schedule_status_update
+PATCH {{baseURL}}/schedules/{{schedule_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{ 
+    "status_id": 3 
+}
+
+# ==========================================
+# VISUALIZAR RESULTADOS ATÉ ENTÃO (READ)
+# ==========================================
+
+### Listar agendamento com id específico
+GET {{baseURL}}/schedules/{{schedule_status_update.response.body.data.id}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+# ==========================================
+# ROTAS DE EXCLUSÃO - DELETE (cliente)
+# ==========================================
+
+### Deletar o próprio usuário existente
+### OBS: dá pra fazer enquanto durar a seção
+DELETE {{baseURL}}/users/{{client.response.body.data.id}}
+Authorization: Bearer {{login_admin.response.body.data.token}}
+
+# ==========================================
+# ROTAS DE EXCLUSÃO - DELETE (é feito com admin)
+# ==========================================
+
+### Logar como admin para poder excluir
+# @name login_admin
+POST {{baseURL}}/users/login
+Content-Type: application/json
+
+{
+    "email": "admin@example.com",
+    "password_hash": "senha_"
+}
+
+### Deletar um agendamento existente
+DELETE {{baseURL}}/schedules/{{schedule_update.response.body.data.id}}
+Authorization: Bearer {{login_admin.response.body.data.token}}
+
+### Deletar um usuário existente
+DELETE {{baseURL}}/users/{{client_update.response.body.data.id}}
+Authorization: Bearer {{login_admin.response.body.data.token}}
+
+### NÃO FUNCIONARÃO (não houve criação/alteração dos itens a seguir):
+
+### Deletar um bloqueio de horário existente
+DELETE {{baseURL}}/blocks/{{block_update.response.body.data.id}}
+Authorization: Bearer {{login_admin.response.body.data.token}}
+
+### Deletar um horário existente
+DELETE {{baseURL}}/works/{{works_update.response.body.data.id}}
+Authorization: Bearer {{login_admin.response.body.data.token}}
+
+### Deletar um serviço existente
+DELETE {{baseURL}}/services/{{service_update.response.body.data.id}}
+Authorization: Bearer {{login_admin.response.body.data.token}}
+
+### Deletar um profissional existente
+DELETE {{baseURL}}/professionals/{{professional_update.response.body.data.id}}
+Authorization: Bearer {{login_admin.response.body.data.token}}
+
+# ==========================================
+# VISUALIZAR RESULTADOS ATÉ ENTÃO (READ) (cliente)
+# ==========================================
+
+### Listar todos os agendamentos
+GET {{baseURL}}/schedules
+Authorization: Bearer {{login.response.body.data.token}}
+
+### FORBIDDEN/UNAUTHORIZED: Listar todos os bloqueios de horário
+GET {{baseURL}}/blocks
+Authorization: Bearer {{login.response.body.data.token}}
+
+### FORBIDDEN/UNAUTHORIZED: Listar todos os horários
+GET {{baseURL}}/works
+Authorization: Bearer {{login.response.body.data.token}}
+
+### FORBIDDEN/UNAUTHORIZED: Listar todos os serviços
+GET {{baseURL}}/services
+Authorization: Bearer {{login.response.body.data.token}}
+
+### FORBIDDEN/UNAUTHORIZED: Listar todos os usuários
+GET {{baseURL}}/users
+Authorization: Bearer {{login.response.body.data.token}}
+
+### FORBIDDEN/UNAUTHORIZED: Listar todos os profissionais
+GET {{baseURL}}/professionals
+Authorization: Bearer {{login.response.body.data.token}}
+
+# ==========================================
+# VISUALIZAR RESULTADOS ATÉ ENTÃO (READ) (admin)
+# ==========================================
+
+### SÓ PRECISA DO ABAIXO
+
+### Listar todos os usuários
+GET {{baseURL}}/users
+Authorization: Bearer {{login_admin.response.body.data.token}}

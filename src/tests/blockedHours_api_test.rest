@@ -1,7 +1,7 @@
 # ==========================================
 # TESTES DO MÓDULO DE SERVIÇOS (ISSUE #12)
 # ==========================================
-@baseURL = http://localhost:3000
+
 @blocked_hour_id = 13
 @professional_id = 3
 
@@ -11,27 +11,28 @@
 
 ### Listar todos os bloqueios de horário
 GET {{baseURL}}/blocks
-Accept: application/json
+Authorization: Bearer {{token}}
 
 ### Listar bloqueio de horário por id 
 GET {{baseURL}}/blocks/1
-Accept: application/json
+Authorization: Bearer {{token}}
 
 ### Listar todos os bloqueios de horário filtrados pelo profissional
 GET {{baseURL}}/blocks?professional_id={{professional_id}}
-Accept: application/json
+Authorization: Bearer {{token}}
 
 ### Listar todos os bloqueios de horário filtrados pela data
 GET {{baseURL}}/blocks?date=2027-01-15
-Accept: application/json
+Authorization: Bearer {{token}}
 
 ### Listar todos os bloqueios de horário filtrados pelo profissional e pela data
 GET {{baseURL}}/blocks?professional_id={{professional_id}}&date=2027-01-15
-Accept: application/json
+Authorization: Bearer {{token}}
 
 ### Criar um novo bloqueio de horário com sucesso
 POST {{baseURL}}/blocks
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "professional_id": 4,
@@ -43,6 +44,7 @@ Content-Type: application/json
 ### Atualizar um bloqueio de horário existente (substitua @professional_id)
 PUT {{baseURL}}/blocks/{{blocked_hour_id}}
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "professional_id": 4,
@@ -53,11 +55,20 @@ Content-Type: application/json
 
 ### Deletar um bloqueio de horário existente (substitua @blocked_hour_id)
 DELETE {{baseURL}}/blocks/{{blocked_hour_id}}
-Accept: application/json
+Authorization: Bearer {{token}}
 
 # ==========================================
 # CENÁRIOS DE ERRO (VALIDAÇÕES DA ISSUE #10)
 # ==========================================
+
+# ------------------------------------------ 
+# BUSCAS (GET)
+# ------------------------------------------
+
+### Listar todos os bloqueios de horário
+### porém com cabeçalho sem token (erro esperado)
+GET {{baseURL}}/blocks
+Accept: application/json
 
 #Fazer
 # cenários de visualização com data incorreta
