@@ -29,3 +29,5 @@
 
 - validações de erro nas rotas
 - verificar tópicos faltantes nos arquivos "full_..."
+
+- retornar valores humanizados ao invés do id
