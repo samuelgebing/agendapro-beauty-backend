@@ -20,7 +20,8 @@ class DashboardModel extends BaseModel {
         if (!professionalId) {
             const [rows] = await db.execute(
                 `SELECT professional_id, count(*) as quantidade FROM schedules
-                GROUP BY professional_id`
+                GROUP BY professional_id
+                ORDER BY quantidade DESC`
             );
             return rows; // Retorna todos os profissionais com suas contagens
         } else {
@@ -57,7 +58,8 @@ class DashboardModel extends BaseModel {
         if (!clientId) {
             const [rows] = await db.execute(
                 `SELECT user_id, count(*) as quantidade FROM schedules
-                GROUP BY user_id`
+                GROUP BY user_id
+                ORDER BY quantidade DESC`
             );
             return rows; // Retorna todos os clientes com suas contagens
         } else {
@@ -84,6 +86,25 @@ class DashboardModel extends BaseModel {
         console.log('start:', startDate);
         console.log('end:', endDate);
         return rows; // Retorna diretamente o número
+    }
+
+    async countSchedulesByService(serviceId = null) {
+        if (!serviceId) {
+            const [rows] = await db.execute(
+                `SELECT service_id, count(*) as quantidade FROM schedules
+                GROUP BY service_id
+                ORDER BY quantidade DESC`
+            );
+            return rows; // Retorna todos os serviços com suas contagens
+        } else {
+            const [rows] = await db.execute(
+                `SELECT service_id, count(*) as quantidade FROM schedules 
+                 WHERE service_id = ?
+                 GROUP BY service_id`,
+                [serviceId]
+            );
+            return rows[0]?.quantidade || 0; // Retorna diretamente o número
+        }
     }
 }
 

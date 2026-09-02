@@ -60,10 +60,18 @@ class DashboardService extends BaseService {
         // Total geral
         const allSchedules = await this.model.countAllSchedules();
         
+        let schedulesByService;
         let schedulesByProfessional;
         let schedulesByStatus;
         let schedulesByClient;
         let schedulesByDateRange;
+
+        // Total por serviço (com/sem id)
+        if (filters.service_id) {
+            schedulesByService = await this.model.countSchedulesByService(filters.service_id);
+        } else {
+            schedulesByService = await this.model.countSchedulesByService();
+        }
 
         // Total por profissional (com/sem id)
         if (filters.professional_id) {
@@ -102,6 +110,7 @@ class DashboardService extends BaseService {
         
         return {
             total_agendamentos: allSchedules,
+            agendamentos_por_servico: schedulesByService,
             agendamentos_por_profissional: schedulesByProfessional,
             agendamentos_por_status: schedulesByStatus,
             agendamentos_por_cliente: schedulesByClient,
